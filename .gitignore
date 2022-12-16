@@ -9,3 +9,9 @@
 
 #files
 *.user
+/bin-int/Debug-windows-x86_64
+/bin/Debug-windows-x86_64
+/Hazel/Hazel.vcxproj
+/Hazel/Hazel.vcxproj.filters
+/SandBox/Sandbox.vcxproj
+/Hazel.sln

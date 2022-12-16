@@ -8,7 +8,7 @@ workspace "Hazel"
         "Dist"
     }
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecturek}"
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Hazel"
     location "Hazel"
@@ -42,7 +42,7 @@ project "Hazel"
 
         postbuildcommands
         {
-            ("{COPY} %{cfg.buildtarget.relpath}../bin/"..outputdir.."/Sandbox")
+            ("{COPY} %{cfg.buildtarget.relpath} ../bin/"..outputdir.."/Sandbox")
         }
 
     filter "configurations:Debug"
@@ -73,7 +73,7 @@ project "Sandbox"
 
     includedirs
     {
-        "%{prj.name}/vendor/spdlog/include",
+        "Hazel/vendor/spdlog/include",
         "Hazel/src",
     }
 
