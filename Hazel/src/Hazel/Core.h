@@ -11,3 +11,6 @@
 	#error Hazel(cherno) Like shitting windows!
 #endif // HZ_PLATFORM_WINDOWS
 
+
+#define BIT(x) (1<<x)
+
