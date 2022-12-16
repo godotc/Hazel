@@ -5,3 +5,7 @@
 /.vs
 /bin/Debug-x64
 /bin-int/Debug-x64
+
+
+#files
+*.user
