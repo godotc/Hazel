@@ -14,7 +14,6 @@ void Application::Run()
 {
 	while (true)
 	{
-		printf("Hazel Engine\n");
 	}
 }
 
