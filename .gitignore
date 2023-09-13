@@ -9,3 +9,6 @@ build/
 # Clangd
 .cache
 compile_commands.json
+
+# Binaries
+bin

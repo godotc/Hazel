@@ -1,9 +1,12 @@
 #include <iostream>
 
-using namespace std;
+
+
+#include <hazel.h>
+
 
 int main(int argc, char **argv)
 {
-    cout << "hello world!" << endl;
+    hazel ::print();
     return 0;
 }
