@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hazel.h"
 
 #ifdef HAZEL_LINKAGE_PROGRAM
 

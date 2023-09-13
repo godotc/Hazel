@@ -1,3 +1,6 @@
+add_requires("spdlog")
+add_packages("spdlog")
+
 target("hazel")
     set_kind("shared")
     add_files("**.cpp")
@@ -8,3 +11,5 @@ target("hazel")
     elseif is_os("windows") then
         add_defines("BUILD_SHARED_HAZEL")
     end
+
+    add_packages("spdlog")

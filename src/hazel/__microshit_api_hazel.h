@@ -9,5 +9,5 @@
 		#define HAZEL_API __declspec(dllimport)
 	#endif
 #else
-	#define HAZEL_API extern
+	#define HAZEL_API 
 #endif
