@@ -1,12 +1,5 @@
+#pragma once
 
+#include "__microshit_api_hazel.h"
 
-
-namespace hazel {
-
-
-class App
-{
-};
-
-
-} // namespace hazel
+#include "app.h"

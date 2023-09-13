@@ -1,13 +1,9 @@
+#pragma once
 
-#include "__microshit_api_hazel.h"
 #include <iostream>
-#include <log.h>
 
 
-namespace hazel {
-void HAZEL_API print()
-{
+#include "app.h"
+#include "core.h"
 
-    LOG_DEBUG("Hello hazel");
-};
-} // namespace hazel
+#include "entry_point.h"

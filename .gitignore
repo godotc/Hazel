@@ -10,5 +10,8 @@ build/
 .cache
 compile_commands.json
 
+# Vscode
+.vscode
+
 # Binaries
 bin
