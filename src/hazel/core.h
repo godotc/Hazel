@@ -2,4 +2,4 @@
 
 #include "__microshit_api_hazel.h"
 
-#include "app.h"
+#define BIT(x) (1 << x)

@@ -15,7 +15,6 @@ hazel::Log::Log()
     std::cout << fmt::format("Initializing the spd logger...") << std::endl;
 
 
-
     spdlog::set_pattern("%^[%T] %n: %v%$");
     // spdlog::set_pattern("%^[%l]%$ %v");
 
