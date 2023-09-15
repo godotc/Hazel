@@ -1,6 +1,11 @@
+#pragma once
+
 #include "__microshit_api_hazel.h"
-#include <memory>
-#include <spdlog/fwd.h>
+
+#include <spdlog/spdlog.h>
+
+#include <spdlog/fmt/ostr.h>
+
 
 namespace hazel {
 

@@ -1,12 +1,10 @@
 #pragma once
 
+#include "hz_pch.h"
 
-#include "__microshit_api_hazel.h"
 #include "hazel/core.h"
 #include "hazel/event/event.h"
-#include <string>
 
-#include <fmt/format.h>
 
 namespace hazel {
 
@@ -21,7 +19,8 @@ class HAZEL_API WindowResizeEvent : public Event
 
     inline uint width() { return m_Width; }
     inline uint height() { return m_Height; }
-    std::string to_string() { return fmt::format("WindowResizeEvent: {}, {}", m_Width, m_Height); }
+
+    std::string to_string() const override { return fmt::format("WindowResizeEvent: {}, {}", m_Width, m_Height); }
 
 
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
@@ -31,6 +30,7 @@ class HAZEL_API WindowResizeEvent : public Event
     uint m_Height, m_Width;
 };
 
+
 class HAZEL_API WindowCloseEvent : public Event
 {
   public:
@@ -38,7 +38,7 @@ class HAZEL_API WindowCloseEvent : public Event
 
 
     std::string to_string() { return fmt::format("WindowCloseEvent"); }
-
+    //
 
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
     EVENT_CLASS_TYPE(WindowClose)

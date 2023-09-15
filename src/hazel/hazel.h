@@ -1,10 +1,8 @@
 #pragma once
 
-#include <iostream>
 
+#include "hazel/app.h"
+#include "hazel/layer.h"
+#include "hazel/log.h"
 
-#include "app.h"
-#include "core.h"
-#include "./log.h"
-
-#include "entry_point.h"
+#include "hazel/entry_point.h"

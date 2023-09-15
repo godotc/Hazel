@@ -1,15 +1,9 @@
 #pragma once
 
-#include "__microshit_api_hazel.h"
-#include <cstdint>
-#include <functional>
-#include <ostream>
-#include <stdint.h>
+#include <hz_pch.h>
 
+#include "hazel/core.h"
 
-#include <hazel/core.h>
-#include <string>
-#include <type_traits>
 
 namespace hazel {
 
@@ -70,14 +64,14 @@ class HAZEL_API Event
     virtual EventType   GetEventType() const     = 0;
     virtual const char *GetName() const          = 0;
     virtual int         GetCategoryFlags() const = 0;
-    virtual std::string ToString() const { return GetName(); }
+    virtual std::string to_string() const { return GetName(); }
 
     inline bool IsInCategory(EventCategory category)
     {
         return GetCategoryFlags() & category;
     }
 
-  protected:
+  public:
     bool bHandled = false;
 };
 
@@ -93,7 +87,7 @@ class EventDispatcher
     template <class T>
     bool Dispatch(EventFn<T> func)
     {
-        if (m_Event.GetEventType() == T::GetStaticType)
+        if (m_Event.GetEventType() == T::GetStaticType())
         {
             m_Event.bHandled = func(*(T *)&m_Event);
             return true;
@@ -101,12 +95,13 @@ class EventDispatcher
         return false;
     }
 
+
   private:
     Event &m_Event;
 };
 
 
-inline std::ostream &operator<<(std::ostream &os, const Event &ev) { return os << ev.ToString(); }
-
-
 } // namespace hazel
+
+inline std::ostream &operator<<(std::ostream &os, const hazel::Event &ev) { return os << ev.to_string(); }
+inline std::ostream &operator<<(std::ostream &os, const hazel::Event *ev) { return os << ev->to_string(); }
