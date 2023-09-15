@@ -8,9 +8,6 @@ if is_mode("debug") then
     add_defines("__HZ_DEBUG")
 end
 
-add_requires("fmt")
-add_packages("fmt")
-
 
 
 includes("./src")

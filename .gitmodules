@@ -1,3 +1,0 @@
-[submodule "pkgs/m_log"]
-	path = pkgs/m_log
-	url = git@github.com:godotc/m_log.git
