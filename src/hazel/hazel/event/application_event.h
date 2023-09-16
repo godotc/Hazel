@@ -17,10 +17,10 @@ class HAZEL_API WindowResizeEvent : public Event
     WindowResizeEvent(uint w, uint h) : m_Width(w), m_Height(h) {}
 
 
-    inline uint width() { return m_Width; }
-    inline uint height() { return m_Height; }
+    inline uint GetWidth() const { return m_Width; }
+    inline uint GetHeight() const { return m_Height; }
 
-    std::string to_string() const override { return fmt::format("WindowResizeEvent: {}, {}", m_Width, m_Height); }
+    [[nodiscard]] std::string to_string() const override { return fmt::format("WindowResizeEvent: {}, {}", m_Width, m_Height); }
 
 
     EVENT_CLASS_CATEGORY(EventCategoryApplication)

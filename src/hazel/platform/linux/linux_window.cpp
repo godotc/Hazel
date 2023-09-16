@@ -15,6 +15,7 @@
 #include "log.h"
 
 
+#include <imgui_impl_glfw.h>
 namespace hazel {
 
 static bool bGLFWInitialized = false;
@@ -43,7 +44,10 @@ static void MessageCallback(GLenum        source,
 Window *Window::Create(const WindowProps &props) { return new LinuxWindow(props); }
 
 
-LinuxWindow::LinuxWindow(const WindowProps &props) { Init(props); }
+LinuxWindow::LinuxWindow(const WindowProps &props)
+{
+    Init(props);
+}
 LinuxWindow::~LinuxWindow()
 {
     ShutDown();
@@ -145,6 +149,13 @@ void LinuxWindow::Init(const WindowProps &props)
                 break;
             }
             }
+        }
+    });
+
+    glfwSetCharCallback(m_Window, [](GLFWwindow *win, unsigned int character) {
+        if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
+            KeyTypedEvent ev(character);
+            data->EventCallback(ev);
         }
     });
 

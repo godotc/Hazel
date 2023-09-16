@@ -25,6 +25,7 @@ enum class EventType
 
     KeyPressed,
     KeyReleased,
+    KeyTyped,
 
     MouseMoved,
     MouseScrolled,
@@ -61,12 +62,12 @@ class HAZEL_API Event
     friend class EventDispatcher;
 
   public:
-    virtual EventType   GetEventType() const     = 0;
-    virtual const char *GetName() const          = 0;
-    virtual int         GetCategoryFlags() const = 0;
-    virtual std::string to_string() const { return GetName(); }
+    [[nodiscard]] virtual EventType   GetEventType() const     = 0;
+    [[nodiscard]] virtual const char *GetName() const          = 0;
+    [[nodiscard]] virtual int         GetCategoryFlags() const = 0;
+    [[nodiscard]] virtual std::string to_string() const { return GetName(); }
 
-    inline bool IsInCategory(EventCategory category)
+    [[nodiscard]] inline bool IsInCategory(EventCategory category) const
     {
         return GetCategoryFlags() & category;
     }

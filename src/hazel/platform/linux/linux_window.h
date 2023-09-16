@@ -13,7 +13,7 @@ namespace hazel {
 class LinuxWindow : public Window
 {
   public:
-    LinuxWindow(const WindowProps &props);
+    explicit LinuxWindow(const WindowProps &props);
     virtual ~LinuxWindow();
 
   public:
@@ -27,6 +27,8 @@ class LinuxWindow : public Window
 
     void SetVSync(bool bEnable) override;
     bool IsVSync() const override;
+
+    GLFWwindow *GetWindow() { return m_Window; }
 
   private:
     void Init(const WindowProps &props);

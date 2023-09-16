@@ -1,7 +1,7 @@
 #include <hazel.h>
+#include <hazel/imgui/imgui_layer.h>
 #include <ostream>
-#include <spdlog/fwd.h>
-#include <spdlog/logger.h>
+
 
 class NothingLayer : public hazel::Layer
 {
@@ -10,12 +10,12 @@ class NothingLayer : public hazel::Layer
 
     void OnUpdate() override
     {
-        HZ_INFO("{}::Update ", GetName());
+        // HZ_INFO("{}::Update ", GetName());
     }
 
     void OnEvent(hazel::Event &event) override
     {
-        HZ_TRACE("{}::OnEvent", GetName());
+        // HZ_TRACE("{}::OnEvent", GetName());
     }
 };
 
@@ -25,7 +25,9 @@ class Sandbox : public hazel::App
   public:
     Sandbox()
     {
+        HZ_INFO("Sandbox construct");
         PushLayer(new NothingLayer);
+        PushLayer(new hazel::ImGuiLayer);
     }
 
     ~Sandbox()
@@ -37,6 +39,5 @@ class Sandbox : public hazel::App
 
 hazel::App *hazel::CreateApplication()
 {
-
-    return new Sandbox();
+    return new Sandbox;
 }

@@ -1,4 +1,5 @@
 add_requires("spdlog","glfw","glad")
+add_requires("imgui docking",  {configs = { opengl3 = true, glfw=true }})
 add_packages("spdlog")
 
 target("hazel")
@@ -8,6 +9,7 @@ target("hazel")
 
     add_packages("spdlog")
     add_packages("glfw", "glad")
+    add_packages("imgui")
     
     add_includedirs("./hazel")
 

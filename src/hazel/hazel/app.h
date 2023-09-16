@@ -17,11 +17,15 @@ class App
     virtual ~App();
 
   public:
+    static inline App &Get() { return *Application; }
+
     void Run();
 
     void OnEvent(Event &ev);
     void PushLayer(Layer *layer);
     void PopLayer(Layer *layer);
+
+    inline Window &GetWindow() { return *m_Window; }
 
   private:
     bool OnWindowClose(WindowCloseEvent &ev);
@@ -33,8 +37,9 @@ class App
     bool                    bRunning = true;
 
     LayerStack m_LayerStack;
-};
 
+    static App *Application;
+};
 
 App *CreateApplication();
 

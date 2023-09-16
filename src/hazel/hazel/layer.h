@@ -8,7 +8,6 @@
 
 namespace hazel {
 
-
 class HAZEL_API Layer
 {
   public:

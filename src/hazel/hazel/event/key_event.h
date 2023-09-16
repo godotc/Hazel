@@ -29,7 +29,7 @@ class HAZEL_API KeyPressedEvent : public KeyEvent
   public:
     KeyPressedEvent(int keycode, int repeat_count) : KeyEvent(keycode), m_RepeatCount(repeat_count) {}
 
-    std::string to_string() const override { return fmt::format("KeyPressedEvent: {} ({} repeats)", m_KeyCode, m_RepeatCount); }
+    [[nodiscard]] std::string to_string() const override { return fmt::format("KeyPressedEvent: {} ({} repeats)", m_KeyCode, m_RepeatCount); }
 
     EVENT_CLASS_TYPE(KeyPressed)
 
@@ -40,13 +40,26 @@ class HAZEL_API KeyPressedEvent : public KeyEvent
 class HAZEL_API KeyReleasedEvent : public KeyEvent
 {
   public:
-    KeyReleasedEvent(int keycode) : KeyEvent(keycode){};
+    explicit KeyReleasedEvent(int keycode) : KeyEvent(keycode){};
 
-    std::string to_string() const override { return fmt::format("KeyReleasedEvent: {} ", m_KeyCode); }
+    [[nodiscard]] std::string to_string() const override { return fmt::format("KeyReleasedEvent: {} ", m_KeyCode); }
 
     EVENT_CLASS_TYPE(KeyReleased)
 
   protected:
 };
+
+
+
+class HAZEL_API KeyTypedEvent : public KeyEvent
+{
+  public:
+    explicit KeyTypedEvent(int keycode) : KeyEvent(keycode) {}
+
+    [[nodiscard]] std::string to_string() const override { return fmt::format("KeyTypeEvent: {} ", m_KeyCode); }
+
+    EVENT_CLASS_TYPE(KeyTyped)
+};
+
 
 } // namespace hazel
