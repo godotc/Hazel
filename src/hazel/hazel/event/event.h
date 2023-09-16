@@ -105,4 +105,3 @@ class EventDispatcher
 } // namespace hazel
 
 inline std::ostream &operator<<(std::ostream &os, const hazel::Event &ev) { return os << ev.to_string(); }
-inline std::ostream &operator<<(std::ostream &os, const hazel::Event *ev) { return os << ev->to_string(); }

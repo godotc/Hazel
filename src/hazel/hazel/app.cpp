@@ -65,6 +65,7 @@ void App::Run()
             layer->OnUpdate();
         }
 
+
         m_Window->OnUpdate();
     }
 }
