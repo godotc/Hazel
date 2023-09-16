@@ -217,5 +217,6 @@ bool LinuxWindow::IsVSync() const
 {
     return m_Data.bVSync;
 }
+unsigned int LinuxWindow::GetHeight() const { return m_Data.Height; }
 
 } // namespace hazel

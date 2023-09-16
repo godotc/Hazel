@@ -24,12 +24,12 @@
                 PLATFORM_BREAK();                              \
             }                                                  \
         }
-    #define HZ_CORE_ASSERT(x, ...)                                  \
-        {                                                           \
-            if (!(x)) {                                             \
+    #define HZ_CORE_ASSERT(x, ...)                                 \
+        {                                                          \
+            if (!(x)) {                                            \
                 HZ_CORE_ERROR("Assertion Failed: {}", __VA_ARGS__); \
-                PLATFORM_BREAK();                                   \
-            }                                                       \
+                PLATFORM_BREAK();                                  \
+            }                                                      \
         }
 #else
     #define HZ_ASSERT(x, ...)

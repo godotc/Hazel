@@ -12,7 +12,7 @@
 #include <ostream>
 #include <queue>
 #include <stack>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <type_traits>
 

@@ -12,6 +12,8 @@ int main()
     std::cout << "The HZ~ Engine" << std::endl;
     hazel::App *app = hazel::CreateApplication();
     app->Run();
+    delete app;
+
     return 0;
 }
 

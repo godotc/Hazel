@@ -14,28 +14,27 @@ class LinuxWindow : public Window
 {
   public:
     explicit LinuxWindow(const WindowProps &props);
-    virtual ~LinuxWindow();
+    ~LinuxWindow() override;
 
   public:
 
     void OnUpdate() override;
 
-    inline unsigned int GetWidth() const override { return m_Data.Width; }
-    inline unsigned int GetHeight() const override { return m_Data.Height; }
+    [[nodiscard]] inline unsigned int GetWidth() const override { return m_Data.Width; }
+    [[nodiscard]] inline unsigned int GetHeight() const override;
 
     inline void SetEventCallback(const EventCallBackFn &cb) override { m_Data.EventCallback = cb; }
 
-    void SetVSync(bool bEnable) override;
-    bool IsVSync() const override;
+    void               SetVSync(bool bEnable) override;
+    [[nodiscard]] bool IsVSync() const override;
 
-    GLFWwindow *GetWindow() { return m_Window; }
+    [[nodiscard]] inline std::any GetNativeWindow() const override { return m_Window; }
 
   private:
     void Init(const WindowProps &props);
     void ShutDown();
 
   private:
-
     struct WindowData {
         std::string     Title;
         unsigned int    Width, Height;

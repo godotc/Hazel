@@ -30,7 +30,7 @@ class Sandbox : public hazel::App
         PushLayer(new hazel::ImGuiLayer);
     }
 
-    ~Sandbox()
+    ~Sandbox() override
     {
     }
 };

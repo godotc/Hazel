@@ -10,7 +10,8 @@ namespace hazel {
 std::shared_ptr<spdlog::logger> Log::core_logger;
 std::shared_ptr<spdlog::logger> Log::client_logger;
 
-hazel::Log::Log()
+
+Log::Log()
 {
     std::cout << fmt::format("Initializing the spd logger...") << std::endl;
 
@@ -25,7 +26,7 @@ hazel::Log::Log()
     client_logger->set_level(spdlog::level::trace);
 }
 
-hazel::Log::~Log()
+Log::~Log()
 {
 }
 

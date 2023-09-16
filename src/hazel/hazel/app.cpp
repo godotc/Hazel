@@ -68,7 +68,6 @@ void App::Run()
         m_Window->OnUpdate();
     }
 }
-
 void App::PushLayer(Layer *layer)
 {
     m_LayerStack.PushLayer(layer);

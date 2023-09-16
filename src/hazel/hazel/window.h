@@ -2,6 +2,7 @@
 
 
 #include "event/event.h"
+#include <any>
 #include <type_traits>
 
 
@@ -35,6 +36,8 @@ class HAZEL_API Window
     virtual void SetEventCallback(const EventCallBackFn &cb) = 0;
     virtual void SetVSync(bool bEnable)                      = 0;
     virtual bool IsVSync() const                             = 0;
+
+    virtual std::any GetNativeWindow() const = 0;
 
     static Window *Create(const WindowProps &props = WindowProps());
 };
