@@ -19,15 +19,17 @@ class App
   public:
     static inline App &Get() { return *Application; }
 
+  public:
     void Run();
 
-    void OnEvent(Event &ev);
     void PushLayer(Layer *layer);
     void PopLayer(Layer *layer);
 
     inline Window &GetWindow() { return *m_Window; }
 
-  private:
+  protected:
+    void OnEvent(Event &ev);
+
     bool OnWindowClose(WindowCloseEvent &ev);
     bool OnKeyPressed(KeyPressedEvent &ev);
 

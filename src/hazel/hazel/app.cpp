@@ -8,6 +8,7 @@
 
 #include "glad/glad.h"
 #include "imgui/imgui_layer.h"
+#include "input.h"
 #include "layer.h"
 #include "log.h"
 #include <GLFW/glfw3.h>
@@ -59,7 +60,6 @@ void App::Run()
     while (bRunning) {
         glClearColor(0.3, 0.5, 0.7, 1);
         glClear(GL_COLOR_BUFFER_BIT);
-
 
         for (Layer *layer : m_LayerStack.GetLayers()) {
             layer->OnUpdate();

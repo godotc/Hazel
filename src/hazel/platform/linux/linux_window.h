@@ -42,7 +42,6 @@ class LinuxWindow : public Window
         bool            bVSync;
     };
 
-
     WindowData m_Data;
 
     GLFWwindow *m_Window;
