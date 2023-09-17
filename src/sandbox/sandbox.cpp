@@ -29,14 +29,13 @@ class NothingLayer : public hazel::Layer
     {
     }
 
-
     void OnImGuiRender() override
     {
         static bool bShow = true;
         ImGui::ShowDemoWindow(&bShow);
 
         ImGui::Begin("hello world");
-        ImGui::Text("heeeeeee");
+        ImGui::DragFloat4("color", color);
         ImGui::End();
     }
 
@@ -47,6 +46,9 @@ class NothingLayer : public hazel::Layer
             HZ_TRACE("{}, is F1 button? {}", (char)kc, kc == HZ_KEY_F1);
         }
     }
+
+  private:
+    float color[4];
 };
 
 
@@ -58,7 +60,6 @@ class Sandbox : public hazel::App
         HZ_INFO("Sandbox construct");
         PushLayer(new NothingLayer);
     }
-
     ~Sandbox() override
     {
     }

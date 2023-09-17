@@ -6,6 +6,9 @@
 #include "hazel.h"
 
 struct GLFWwindow;
+namespace hazel {
+class GraphicsContext;
+};
 
 namespace hazel {
 
@@ -17,22 +20,26 @@ class LinuxWindow : public Window
     ~LinuxWindow() override;
 
   public:
-
     void OnUpdate() override;
 
+    inline void SetEventCallback(const EventCallBackFn &cb) override { m_Data.EventCallback = cb; }
+
+  public:
+    [[nodiscard]] inline std::any     GetNativeWindow() const override { return m_Window; }
     [[nodiscard]] inline unsigned int GetWidth() const override { return m_Data.Width; }
     [[nodiscard]] inline unsigned int GetHeight() const override;
-
-    inline void SetEventCallback(const EventCallBackFn &cb) override { m_Data.EventCallback = cb; }
 
     void               SetVSync(bool bEnable) override;
     [[nodiscard]] bool IsVSync() const override;
 
-    [[nodiscard]] inline std::any GetNativeWindow() const override { return m_Window; }
 
   private:
     void Init(const WindowProps &props);
     void ShutDown();
+
+  private:
+    void initCallbacks();
+    void printGLVerbose();
 
   private:
     struct WindowData {
@@ -44,7 +51,8 @@ class LinuxWindow : public Window
 
     WindowData m_Data;
 
-    GLFWwindow *m_Window;
+    GLFWwindow      *m_Window;
+    GraphicsContext *m_Context;
 };
 
 

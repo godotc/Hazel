@@ -8,6 +8,10 @@ if is_mode("debug") then
     add_defines("__HZ_DEBUG")
 end
 
+if is_plat("linux") then
+    add_cxflags("-Wall")
+end
+
 
 includes("./src")
 

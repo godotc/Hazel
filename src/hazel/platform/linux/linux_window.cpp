@@ -14,30 +14,13 @@
 
 #include "log.h"
 
-
 #include <imgui_impl_glfw.h>
+
+#include "platform/opengl/open_gl_context.h"
+
 namespace hazel {
 
 static bool bGLFWInitialized = false;
-static bool bGLADInitialized = false;
-
-static void MessageCallback(GLenum        source,
-                            GLenum        type,
-                            GLuint        id,
-                            GLenum        severity,
-                            GLsizei       length,
-                            const GLchar *message,
-                            const void   *userParam)
-{
-    if (type == GL_DEBUG_TYPE_ERROR) {
-        HZ_CORE_WARN("{} type = 0x{:x} | severity = 0x{:x} \n\t{}", "[GL]",
-                     type, severity, message);
-    }
-    else {
-        HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} \n\t{}", "[GL]",
-                      type, severity, message);
-    }
-}
 
 
 
@@ -68,49 +51,48 @@ void LinuxWindow::Init(const WindowProps &props)
         bGLFWInitialized = true;
     }
 
-    m_Window = glfwCreateWindow((int)props.Width, (int)props.Height,
-                                props.Title.c_str(), nullptr, nullptr);
+    m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(m_Window);
 
-
-
-    if (!bGLADInitialized) {
-        int bSuccess = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-        HZ_CORE_ASSERT(bSuccess, "Could not initialize GLAD!");
-        bGLADInitialized = true;
-
-        // During init, enable debug output
-        // Notice: this is a specific driver extension
-        if (glDebugMessageCallback != nullptr) {
-            glEnable(GL_DEBUG_OUTPUT);
-            glDebugMessageCallback(MessageCallback, nullptr);
-            HZ_CORE_INFO("Bound GL debug callback successfully");
-        }
-        else {
-            HZ_CORE_WARN("glDebugMessageCallback is nullptr. Maybe your driver is not supportting this extionsion!");
-        }
-    }
-
-    {
-        const GLubyte *renderer    = glGetString(GL_RENDERER);
-        const GLubyte *vendor      = glGetString(GL_VENDOR);
-        const GLubyte *version     = glGetString(GL_VERSION);
-        const GLubyte *glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
-        GLint          major, minor;
-        glGetIntegerv(GL_MAJOR_VERSION, &major);
-        glGetIntegerv(GL_MINOR_VERSION, &minor);
-        HZ_CORE_INFO("GL Vendor : {}", (const char *)vendor);
-        HZ_CORE_INFO("GL Renderer :{}", (const char *)renderer);
-        HZ_CORE_INFO("GL Version (string) : {}", (const char *)version);
-        HZ_CORE_INFO("GL Version (integer) : {}, {}", major, minor);
-        HZ_CORE_INFO("GLSL Version : {}\n", (const char *)glslVersion);
-    }
-
-
-    SetVSync(true);
+    m_Context = new OpenGLContext(m_Window);
+    m_Context->Init();
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
+    printGLVerbose();
+    initCallbacks();
+
+
+    SetVSync(true);
+}
+
+void LinuxWindow::ShutDown()
+{
+    glfwDestroyWindow(m_Window);
+}
+
+void LinuxWindow::OnUpdate()
+{
+    glfwPollEvents();
+    m_Context->SwapBuffers();
+}
+
+void LinuxWindow::SetVSync(bool bEnable)
+{
+    glfwSwapInterval(bEnable ? 1 : 0);
+    m_Data.bVSync = bEnable;
+}
+
+bool LinuxWindow::IsVSync() const
+{
+    return m_Data.bVSync;
+}
+
+unsigned int LinuxWindow::GetHeight() const { return m_Data.Height; }
+
+
+void LinuxWindow::initCallbacks()
+{
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *win, int w, int h) {
         if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
             data->Width  = w;
@@ -179,14 +161,12 @@ void LinuxWindow::Init(const WindowProps &props)
         }
     });
 
-
     glfwSetScrollCallback(m_Window, [](GLFWwindow *win, double xoffset, double yoffset) {
         if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
             MouseScrolledEvent ev((float)xoffset, (float)yoffset);
             data->EventCallback(ev);
         }
     });
-
 
     glfwSetCursorPosCallback(m_Window, [](GLFWwindow *win, double x, double y) {
         if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
@@ -196,27 +176,22 @@ void LinuxWindow::Init(const WindowProps &props)
     });
 }
 
-void LinuxWindow::ShutDown()
+void LinuxWindow::printGLVerbose()
 {
-    glfwDestroyWindow(m_Window);
+    const GLubyte *renderer    = glGetString(GL_RENDERER);
+    const GLubyte *vendor      = glGetString(GL_VENDOR);
+    const GLubyte *version     = glGetString(GL_VERSION);
+    const GLubyte *glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    GLint          major, minor;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+    HZ_CORE_INFO("GL Vendor : {}", (const char *)vendor);
+    HZ_CORE_INFO("GL Renderer :{}", (const char *)renderer);
+    HZ_CORE_INFO("GL Version (string) : {}", (const char *)version);
+    HZ_CORE_INFO("GL Version (integer) : {}, {}", major, minor);
+    HZ_CORE_INFO("GLSL Version : {}\n", (const char *)glslVersion);
 }
 
-void LinuxWindow::OnUpdate()
-{
-    glfwPollEvents();
-    glfwSwapBuffers(m_Window);
-}
 
-void LinuxWindow::SetVSync(bool bEnable)
-{
-    glfwSwapInterval(bEnable ? 1 : 0);
-    m_Data.bVSync = bEnable;
-}
-
-bool LinuxWindow::IsVSync() const
-{
-    return m_Data.bVSync;
-}
-unsigned int LinuxWindow::GetHeight() const { return m_Data.Height; }
 
 } // namespace hazel
