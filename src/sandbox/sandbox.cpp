@@ -21,12 +21,23 @@ class NothingLayer : public hazel::Layer
   public:
     NothingLayer() : Layer("nothing")
     {
-
         auto cam = camera(5.f, {1.f, 1.f});
         auto a   = cam[0][1];
     }
+
     void OnUpdate() override
     {
+    }
+
+
+    void OnImGuiRender() override
+    {
+        static bool bShow = true;
+        ImGui::ShowDemoWindow(&bShow);
+
+        ImGui::Begin("hello world");
+        ImGui::Text("heeeeeee");
+        ImGui::End();
     }
 
     void OnEvent(hazel::Event &event) override
@@ -46,7 +57,6 @@ class Sandbox : public hazel::App
     {
         HZ_INFO("Sandbox construct");
         PushLayer(new NothingLayer);
-        PushLayer(new hazel::ImGuiLayer);
     }
 
     ~Sandbox() override

@@ -4,6 +4,7 @@
 #include "hazel/event/key_event.h"
 #include "hazel/event/mouse_event.h"
 #include "hazel/layer.h"
+#include "imgui.h"
 
 namespace hazel {
 
@@ -14,24 +15,12 @@ class HAZEL_API ImGuiLayer : public Layer
 
 
   public:
-    void OnAttach() override;
-    void OnDetach() override;
-    void OnUpdate() override;
-    void OnEvent(Event &event) override;
+    virtual void OnAttach() override;
+    virtual void OnDetach() override;
+    virtual void OnImGuiRender() override;
 
-
-  private:
-    bool OnKeyTypedEvent(KeyTypedEvent &ev);
-
-    bool OnKeyPressedEvent(KeyPressedEvent &ev);
-    bool OnKeyReleasedEvent(KeyReleasedEvent &ev);
-
-    bool OnMouseButtonPressedEvent(MouseButtonPressedEvent &ev);
-    bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent &ev);
-    bool OnMouseScrolledEvent(MouseScrolledEvent &ev);
-    bool OnMouseMoveEvent(MouseMoveEvent &ev);
-
-    bool OnWindowResizedEvent(WindowResizeEvent &ev);
+    void Begin();
+    void End();
 
   private:
     float m_Time;

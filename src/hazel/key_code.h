@@ -67,10 +67,6 @@
 #define HZ_KEY_ENTER              257
 //#ifdef _WIN32
     #define HZ_KEY_TAB                258
-//#elsinlinline std::ostream &operator<<(std::ostream &os, const glm:: &ev) { return os << ev.to_string(); }
-ine sinline std::ostream &operator<<(std::ostream &os, const glm:: &ev) { return os << ev.to_string(); }
-td::ostream &operator<<(std::ostream &os, const glm:: &ev) { return os << ev.to_string(); }
-e
 //    #define HZ_KEY_TAB                9
 //#endif
 #define HZ_KEY_BACKSPACE          259

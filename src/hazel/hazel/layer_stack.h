@@ -19,11 +19,11 @@ class HAZEL_API LayerStack
     void PophLayer(Layer *layer);
     void PophOverlay(Layer *overlay);
 
-    std::vector<Layer *>& GetLayers() { return m_Layers; }
+    std::vector<Layer *> &GetLayers() { return m_Layers; }
 
   protected:
-    std::vector<Layer *>           m_Layers;
-    std::vector<Layer *>::iterator m_LayerInsert;
+    std::vector<Layer *> m_Layers;
+    int                  m_LayerIndex = 0;
 };
 
 }; // namespace hazel

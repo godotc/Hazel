@@ -5,7 +5,6 @@ namespace hazel {
 
 LayerStack ::LayerStack()
 {
-    m_LayerInsert = m_Layers.begin();
 }
 
 LayerStack::~LayerStack()
@@ -16,7 +15,8 @@ LayerStack::~LayerStack()
 
 void LayerStack ::PushLayer(Layer *layer)
 {
-    m_LayerInsert = m_Layers.emplace(m_LayerInsert, layer);
+    m_Layers.emplace(m_Layers.begin() + m_LayerIndex, layer);
+    ++m_LayerIndex;
     layer->OnAttach();
 }
 
@@ -32,7 +32,7 @@ void LayerStack ::PophLayer(Layer *layer)
     if (it != m_Layers.end()) {
         (*it)->OnDetach();
         m_Layers.erase(it);
-        --m_LayerInsert;
+        --m_LayerIndex;
     }
 }
 

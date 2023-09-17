@@ -2,6 +2,7 @@
 
 #include "event/event.h"
 #include "event/key_event.h"
+#include "imgui/imgui_layer.h"
 #include "layer_stack.h"
 #include "window.h"
 
@@ -22,6 +23,7 @@ class App
   public:
     void Run();
 
+  public:
     void PushLayer(Layer *layer);
     void PopLayer(Layer *layer);
 
@@ -36,9 +38,11 @@ class App
 
   private:
     std::unique_ptr<Window> m_Window;
-    bool                    bRunning = true;
+    ImGuiLayer             *m_ImGuiLayer;
+    LayerStack              m_LayerStack;
 
-    LayerStack m_LayerStack;
+    bool bRunning = true;
+
 
     static App *Application;
 };

@@ -1,6 +1,9 @@
 
 add_requires("fmt", "glm")
-add_packages("fmt", "glm")
+add_requires("imgui docking",  {configs = {shared=true,  debug=true,  opengl3 = true, glfw=true }})
+
+add_packages("fmt", "glm", "imgui")
+
 
 add_includedirs(".")
 add_includedirs("./hazel")
