@@ -39,7 +39,6 @@ class LinuxWindow : public Window
 
   private:
     void initCallbacks();
-    void printGLVerbose();
 
   private:
     struct WindowData {

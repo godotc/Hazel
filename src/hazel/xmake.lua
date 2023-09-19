@@ -7,6 +7,7 @@ target("hazel")
     set_kind("shared")
 
     add_files("**.cpp")
+    add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")
 
     add_packages("spdlog")

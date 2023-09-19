@@ -18,6 +18,9 @@ class OpenGLContext : public GraphicsContext
     void SwapBuffers() override;
 
   private:
+    void printGLVerbose();
+
+  private:
     GLFWwindow *m_WindowHandle;
 };
 

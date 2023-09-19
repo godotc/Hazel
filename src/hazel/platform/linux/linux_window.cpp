@@ -59,7 +59,7 @@ void LinuxWindow::Init(const WindowProps &props)
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
-    printGLVerbose();
+//    printGLVerbose();
     initCallbacks();
 
 
@@ -174,22 +174,6 @@ void LinuxWindow::initCallbacks()
             data->EventCallback(ev);
         }
     });
-}
-
-void LinuxWindow::printGLVerbose()
-{
-    const GLubyte *renderer    = glGetString(GL_RENDERER);
-    const GLubyte *vendor      = glGetString(GL_VENDOR);
-    const GLubyte *version     = glGetString(GL_VERSION);
-    const GLubyte *glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
-    GLint          major, minor;
-    glGetIntegerv(GL_MAJOR_VERSION, &major);
-    glGetIntegerv(GL_MINOR_VERSION, &minor);
-    HZ_CORE_INFO("GL Vendor : {}", (const char *)vendor);
-    HZ_CORE_INFO("GL Renderer :{}", (const char *)renderer);
-    HZ_CORE_INFO("GL Version (string) : {}", (const char *)version);
-    HZ_CORE_INFO("GL Version (integer) : {}, {}", major, minor);
-    HZ_CORE_INFO("GLSL Version : {}\n", (const char *)glslVersion);
 }
 
 

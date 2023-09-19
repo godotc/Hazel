@@ -7,7 +7,8 @@
 namespace hazel {
 
 class GraphicsContext
-{ public:
+{
+  public:
     virtual void Init()        = 0;
     virtual void SwapBuffers() = 0;
 };

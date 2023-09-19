@@ -7,6 +7,7 @@
 #include "window.h"
 
 #include "event/application_event.h"
+#include "renderer/shader.h"
 
 namespace hazel {
 
@@ -37,6 +38,10 @@ class App
 
 
   private:
+    unsigned int            VA, VB, IB;
+    std::unique_ptr<Shader> m_Shader;
+
+  private:
     std::unique_ptr<Window> m_Window;
     ImGuiLayer             *m_ImGuiLayer;
     LayerStack              m_LayerStack;
@@ -44,6 +49,7 @@ class App
     bool bRunning = true;
 
 
+  private:
     static App *Application;
 };
 
