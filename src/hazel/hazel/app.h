@@ -7,6 +7,7 @@
 #include "window.h"
 
 #include "event/application_event.h"
+#include "hazel/renderer/buffer.h"
 #include "renderer/shader.h"
 
 namespace hazel {
@@ -16,7 +17,7 @@ class App
 {
   public:
     App();
-    virtual ~App();
+    virtual ~App() = default;
 
   public:
     static inline App &Get() { return *Application; }
@@ -38,8 +39,10 @@ class App
 
 
   private:
-    unsigned int            VA, VB, IB;
-    std::unique_ptr<Shader> m_Shader;
+    std::unique_ptr<VertexBuffer> m_VertexBuffer;
+    std::unique_ptr<IndexBuffer>  m_IndexBuffer;
+    unsigned int                  VA;
+    std::unique_ptr<Shader>       m_Shader;
 
   private:
     std::unique_ptr<Window> m_Window;

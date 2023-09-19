@@ -3,6 +3,7 @@
 #include "__microshit_api_hazel.h"
 #include "hz_pch.h"
 
+
 #ifdef __HZ_DEBUG
     #define __HZ_ENABLE_ASSERTS
 #endif

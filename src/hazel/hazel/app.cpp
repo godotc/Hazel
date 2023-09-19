@@ -31,30 +31,26 @@ App::App()
 
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
 
-
     // VA
     glGenVertexArrays(1, &VA);
     glBindVertexArray(VA);
     // VB
-    glGenBuffers(1, &VB);
-    glBindBuffer(GL_ARRAY_BUFFER, VB);
     float vertices[4][3] = {
         {-0.5, -0.5, 0},
         { 0.5, -0.5, 0},
         {-0.5,  0.5, 0},
         { 0.5,  0.5, 0},
     };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), (float *)vertices, GL_STATIC_DRAW);
+    m_VertexBuffer.reset(VertexBuffer::Create((float *)vertices, sizeof(vertices)));
+
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
     // IB
-    glGenBuffers(1, &IB);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
-    int indices[2][3] = {
+    uint32_t indices[2][3] = {
         {0, 1, 2},
         {2, 1, 3},
     };
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), (void *)indices, GL_STATIC_DRAW);
+    m_IndexBuffer.reset(IndexBuffer::Create((uint32_t *)indices, sizeof(indices) / sizeof(uint32_t)));
     // Shader
     std::string vert = R"(
         #version 330 core
@@ -76,8 +72,6 @@ App::App()
     m_Shader         = std::make_unique<Shader>(vert, frag);
 }
 
-App::~App() {}
-
 void App::Run()
 {
     while (bRunning) {
@@ -86,7 +80,7 @@ void App::Run()
 
         glBindVertexArray(VA);
         m_Shader->Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
         for (Layer *layer : m_LayerStack.GetLayers())
         {
