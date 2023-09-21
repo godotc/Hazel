@@ -2,9 +2,9 @@
 
 #include "__microshit_api_hazel.h"
 
-#include <spdlog/spdlog.h>
-
+#include <memory>
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
 
 
 namespace hazel {

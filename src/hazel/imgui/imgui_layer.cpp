@@ -12,6 +12,8 @@
 #include "app.h"
 #include "log.h"
 #include "platform/linux/linux_window.h"
+#include "spdlog/fmt/bundled/ostream.h"
+
 
 
 namespace hazel {
@@ -50,7 +52,15 @@ void ImGuiLayer::OnAttach()
         bool bSuccess = ImGui_ImplGlfw_InitForOpenGL(any_cast<GLFWwindow *>(window->GetNativeWindow()), true);
         HZ_CORE_ASSERT(bSuccess, "imgui glfw backend initialize failed");
     }
-    bool bSuccess = ImGui_ImplOpenGL3_Init("#version 460");
+
+    // TODO: detect the host opengl version, call imgui init automatically
+    // GLint major, minor;
+    // glGetIntegerv(GL_MAJOR_VERSION, &major);
+    // glGetIntegerv(GL_MINOR_VERSION, &minor);
+    // auto glversion = "#version " + std::to_string(major * 100 + minor * 10);
+    // HZ_CORE_INFO("Imgui detect the GL version: {}", glversion);
+
+    bool bSuccess = ImGui_ImplOpenGL3_Init("#version 420");
     HZ_CORE_ASSERT(bSuccess, "imgui opengl3 backend initialize failed");
 }
 
