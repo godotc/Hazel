@@ -14,10 +14,10 @@ namespace hazel {
 VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
 {
     switch (Render::GetRendererAPI()) {
-    case RendererAPI::NONE:
+    case RendererAPI::API::NONE:
         HZ_CORE_ASSERT(false, "RendererAPI::None is current not supported!");
         return nullptr;
-    case RendererAPI::OPENGL:
+    case RendererAPI::API::OPENGL:
         return new OpenGLVertexBuffer(vertices, size);
         //    case RendererAPI::VULKAN:
         //        break;
@@ -34,10 +34,10 @@ VertexBuffer *VertexBuffer::Create(float *vertices, uint32_t size)
 IndexBuffer *IndexBuffer::Create(uint32_t *indices, uint32_t count)
 {
     switch (Render::GetRendererAPI()) {
-    case RendererAPI::NONE:
+    case RendererAPI::API::NONE:
         HZ_CORE_ASSERT(false, "RendererAPI::None is current not supported!");
         return nullptr;
-    case RendererAPI::OPENGL:
+    case RendererAPI::API::OPENGL:
         return new OpenGLIndexBuffer(indices, count);
         //    case RendererAPI::VULKAN:
         //        break;

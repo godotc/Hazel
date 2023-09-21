@@ -3,9 +3,21 @@
 //
 
 #include "render.h"
+#include "render_command.h"
 
 namespace hazel {
 
-RendererAPI Render::API = RendererAPI::OPENGL;
 
+void Render::BeginScene()
+{
+}
+void Render::EndScene()
+{
+}
+
+void Render::Submit(std::shared_ptr<VertexArray> &vertex_array)
+{
+    vertex_array->Bind();
+    RenderCommand::DrawIndex(vertex_array);
+}
 } // namespace hazel

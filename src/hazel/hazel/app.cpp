@@ -1,6 +1,7 @@
+#include "hz_pch.h"
+
 #include "event/event.h"
 #include "event/key_event.h"
-#include "hz_pch.h"
 
 #include "app.h"
 
@@ -13,8 +14,8 @@
 #include "log.h"
 #include <GLFW/glfw3.h>
 
-#include <memory>
-#include <unistd.h>
+#include "hazel/renderer/render.h"
+#include "hazel/renderer/render_command.h"
 
 namespace hazel {
 
@@ -95,12 +96,18 @@ App::App()
 void App::Run()
 {
     while (bRunning) {
-        glClearColor(0.3, 0.5, 0.7, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
 
-        m_VertexArray->Bind();
+        RenderCommand::SetClearColor({0.3, 0.5, 0.7, 1});
+        RenderCommand::Clear();
+
+        Render::BeginScene();
+
         m_Shader->Bind();
-        glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        Render::Submit(m_VertexArray);
+
+        Render::EndScene();
+        //        Renderer::Flush(0);
+
 
         for (Layer *layer : m_LayerStack.GetLayers())
         {

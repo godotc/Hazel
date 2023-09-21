@@ -4,12 +4,16 @@
     #include <windows.h>
 #endif
 
+#ifdef __linux
+    #include <unistd.h>
+#endif
 
 #include <cstdint>
 #include <cstdio>
 #include <functional>
 #include <iostream>
 #include <list>
+#include <memory>
 #include <ostream>
 #include <queue>
 #include <stack>

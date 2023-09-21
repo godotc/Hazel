@@ -5,24 +5,21 @@
 #ifndef HAZEL_RENDER_H
 #define HAZEL_RENDER_H
 
-namespace hazel {
+#include "renderer_api.h"
 
-enum class RendererAPI
-{
-    NONE   = 0,
-    OPENGL = 1,
-    VULKAN,
-    DIRECTX,
-    METAL
-};
+namespace hazel {
 
 class Render
 {
   public:
-    static inline RendererAPI GetRendererAPI() { return API; }
+    static void BeginScene();
+    static void EndScene();
 
-  private:
-    static RendererAPI API;
+    //    static void Submit(std::shared_ptr<Shader> &vertex_array);
+    static void Submit(std::shared_ptr<VertexArray> &vertex_array);
+
+  public:
+    static inline RendererAPI::API GetRendererAPI() { return RendererAPI::GetAPI(); }
 };
 
 } // namespace hazel

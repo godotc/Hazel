@@ -86,8 +86,8 @@ class BufferLayout
     BufferLayout(std::initializer_list<BufferElement> &elements) : m_Elements(elements) { CalculateOffsetsAndStride(); }
 
   public:
-    inline const std::vector<BufferElement> GetElements() const { return m_Elements; }
-    inline const uint32_t                   GetStride() const { return m_Stride; }
+    [[nodiscard]] inline const std::vector<BufferElement> GetElements() const { return m_Elements; }
+    inline const uint32_t                                 GetStride() const { return m_Stride; }
 
   private:
     void CalculateOffsetsAndStride()
@@ -104,7 +104,7 @@ class BufferLayout
 
   private:
     std::vector<BufferElement> m_Elements;
-    uint32_t                   m_Stride;
+    uint32_t                   m_Stride = {0};
 };
 
 
