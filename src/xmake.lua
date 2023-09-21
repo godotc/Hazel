@@ -1,8 +1,8 @@
 
-add_requires("fmt", "glm")
+add_requires("fmt", "glm", "spdlog")
 add_requires("imgui docking",  {configs = {shared=true,  debug=true,  opengl3 = true, glfw=true }})
 
-add_packages("fmt", "glm", "imgui")
+add_packages("fmt", "glm", "imgui","spdlog")
 
 
 add_includedirs(".")

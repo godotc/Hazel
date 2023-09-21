@@ -37,7 +37,6 @@ class App
     bool OnWindowClose(WindowCloseEvent &ev);
     bool OnKeyPressed(KeyPressedEvent &ev);
 
-
   private:
     std::unique_ptr<VertexBuffer> m_VertexBuffer;
     std::unique_ptr<IndexBuffer>  m_IndexBuffer;

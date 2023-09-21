@@ -50,8 +50,7 @@ class LinuxWindow : public Window
 
     WindowData m_Data;
 
-    GLFWwindow      *m_Window;
-    GraphicsContext *m_Context;
+    GLFWwindow *m_Window;
 };
 
 

@@ -59,7 +59,7 @@ void LinuxWindow::Init(const WindowProps &props)
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
-//    printGLVerbose();
+    //    printGLVerbose();
     initCallbacks();
 
 

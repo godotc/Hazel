@@ -2,6 +2,7 @@
 
 
 #include "event/event.h"
+#include "renderer/graphics_context.h"
 #include <any>
 #include <type_traits>
 
@@ -40,6 +41,8 @@ class HAZEL_API Window
     virtual std::any GetNativeWindow() const = 0;
 
     static Window *Create(const WindowProps &props = WindowProps());
+
+    GraphicsContext *m_Context;
 };
 
 }; // namespace hazel
