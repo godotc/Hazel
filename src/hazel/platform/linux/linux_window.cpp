@@ -16,7 +16,7 @@
 
 #include <imgui_impl_glfw.h>
 
-#include "platform/opengl/open_gl_context.h"
+#include "platform/opengl/opengl_context.h"
 
 namespace hazel {
 

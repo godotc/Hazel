@@ -1,7 +1,8 @@
 #pragma once
 
 #include "__microshit_api_hazel.h"
-#include "hz_pch.h"
+
+#include "hazel/log.h"
 
 
 #ifdef __HZ_DEBUG

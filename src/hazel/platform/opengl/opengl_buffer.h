@@ -2,8 +2,8 @@
 // Created by nono on 9/20/23.
 //
 
-#ifndef HAZEL_OPEN_GL_BUFFER_H
-#define HAZEL_OPEN_GL_BUFFER_H
+#ifndef HAZEL_OPENGL_BUFFER_H
+#define HAZEL_OPENGL_BUFFER_H
 
 #include "hazel/renderer/buffer.h"
 #include <cstdint>
@@ -16,11 +16,16 @@ class OpenGLVertexBuffer : public VertexBuffer
     OpenGLVertexBuffer(float *vertices, uint32_t size);
     ~OpenGLVertexBuffer() override;
 
+    inline void          SetLayout(const hazel::BufferLayout &layout) override { m_Layout = layout; }
+    inline BufferLayout &GetLayout() override { return m_Layout; }
+
+
     void Bind() override;
     void Unbind() override;
 
   private:
-    uint32_t m_BufferID;
+    uint32_t     m_BufferID;
+    BufferLayout m_Layout = {};
 };
 
 class OpenGLIndexBuffer : public IndexBuffer
@@ -38,4 +43,4 @@ class OpenGLIndexBuffer : public IndexBuffer
 
 } // namespace hazel
 
-#endif // HAZEL_OPEN_GL_BUFFER_H
+#endif // HAZEL_OPENGL_BUFFER_H

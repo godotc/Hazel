@@ -3,11 +3,12 @@
 //
 #include "hz_pch.h"
 
-#include "open_gl_buffer.h"
+#include "opengl_buffer.h"
 
 #include "glad/glad.h"
 
 namespace hazel {
+
 OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices, uint32_t size)
 {
     glGenBuffers(1, &m_BufferID);

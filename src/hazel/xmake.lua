@@ -24,10 +24,10 @@ target("hazel")
         end
     end
 
-    if is_kind("shared") then
-        if is_plat("linux") then
-            add_shflags("-fPIC")
-        elseif is_plat("windows") then
+    if not is_kind("static") then
+        if is_os("windows") then
             add_defines("BUILD_SHARED_HAZEL")
+        else
+            add_shflags("-fPIC")
         end
     end

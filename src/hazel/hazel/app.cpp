@@ -17,6 +17,31 @@
 
 namespace hazel {
 
+// clang-format off
+static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+{
+    switch (type) {
+        case ShaderDataType::Float:  return GL_FLOAT;
+        case ShaderDataType::Float2: return GL_FLOAT;
+        case ShaderDataType::Float3: return GL_FLOAT;
+        case ShaderDataType::Float4: return GL_FLOAT;
+
+        case ShaderDataType::Mat3:   return GL_FLOAT;
+        case ShaderDataType::Mat4:   return GL_FLOAT;
+
+        case ShaderDataType::Int:   return GL_INT;
+        case ShaderDataType::Int2:  return GL_INT;
+        case ShaderDataType::Int3:  return GL_INT;
+        case ShaderDataType::Int4:  return GL_INT;
+
+        case ShaderDataType::Bool: return GL_BOOL;
+    }
+
+    HZ_CORE_ASSERT(false, "Unknown ShaderDataType!");
+    return -1;
+}
+// clang-format on
+
 App *App::Application = nullptr;
 
 App::App()
@@ -35,16 +60,31 @@ App::App()
     glGenVertexArrays(1, &VA);
     glBindVertexArray(VA);
     // VB
-    float vertices[4][3] = {
-        {-0.5, -0.5, 0},
-        { 0.5, -0.5, 0},
-        {-0.5,  0.5, 0},
-        { 0.5,  0.5, 0},
+    float vertices[4][7] = {
+        {-0.5, -0.5, 0, 1, 0, 0, 0},
+        {0.5, -0.5, 0, 1, 0, 0, 1},
+        {-0.5, 0.5, 0, 1, 0, 0, 1},
+        {0.5, 0.5, 0, 1, 0, 0},
     };
     m_VertexBuffer.reset(VertexBuffer::Create((float *)vertices, sizeof(vertices)));
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
+    // Layout
+    m_VertexBuffer->SetLayout({
+        {ShaderDataType::Float3, "a_Position"},
+        {ShaderDataType::Float4,    "a_Color"},
+    });
+    uint32_t index  = 0;
+    auto    &layout = m_VertexBuffer->GetLayout();
+    for (const auto &elem : layout.GetElements()) {
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(
+            index,
+            elem.GetElementCount(),
+            ShaderDataTypeToOpenGLBaseType(elem.Type),
+            elem.bNormalized ? GL_TRUE : GL_FALSE,
+            layout.GetStride(),
+            (const void *)elem.Offset);
+        ++index;
+    }
     // IB
     uint32_t indices[2][3] = {
         {0, 1, 2},
@@ -55,18 +95,26 @@ App::App()
     std::string vert = R"(
         #version 330 core
         layout(location =0 ) in vec3 a_Position;
+        layout(location =1 ) in vec4 a_Color;
+
         out vec3 pos;
+        out vec4 color;
+
         void main(){
             gl_Position = vec4(a_Position, 1.f);
             pos = a_Position;
+            color = a_Color;
         }
     )";
     std::string frag = R"(
         #version 330 core
         in vec3 pos;
-        out vec4 color;
+        in vec4 color;
+
+        out vec4 out_color;
+
         void main(){
-            color = vec4(pos*0.5 + 0.5,0);
+            out_color = vec4(pos*0.5 + 0.5,1) * color;
         }
     )";
     m_Shader         = std::make_unique<Shader>(vert, frag);

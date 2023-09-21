@@ -7,7 +7,7 @@
 #include "buffer.h"
 #include "hazel/core.h"
 #include "hazel/log.h"
-#include "hazel/platform/opengl/open_gl_buffer.h"
+#include "hazel/platform/opengl/opengl_buffer.h"
 #include "render.h"
 
 namespace hazel {
