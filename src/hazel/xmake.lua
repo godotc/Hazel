@@ -10,6 +10,7 @@ target("hazel")
     add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")
 
+    add_packages("fmt")
     add_packages("spdlog")
     add_packages("glfw", "glad")
 

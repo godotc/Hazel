@@ -12,7 +12,6 @@
 #include "app.h"
 #include "log.h"
 #include "platform/linux/linux_window.h"
-#include "spdlog/fmt/bundled/ostream.h"
 
 
 

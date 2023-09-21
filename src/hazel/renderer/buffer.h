@@ -44,9 +44,6 @@ static uint32_t ShaderDataTypeSize(ShaderDataType type)
     return 0;
 }
 
-
-
-
 struct BufferElement {
     std::string    Name;
     ShaderDataType Type;
@@ -57,7 +54,7 @@ struct BufferElement {
     BufferElement(ShaderDataType type, std::string name, bool bNormalized = false)
         : Name(std::move(name)), Type(type),bNormalized(bNormalized), Size(ShaderDataTypeSize(type)), Offset(0) {}
 
-    uint32_t GetElementCount() const
+    [[nodiscard]] uint32_t GetComponentsCount() const
     {
         switch (Type) {
             case ShaderDataType::Float: return 1;

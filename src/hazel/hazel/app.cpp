@@ -18,30 +18,6 @@
 
 namespace hazel {
 
-// clang-format off
-static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-{
-    switch (type) {
-        case ShaderDataType::Float:  return GL_FLOAT;
-        case ShaderDataType::Float2: return GL_FLOAT;
-        case ShaderDataType::Float3: return GL_FLOAT;
-        case ShaderDataType::Float4: return GL_FLOAT;
-
-        case ShaderDataType::Mat3:   return GL_FLOAT;
-        case ShaderDataType::Mat4:   return GL_FLOAT;
-
-        case ShaderDataType::Int:   return GL_INT;
-        case ShaderDataType::Int2:  return GL_INT;
-        case ShaderDataType::Int3:  return GL_INT;
-        case ShaderDataType::Int4:  return GL_INT;
-
-        case ShaderDataType::Bool: return GL_BOOL;
-    }
-
-    HZ_CORE_ASSERT(false, "Unknown ShaderDataType!");
-    return -1;
-}
-// clang-format on
 
 App *App::Application = nullptr;
 
@@ -51,47 +27,42 @@ App::App()
     HZ_CORE_ASSERT(!Application, "Already a application instance");
     Application = this;
 
-    m_Window = std::unique_ptr<Window>(Window::Create());
+    m_Window     = std::unique_ptr<Window>(Window::Create());
     m_ImGuiLayer = new ImGuiLayer();
     m_LayerStack.PushOverlay(m_ImGuiLayer);
 
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
 
-    // VA
-    glGenVertexArrays(1, &VA);
-    glBindVertexArray(VA);
-    // VB
     float vertices[4][7] = {
         {-0.5, -0.5, 0, 1, 0, 0, 0},
         {0.5, -0.5, 0, 1, 0, 0, 1},
         {-0.5, 0.5, 0, 1, 0, 0, 1},
         {0.5, 0.5, 0, 1, 0, 0},
     };
-    m_VertexBuffer.reset(VertexBuffer::Create((float *)vertices, sizeof(vertices)));
-    // Layout
-    m_VertexBuffer->SetLayout({
-        {ShaderDataType::Float3, "a_Position"},
-        {ShaderDataType::Float4,    "a_Color"},
-    });
-    uint32_t index  = 0;
-    auto    &layout = m_VertexBuffer->GetLayout();
-    for (const auto &elem : layout.GetElements()) {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(
-            index,
-            elem.GetElementCount(),
-            ShaderDataTypeToOpenGLBaseType(elem.Type),
-            elem.bNormalized ? GL_TRUE : GL_FALSE,
-            layout.GetStride(),
-            (const void *)elem.Offset);
-        ++index;
-    }
-    // IB
+
     uint32_t indices[2][3] = {
         {0, 1, 2},
         {2, 1, 3},
     };
-    m_IndexBuffer.reset(IndexBuffer::Create((uint32_t *)indices, sizeof(indices) / sizeof(uint32_t)));
+
+    // VA
+    m_VertexArray.reset(VertexArray::Create());
+    std::shared_ptr<VertexBuffer> m_VertexBuffer;
+    std::shared_ptr<IndexBuffer>  m_IndexBuffer;
+    {
+        // VB
+        m_VertexBuffer.reset(VertexBuffer::Create((float *)vertices, sizeof(vertices)));
+        // Layout
+        m_VertexBuffer->SetLayout({
+            {ShaderDataType::Float3, "a_Position"},
+            {ShaderDataType::Float4,    "a_Color"},
+        });
+        // IB
+        m_IndexBuffer.reset(IndexBuffer::Create((uint32_t *)indices, sizeof(indices) / sizeof(uint32_t)));
+    }
+    m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+    m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
     // Shader
     std::string vert = R"(
         #version 330 core
@@ -127,9 +98,9 @@ void App::Run()
         glClearColor(0.3, 0.5, 0.7, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBindVertexArray(VA);
+        m_VertexArray->Bind();
         m_Shader->Bind();
-        glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
         for (Layer *layer : m_LayerStack.GetLayers())
         {

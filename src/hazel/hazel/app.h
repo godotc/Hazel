@@ -8,6 +8,7 @@
 
 #include "event/application_event.h"
 #include "hazel/renderer/buffer.h"
+#include "hazel/renderer/vertex_array.h"
 #include "renderer/shader.h"
 
 namespace hazel {
@@ -38,10 +39,8 @@ class App
     bool OnKeyPressed(KeyPressedEvent &ev);
 
   private:
-    std::unique_ptr<VertexBuffer> m_VertexBuffer;
-    std::unique_ptr<IndexBuffer>  m_IndexBuffer;
-    unsigned int                  VA;
-    std::unique_ptr<Shader>       m_Shader;
+    std::shared_ptr<VertexArray> m_VertexArray;
+    std::shared_ptr<Shader>      m_Shader;
 
   private:
     std::unique_ptr<Window> m_Window;
