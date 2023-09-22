@@ -4,6 +4,7 @@
 
 #include "render.h"
 #include "orthographic_camera.h"
+#include "platform/opengl/opengl_shader.h"
 #include "render_command.h"
 #include "shader.h"
 
@@ -22,8 +23,9 @@ void Render::EndScene()
 void Render::Submit(const std::shared_ptr<Shader> &shader, std::shared_ptr<VertexArray> &vertex_array, const glm::mat4 transform)
 {
     shader->Bind();
-    shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-    shader->UploadUniformMat4("u_Transform", transform);
+
+    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Transform", transform);
     vertex_array->Bind();
     RenderCommand::DrawIndex(vertex_array);
 }

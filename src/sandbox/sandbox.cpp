@@ -7,6 +7,8 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/matrix.hpp"
 
+#include "platform/opengl/opengl_shader.h"
+
 namespace hazel {
 class NothingLayer : public hazel::Layer
 {
@@ -68,13 +70,16 @@ class NothingLayer : public hazel::Layer
             in vec3 pos;
             in vec4 color;
 
+            uniform vec4  u_Color;
+
             out vec4 out_color;
 
             void main(){
-                out_color = vec4(pos*0.5 + 0.5,1) * color;
+                out_color =  u_Color;
+                            //vec4(pos*0.5 + 0.5,1) * color;
             }
         )";
-        m_Shader         = std::make_unique<Shader>(vert, frag);
+        m_Shader.reset(hazel::Shader::Create(vert, frag));
     }
 
     void OnUpdate(Timestep ts) override
@@ -83,9 +88,9 @@ class NothingLayer : public hazel::Layer
 
         //        HZ_TRACE("Delta time : {}s {}ms ", ts.GetSeconds(), ts.GetMiliseconds());
 
-
         RenderCommand::SetClearColor({0.3, 0.5, 0.7, 1});
         RenderCommand::Clear();
+
         Render::BeginScene(m_Camera);
         m_Camera.SetRotation(m_CameraRotation);
         m_Camera.SetPosition(m_CameraPosition);
@@ -97,6 +102,10 @@ class NothingLayer : public hazel::Layer
             {
                 glm::vec3 pos(i * 0.11f, j * 0.11f, 0.f);
                 pos *= m_SquarePosition;
+
+                glm::vec4 color(sin(i), cos(i), tan(i), 1);
+
+                static_pointer_cast<OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", color);
                 glm::mat4 tranform = glm::translate(glm::mat4(1.f), pos) * scale;
 
                 Render::Submit(m_Shader, m_VertexArray, tranform);
@@ -153,9 +162,7 @@ class Sandbox : public hazel::App
         PushLayer(new hazel::NothingLayer);
         GetWindow().SetVSync(true);
     }
-    ~Sandbox() override
-    {
-    }
+    ~Sandbox() override = default;
 };
 
 

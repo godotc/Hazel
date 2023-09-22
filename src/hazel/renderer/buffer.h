@@ -88,7 +88,7 @@ class BufferLayout
 
   public:
     [[nodiscard]] inline const std::vector<BufferElement> GetElements() const { return m_Elements; }
-    inline const uint32_t                                 GetStride() const { return m_Stride; }
+    [[nodiscard]] inline const uint32_t                   GetStride() const { return m_Stride; }
 
   private:
     void CalculateOffsetsAndStride()
@@ -131,7 +131,7 @@ class IndexBuffer
     virtual void Bind()   = 0;
     virtual void Unbind() = 0;
 
-    virtual uint32_t GetCount() const { return m_Count; };
+    [[nodiscard]] virtual uint32_t GetCount() const { return m_Count; };
 
     static IndexBuffer *Create(uint32_t *indeices, uint32_t count);
 

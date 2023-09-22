@@ -15,17 +15,11 @@ namespace hazel {
 class Shader
 {
   public:
-    Shader(const std::string &vert_src, const std::string &frag_src, const std::string &geom_src = "");
-    ~Shader() {}
+    static Shader *Create(const std::string &vert_src, const std::string &frag_src, const std::string &geom_src = "");
+    virtual ~Shader() = default;
 
-    void Bind() const;
-    void Unbind() const;
-
-  public:
-    void UploadUniformMat4(const std::string name, const glm::mat4 &matrix);
-
-  private:
-    static void checkCompileErrors(unsigned int object, const std::string &type);
+    virtual void Bind() const   = 0;
+    virtual void Unbind() const = 0;
 
   private:
     uint32_t m_ShaderID;
