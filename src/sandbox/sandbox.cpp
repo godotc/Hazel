@@ -76,8 +76,15 @@ class NothingLayer : public hazel::Layer
         m_Shader         = std::make_unique<Shader>(vert, frag);
     }
 
-    void OnUpdate() override
+    void OnUpdate(Timestep ts) override
     {
+        float dt = ts;
+
+        HZ_TRACE("Delta time : {}s {}ms ", ts.GetSeconds(), ts.GetMiliseconds());
+
+
+        RenderCommand::SetClearColor({0.3, 0.5, 0.7, 1});
+        RenderCommand::Clear();
         Render::BeginScene(m_Camera);
         m_Camera.SetRotation(m_CameraRotation);
         m_Camera.SetPosition(m_CameraPosition);
@@ -86,12 +93,12 @@ class NothingLayer : public hazel::Layer
         //        exit(-1);
 
         // clang-format off
-        if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x += m_CameraSpeed;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_D)) m_CameraPosition.x -= m_CameraSpeed;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_W)) m_CameraPosition.y -= m_CameraSpeed;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_S)) m_CameraPosition.y += m_CameraSpeed;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_Q)) m_CameraRotation -= m_CameraRotateDegree;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_E)) m_CameraRotation += m_CameraRotateDegree;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x -= m_CameraSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_D)) m_CameraPosition.x += m_CameraSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_W)) m_CameraPosition.y += m_CameraSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_S)) m_CameraPosition.y -= m_CameraSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_Q)) m_CameraRotation -= m_CameraRotateDegree * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_E)) m_CameraRotation += m_CameraRotateDegree * dt;
         // clang-format on
     };
 
@@ -113,8 +120,8 @@ class NothingLayer : public hazel::Layer
   private:
     float     m_CameraRotation     = 0.f;
     glm::vec3 m_CameraPosition     = glm::vec3(0.f);
-    float     m_CameraSpeed        = 0.02f;
-    float     m_CameraRotateDegree = 1.f;
+    float     m_CameraSpeed        = 5.f;
+    float     m_CameraRotateDegree = 120.f;
 
     std::shared_ptr<VertexArray> m_VertexArray;
     std::shared_ptr<Shader>      m_Shader;
@@ -130,6 +137,7 @@ class Sandbox : public hazel::App
     {
         HZ_INFO("Sandbox construct");
         PushLayer(new hazel::NothingLayer);
+        GetWindow().SetVSync(true);
     }
     ~Sandbox() override
     {

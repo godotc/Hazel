@@ -17,6 +17,8 @@
 #include "glm/gtc/type_ptr.hpp"
 
 
+// tmp
+#include "GLFW/glfw3.h"
 namespace hazel {
 
 
@@ -28,7 +30,8 @@ App::App()
     HZ_CORE_ASSERT(!Application, "Already a application instance");
     Application = this;
 
-    m_Window     = std::unique_ptr<Window>(Window::Create());
+    m_Window = std::unique_ptr<Window>(Window::Create());
+    m_Window->SetVSync(true);
     m_ImGuiLayer = new ImGuiLayer();
     m_LayerStack.PushOverlay(m_ImGuiLayer);
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
@@ -36,27 +39,24 @@ App::App()
 
 void App::Run()
 {
-    while (bRunning) {
+    // clang-format off
+    while (bRunning)
+    {
+        float time = (float)glfwGetTime();
+        Timestep  timestep = time - m_LastFrameTime;
+        m_LastFrameTime = time;
 
-        RenderCommand::SetClearColor({0.3, 0.5, 0.7, 1});
-        RenderCommand::Clear();
-
-        for (Layer *layer : m_LayerStack.GetLayers()) {
-            layer->OnUpdate();
-        }
+        for (Layer *layer : m_LayerStack.GetLayers()) layer->OnUpdate(timestep);
 
         m_ImGuiLayer->Begin();
-        for (Layer *layer : m_LayerStack.GetLayers()) {
-            layer->OnImGuiRender();
-        }
+        for (Layer *layer : m_LayerStack.GetLayers()) layer->OnImGuiRender();
         m_ImGuiLayer->End();
 
         m_Window->OnUpdate();
     }
 
-    for (auto layer : m_LayerStack.GetLayers()) {
-        layer->OnDetach();
-    }
+    for (auto layer : m_LayerStack.GetLayers()) layer->OnDetach();
+    // clang-format on
 }
 void App::PushLayer(Layer *layer)
 {

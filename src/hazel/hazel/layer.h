@@ -5,6 +5,7 @@
 #include "hazel/core.h"
 #include "window.h"
 
+#include "hazel/core/timestep.h"
 
 namespace hazel {
 
@@ -17,7 +18,7 @@ class HAZEL_API Layer
   public:
     virtual void OnAttach(){};
     virtual void OnDetach(){};
-    virtual void OnUpdate(){};
+    virtual void OnUpdate(Timestep timestep){};
     virtual void OnImGuiRender(){};
     virtual void OnEvent(Event &event){};
 

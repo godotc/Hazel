@@ -4,7 +4,6 @@ add_requires("imgui docking",  {configs = {shared=true,  debug=true,  opengl3 = 
 
 add_packages("fmt", "glm", "imgui", "spdlog")
 
-
 add_includedirs(".")
 add_includedirs("./hazel")
 

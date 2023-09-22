@@ -60,7 +60,6 @@ void LinuxWindow::Init(const WindowProps &props)
     //    printGLVerbose();
     initCallbacks();
 
-
     SetVSync(true);
 }
 

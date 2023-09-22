@@ -11,6 +11,7 @@
 #include "hazel/renderer/vertex_array.h"
 #include "renderer/shader.h"
 
+#include "hazel/core/timestep.h"
 #include "renderer/orthographic_camera.h"
 namespace hazel {
 
@@ -44,6 +45,7 @@ class HAZEL_API App
     std::unique_ptr<Window> m_Window;
     ImGuiLayer             *m_ImGuiLayer;
     LayerStack              m_LayerStack;
+    float                   m_LastFrameTime = 0.f;
 
     bool bRunning = true;
 
