@@ -55,11 +55,12 @@ class NothingLayer : public hazel::Layer
             out vec4 color;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
             void main(){
                 pos = a_Position;
                 color = a_Color;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.f);
+                gl_Position = u_ViewProjection *  u_Transform * vec4(a_Position, 1.f);
             }
         )";
         std::string frag = R"(
@@ -80,7 +81,7 @@ class NothingLayer : public hazel::Layer
     {
         float dt = ts;
 
-        HZ_TRACE("Delta time : {}s {}ms ", ts.GetSeconds(), ts.GetMiliseconds());
+        //        HZ_TRACE("Delta time : {}s {}ms ", ts.GetSeconds(), ts.GetMiliseconds());
 
 
         RenderCommand::SetClearColor({0.3, 0.5, 0.7, 1});
@@ -88,9 +89,19 @@ class NothingLayer : public hazel::Layer
         Render::BeginScene(m_Camera);
         m_Camera.SetRotation(m_CameraRotation);
         m_Camera.SetPosition(m_CameraPosition);
-        Render::Submit(m_Shader, m_VertexArray);
+
+        glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
+
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j)
+            {
+                glm::vec3 pos(i * 0.11f, j * 0.11f, 0.f);
+                pos *= m_SquarePosition;
+                glm::mat4 tranform = glm::translate(glm::mat4(1.f), pos) * scale;
+
+                Render::Submit(m_Shader, m_VertexArray, tranform);
+            }
         Render::EndScene();
-        //        exit(-1);
 
         // clang-format off
         if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x -= m_CameraSpeed * dt;
@@ -102,12 +113,12 @@ class NothingLayer : public hazel::Layer
         // clang-format on
     };
 
-    void
-    OnImGuiRender() override
+    void OnImGuiRender() override
     {
         ImGui::Begin("Panel");
         ImGui::SliderFloat("m_CameraRotation", &m_CameraRotation, 0, 360);
         ImGui::SliderFloat3("m_CameraPosition", glm::value_ptr(m_CameraPosition), -1, 1);
+        ImGui::SliderFloat3("m_SquarePosition", glm::value_ptr(m_SquarePosition), -1, 1);
         ImGui::End();
     }
 
@@ -124,8 +135,11 @@ class NothingLayer : public hazel::Layer
     float     m_CameraRotateDegree = 120.f;
 
     std::shared_ptr<VertexArray> m_VertexArray;
-    std::shared_ptr<Shader>      m_Shader;
-    OrthographicsCamera          m_Camera;
+    glm::vec3                    m_SquarePosition = glm::vec3(1.f);
+
+
+    std::shared_ptr<Shader> m_Shader;
+    OrthographicsCamera     m_Camera;
 };
 
 

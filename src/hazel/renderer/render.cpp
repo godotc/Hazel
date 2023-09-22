@@ -19,10 +19,11 @@ void Render::BeginScene(OrthographicsCamera &Camera)
 void Render::EndScene()
 {
 }
-void Render::Submit(const std::shared_ptr<Shader> &shader, std::shared_ptr<VertexArray> &vertex_array)
+void Render::Submit(const std::shared_ptr<Shader> &shader, std::shared_ptr<VertexArray> &vertex_array, const glm::mat4 transform)
 {
     shader->Bind();
     shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+    shader->UploadUniformMat4("u_Transform", transform);
     vertex_array->Bind();
     RenderCommand::DrawIndex(vertex_array);
 }

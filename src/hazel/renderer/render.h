@@ -20,10 +20,13 @@ class Render
     static void EndScene();
 
     //    static void Submit(std::shared_ptr<Shader> &vertex_array);
-    static void Submit(const std::shared_ptr<Shader> &shader, std::shared_ptr<VertexArray> &vertex_array);
+    static void Submit(const std::shared_ptr<Shader> &shader, std::shared_ptr<VertexArray> &vertex_array, const glm::mat4 transform = glm::mat4(1.f));
 
   public:
-    static inline RendererAPI::API GetRendererAPI() { return RendererAPI::GetAPI(); }
+    static inline RendererAPI::API GetRendererAPI()
+    {
+        return RendererAPI::GetAPI();
+    }
 
   public:
     struct SceneData {
