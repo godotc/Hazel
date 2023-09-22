@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <string>
 
+#include <glm/glm.hpp>
+
 namespace hazel {
 
 class Shader
@@ -18,6 +20,9 @@ class Shader
 
     void Bind() const;
     void Unbind() const;
+
+  public:
+    void UploadUniformMat4(const std::string name, const glm::mat4 &matrix);
 
   private:
     static void checkCompileErrors(unsigned int object, const std::string &type);

@@ -3,8 +3,8 @@
 //
 
 #ifndef HAZEL_BUFFER_H
-
 #define HAZEL_BUFFER_H
+
 #include <utility>
 #include <vector>
 

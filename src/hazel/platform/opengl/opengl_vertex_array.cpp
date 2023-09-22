@@ -6,6 +6,7 @@
 
 #include "glad/glad.h"
 #include "opengl_vertex_array.h"
+#include "hazel/renderer/buffer.h"
 
 namespace hazel {
 

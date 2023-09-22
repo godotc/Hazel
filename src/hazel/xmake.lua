@@ -8,6 +8,8 @@ target("hazel")
 
     add_files("**.cpp")
     add_headerfiles("**.h")
+    add_includedirs(".")
+
     set_pcxxheader("hz_pch.h")
 
     add_packages("fmt")

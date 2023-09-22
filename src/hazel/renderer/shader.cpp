@@ -7,6 +7,7 @@
 #include "shader.h"
 
 #include "gl_macros.h"
+#include "glm/gtc/type_ptr.hpp"
 #include "hazel/log.h"
 
 namespace hazel {
@@ -95,6 +96,11 @@ void Shader::Bind() const
 void Shader::Unbind() const
 {
     glUseProgram(0);
+}
+void Shader::UploadUniformMat4(const std::string name, const glm::mat4 &matrix)
+{
+    // transpose: A^t
+    glUniformMatrix4fv(glGetUniformLocation(m_ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 

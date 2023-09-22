@@ -24,11 +24,11 @@ static void MessageCallback(GLenum        source,
                             const void   *userParam)
 {
     if (type == GL_DEBUG_TYPE_ERROR) {
-        HZ_CORE_WARN("{} type = 0x{:x} | severity = 0x{:x} \n\t{}", "[GL]",
+        HZ_CORE_WARN("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
                      type, severity, message);
     }
     else {
-        HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} \n\t{}", "[GL]",
+        HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
                       type, severity, message);
     }
 }

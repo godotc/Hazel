@@ -3,7 +3,9 @@
 //
 #include "hz_pch.h"
 
+
 #include "glad/glad.h"
+#include "hazel/renderer/buffer.h"
 #include "opengl_render_api.h"
 
 namespace hazel {

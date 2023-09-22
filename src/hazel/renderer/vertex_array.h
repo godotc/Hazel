@@ -7,10 +7,12 @@
 
 #include <hazel/core.h>
 
-#include "hazel/renderer/buffer.h"
 #include <memory>
 
 namespace hazel {
+
+class VertexBuffer;
+class IndexBuffer;
 
 class VertexArray
 {
