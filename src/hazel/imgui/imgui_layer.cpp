@@ -2,6 +2,7 @@
 
 #include "imgui/imgui_layer.h"
 
+
 #include "GLFW/glfw3.h"
 #include "core.h"
 
@@ -11,7 +12,6 @@
 
 #include "app.h"
 #include "log.h"
-#include "platform/linux/linux_window.h"
 
 
 
@@ -47,10 +47,10 @@ void ImGuiLayer::OnAttach()
         style.Colors[ImGuiCol_WindowBg].w = 1.f;
     }
 
-    if (auto *window = static_cast<LinuxWindow *>(&App::Get().GetWindow())) {
-        bool bSuccess = ImGui_ImplGlfw_InitForOpenGL(any_cast<GLFWwindow *>(window->GetNativeWindow()), true);
-        HZ_CORE_ASSERT(bSuccess, "imgui glfw backend initialize failed");
-    }
+    //    if (auto *window = dynamic_cast<LinuxWindow *>(&App::Get().GetWindow())) {
+    //        bool bSuccess = ImGui_ImplGlfw_InitForOpenGL(any_cast<GLFWwindow *>(window->GetNativeWindow()), true);
+    //        HZ_CORE_ASSERT(bSuccess, "imgui glfw backend initialize failed");
+    //    }
 
     // TODO: detect the host opengl version, call imgui init automatically
     // GLint major, minor;

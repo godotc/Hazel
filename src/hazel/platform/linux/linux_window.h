@@ -1,17 +1,14 @@
 #pragma once
 
-#include "hz_pch.h"
 
+#include "hazel/core.h"
 
-#include "hazel.h"
+#include "hazel/window.h"
+#include <any>
 
 struct GLFWwindow;
-namespace hazel {
-class GraphicsContext;
-};
 
 namespace hazel {
-
 
 class LinuxWindow : public Window
 {
@@ -22,7 +19,10 @@ class LinuxWindow : public Window
   public:
     void OnUpdate() override;
 
-    inline void SetEventCallback(const EventCallBackFn &cb) override { m_Data.EventCallback = cb; }
+    inline void SetEventCallback(const EventCallBackFn &cb) override
+    {
+        m_Data.EventCallback = cb;
+    }
 
   public:
     [[nodiscard]] inline std::any     GetNativeWindow() const override { return m_Window; }
@@ -31,7 +31,6 @@ class LinuxWindow : public Window
 
     void               SetVSync(bool bEnable) override;
     [[nodiscard]] bool IsVSync() const override;
-
 
   private:
     void Init(const WindowProps &props);
@@ -52,6 +51,5 @@ class LinuxWindow : public Window
 
     GLFWwindow *m_Window;
 };
-
 
 }; // namespace hazel

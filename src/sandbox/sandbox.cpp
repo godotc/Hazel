@@ -66,7 +66,6 @@ class Sandbox : public hazel::App
 };
 
 
-
 hazel::App *hazel::CreateApplication()
 {
     return new Sandbox;

@@ -12,6 +12,11 @@ if is_plat("linux") then
     add_cxflags("-Wall")
 end
 
+if is_plat("windows") then
+    add_requires("opengl")
+    add_packages("opengl")
+end
+
 
 includes("./src")
 

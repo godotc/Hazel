@@ -76,11 +76,11 @@ inline bool GLLogCall(const char *function, const char *file, int line)
 #endif
 
 #ifndef NDEBUG
-    #define __ASSERT(x) \
+    #define __GL_ASSERT(x) \
         if (!(x))       \
         PLATFORM_BREAK()
 #else
-    #define __ASSERT(x) (x)
+    #define __GL_ASSERT(x) (x)
 #endif
 
 
@@ -91,8 +91,8 @@ inline bool GLLogCall(const char *function, const char *file, int line)
     #define GL_CALL(x)                                         \
         do {                                                   \
             gltk::GLClearError();                              \
-            x;                                                 \
-            __ASSERT(gltk::GLLogCall(#x, __FILE__, __LINE__)); \
+            x;                                                    \
+            __GL_ASSERT(gltk::GLLogCall(#x, __FILE__, __LINE__)); \
         } while (0)
 #endif
 
@@ -100,8 +100,8 @@ inline bool GLLogCall(const char *function, const char *file, int line)
     #define GL_CHECK_HEALTH()
 #else
     #define GL_CHECK_HEALTH()                                        \
-        do {                                                         \
-            __ASSERT(gltk::GLLogCall(__func__, __FILE__, __LINE__)); \
+        do {                                                            \
+            __GL_ASSERT(gltk::GLLogCall(__func__, __FILE__, __LINE__)); \
         } while (0)
 #endif
 

@@ -5,7 +5,7 @@
 
 #include "hazel/renderer/graphics_context.h"
 
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace hazel {
 

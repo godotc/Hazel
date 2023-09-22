@@ -1,22 +1,20 @@
-#include "event/application_event.h"
-#include "event/event.h"
-#include "event/key_event.h"
-#include "event/mouse_event.h"
-#include "hazel.h"
+#include "hz_pch.h"
 
-#include "hazel/window.h"
 #include "linux_window.h"
 
+#include "event/application_event.h"
+#include "event/key_event.h"
+#include "event/mouse_event.h"
 
-#include "glad/glad.h"
 //
 #include <GLFW/glfw3.h>
+//
+
+#include "platform/opengl/opengl_context.h"
 
 #include "log.h"
 
-#include <imgui_impl_glfw.h>
 
-#include "platform/opengl/opengl_context.h"
 
 namespace hazel {
 
@@ -54,8 +52,8 @@ void LinuxWindow::Init(const WindowProps &props)
     m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(m_Window);
 
-    m_Context = new OpenGLContext(m_Window);
-    m_Context->Init();
+    Window::m_Context = new hazel::OpenGLContext(m_Window);
+    Window::m_Context->Init();
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
 

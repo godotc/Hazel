@@ -109,8 +109,7 @@ void App::Run()
         //        Renderer::Flush(0);
 
 
-        for (Layer *layer : m_LayerStack.GetLayers())
-        {
+        for (Layer *layer : m_LayerStack.GetLayers()) {
             layer->OnUpdate();
         }
 

@@ -16,19 +16,26 @@ target("hazel")
 
     add_includedirs("./hazel")
 
-
     if is_os("windows") then
         if is_mode("debug") then
-            add_cxxflags("/MDd")
+--             add_cxxflags("/MDd")
         elseif is_mode("release") then
-            add_cxxflags("/MT")
+--             add_cxxflags("/MT")
         end
     end
 
-    if not is_kind("static") then
-        if is_os("windows") then
-            add_defines("BUILD_SHARED_HAZEL")
-        else
-            add_shflags("-fPIC")
+    on_load(function (target)
+
+    end)
+
+    on_config(function (target)
+        if target:get("kind")=="shared" then
+            print("--["..target:name().."] is the shared library")
+            if target:is_plat("windows") then
+                target:add("defines", "BUILD_SHARED_HAZEL")
+            else
+                target:add("shflags","-fPIC")
+            end
         end
-    end
+    end)
+

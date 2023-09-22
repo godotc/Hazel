@@ -1,6 +1,7 @@
 //
 // Created by nono on 9/18/23.
 //
+
 #include "hz_pch.h"
 
 #include "glad/glad.h"
@@ -10,7 +11,6 @@
 #include "GLFW/glfw3.h"
 #include "hazel/core.h"
 #include "hazel/log.h"
-
 
 
 namespace hazel {
@@ -33,8 +33,9 @@ static void MessageCallback(GLenum        source,
     }
 }
 
-OpenGLContext::OpenGLContext(GLFWwindow *glfw_window_handle) : m_WindowHandle(glfw_window_handle)
+OpenGLContext::OpenGLContext(GLFWwindow *glfw_window_handle)
 {
+    m_WindowHandle = glfw_window_handle;
     HZ_CORE_ASSERT(glfw_window_handle, "Window handle if null");
 }
 void OpenGLContext::Init()
@@ -55,6 +56,7 @@ void OpenGLContext::Init()
 
     printGLVerbose();
 }
+
 void OpenGLContext::SwapBuffers()
 {
     glfwSwapBuffers(m_WindowHandle);

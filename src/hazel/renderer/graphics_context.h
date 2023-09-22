@@ -4,11 +4,15 @@
 
 #pragma once
 
+#include "hazel/core.h"
+
 namespace hazel {
 
 class GraphicsContext
 {
   public:
+    GraphicsContext() {}
+
     virtual void Init()        = 0;
     virtual void SwapBuffers() = 0;
 };

@@ -8,6 +8,7 @@
     #include <unistd.h>
 #endif
 
+#include <any>
 #include <cstdint>
 #include <cstdio>
 #include <functional>
