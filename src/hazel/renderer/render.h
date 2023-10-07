@@ -16,6 +16,7 @@ class OrthographicsCamera;
 class Render
 {
   public:
+    static void Init();
     static void BeginScene(OrthographicsCamera &Camera);
     static void EndScene();
 

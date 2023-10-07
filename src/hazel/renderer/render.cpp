@@ -29,4 +29,8 @@ void Render::Submit(const Ref<Shader> &shader, Ref<VertexArray> &vertex_array, c
     vertex_array->Bind();
     RenderCommand::DrawIndex(vertex_array);
 }
+void Render::Init()
+{
+    RenderCommand::Init();
+}
 } // namespace hazel

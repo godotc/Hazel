@@ -31,10 +31,13 @@ App::App()
     Application = this;
 
     m_Window = Scope<Window>(Window::Create());
+    m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
     m_Window->SetVSync(true);
+
+    Render::Init();
+
     m_ImGuiLayer = new ImGuiLayer();
     m_LayerStack.PushOverlay(m_ImGuiLayer);
-    m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
 }
 
 void App::Run()
