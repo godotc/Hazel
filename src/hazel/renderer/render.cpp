@@ -20,7 +20,7 @@ void Render::BeginScene(OrthographicsCamera &Camera)
 void Render::EndScene()
 {
 }
-void Render::Submit(const std::shared_ptr<Shader> &shader, std::shared_ptr<VertexArray> &vertex_array, const glm::mat4 transform)
+void Render::Submit(const Ref<Shader> &shader, Ref<VertexArray> &vertex_array, const glm::mat4 transform)
 {
     shader->Bind();
 

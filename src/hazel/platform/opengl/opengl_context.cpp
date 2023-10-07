@@ -23,13 +23,23 @@ static void MessageCallback(GLenum        source,
                             const GLchar *message,
                             const void   *userParam)
 {
-    if (type == GL_DEBUG_TYPE_ERROR) {
+
+    // #define GL_DEBUG_SEVERITY_HIGH 0x9146
+    // #define GL_DEBUG_SEVERITY_MEDIUM 0x9147
+    // #define GL_DEBUG_SEVERITY_LOW 0x9148
+
+    static int faltal_error = 0;
+
+    if (severity < GL_DEBUG_SEVERITY_HIGH) {
+        faltal_error = 0;
         HZ_CORE_WARN("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
                      type, severity, message);
     }
     else {
         HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
                       type, severity, message);
+        if (++faltal_error > 3)
+            PLATFORM_BREAK();
     }
 }
 

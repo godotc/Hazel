@@ -30,7 +30,7 @@ App::App()
     HZ_CORE_ASSERT(!Application, "Already a application instance");
     Application = this;
 
-    m_Window = std::unique_ptr<Window>(Window::Create());
+    m_Window = Scope<Window>(Window::Create());
     m_Window->SetVSync(true);
     m_ImGuiLayer = new ImGuiLayer();
     m_LayerStack.PushOverlay(m_ImGuiLayer);

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "__microshit_api_hazel.h"
+#include "hazel/core.h"
 
-#include <memory>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 

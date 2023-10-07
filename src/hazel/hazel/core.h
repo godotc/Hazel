@@ -3,6 +3,7 @@
 #include "__microshit_api_hazel.h"
 
 #include "hazel/log.h"
+#include <memory>
 
 
 #ifdef __HZ_DEBUG
@@ -40,3 +41,14 @@
 
 #define BIT(x) (1 << x)
 #define HZ_BIND_EVENT(ctx, fn) std::bind(fn, ctx, std::placeholders::_1)
+
+namespace hazel {
+
+template <class T>
+using Scope = std::unique_ptr<T>;
+
+
+template <class T>
+using Ref = std::shared_ptr<T>;
+
+}; // namespace hazel

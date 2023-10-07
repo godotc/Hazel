@@ -1,4 +1,5 @@
 #pragma once
+#include "hazel/core.h"
 
 #include "event/event.h"
 #include "event/key_event.h"
@@ -13,6 +14,7 @@
 
 #include "hazel/core/timestep.h"
 #include "renderer/orthographic_camera.h"
+
 namespace hazel {
 
 
@@ -42,7 +44,7 @@ class HAZEL_API App
 
 
   private:
-    std::unique_ptr<Window> m_Window;
+    Scope<Window> m_Window;
     ImGuiLayer             *m_ImGuiLayer;
     LayerStack              m_LayerStack;
     float                   m_LastFrameTime = 0.f;

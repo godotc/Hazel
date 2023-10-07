@@ -22,14 +22,14 @@ class OpenGLVertexArray : public VertexArray
     void Bind() override;
     void Unbind() override;
 
-    void                                                     AddVertexBuffer(std::shared_ptr<VertexBuffer> &vertex_buffer) override;
-    void                                                     SetIndexBuffer(std::shared_ptr<IndexBuffer> &index_buffer) override;
-    inline const std::vector<std::shared_ptr<VertexBuffer>> &GetVertexBuffer() const override { return m_VertexBuffers; }
-    inline const std::shared_ptr<IndexBuffer>               &GetIndexBuffer() const override { return m_IndexBuffer; }
+    void                                         AddVertexBuffer(Ref<VertexBuffer> &vertex_buffer) override;
+    void                                         SetIndexBuffer(Ref<IndexBuffer> &index_buffer) override;
+    inline const std::vector<Ref<VertexBuffer>> &GetVertexBuffer() const override { return m_VertexBuffers; }
+    inline const Ref<IndexBuffer>               &GetIndexBuffer() const override { return m_IndexBuffer; }
 
   private:
-    std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;
-    std::shared_ptr<IndexBuffer>               m_IndexBuffer;
+    std::vector<Ref<VertexBuffer>> m_VertexBuffers;
+    Ref<IndexBuffer>               m_IndexBuffer;
 
     uint32_t m_VertexArrayID = 0;
 };

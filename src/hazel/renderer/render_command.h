@@ -14,7 +14,7 @@ class RenderCommand
     inline static void SetClearColor(const glm::vec4 &color) { Get()->SetClearColor(color); }
     inline static void Clear() { Get()->Clear(); }
 
-    static inline void DrawIndex(const std::shared_ptr<VertexArray> &vertexArray) { Get()->DrawIndexed(vertexArray); }
+    static inline void DrawIndex(const Ref<VertexArray> &vertexArray) { Get()->DrawIndexed(vertexArray); }
 
   private:
     static hazel::RendererAPI *Get();

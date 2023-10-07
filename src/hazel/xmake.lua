@@ -1,7 +1,7 @@
 add_requires("spdlog","glad")
 add_requires( "glfw", {configs={debug=true}})
-add_packages("spdlog")
 
+add_packages("spdlog")
 
 target("hazel")
     set_kind("shared")
@@ -15,6 +15,7 @@ target("hazel")
     add_packages("fmt")
     add_packages("spdlog")
     add_packages("glfw", "glad")
+    add_packages("imgui")
 
     add_includedirs("./hazel")
 
