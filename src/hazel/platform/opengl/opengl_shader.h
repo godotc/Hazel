@@ -25,6 +25,8 @@ class OpenGLShader : public Shader
     void UploadUniformFloat3(const std::string name, const glm::vec3 &values);
     void UploadUniformFloat4(const std::string name, const glm::vec4 &float4);
 
+    void UploadUniformInt(const std::string name, const int32_t value);
+
     void UploadUniformMat4(const std::string name, const glm::mat4 &matrix);
 
   private:

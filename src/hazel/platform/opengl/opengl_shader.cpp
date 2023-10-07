@@ -117,6 +117,11 @@ void OpenGLShader::UploadUniformFloat2(const std::string name, const glm::vec2 &
 }
 void OpenGLShader::UploadUniformFloat3(const std::string name, const glm::vec3 &values)
 {
-    glUniform3f(glGetUniformLocation(m_ShaderID, name.c_str()), values.x, values.y, values.z);
+    GL_CALL(glUniform3f(glGetUniformLocation(m_ShaderID, name.c_str()), values.x, values.y, values.z));
+}
+void OpenGLShader::UploadUniformInt(const std::string name, const int32_t value)
+{
+    // GL_CALL(
+    glUniform1i(glGetUniformLocation(m_ShaderID, name.c_str()), value) /*)*/;
 }
 } // namespace hazel

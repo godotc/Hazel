@@ -17,7 +17,12 @@
 #include "hazel/renderer/shader.h"
 #include "hazel/renderer/vertex_array.h"
 
+#include "hazel/renderer/texture.h"
+
 #include "hazel/renderer/orthographic_camera.h"
+
+
+#include "hazel/core/path.h"
 
 // entry point
 #include "hazel/entry_point.h"

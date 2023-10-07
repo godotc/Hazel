@@ -1,4 +1,5 @@
-add_requires("spdlog","glad")
+add_requires("spdlog")
+add_requires("glad", {configs={debug=true}})
 add_requires( "glfw", {configs={debug=true}})
 
 add_packages("spdlog")

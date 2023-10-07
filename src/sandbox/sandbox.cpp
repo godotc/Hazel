@@ -20,16 +20,18 @@ class NothingLayer : public hazel::Layer
         : Layer("nothing"),
           m_Camera(-1.6, 1.6, -0.9, 0.9)
     {
+
+
         float vertices[4][5] = {
-            {-0.5, -0.5, 0,  0, 0},
-            { 0.5, -0.5, 0,  1, 0},
-            {-0.5,  0.5, 0, -1, 1},
-            { 0.5,  0.5, 0,  1, 1},
+            {-0.5, -0.5, 0, 0, 0},
+            { 0.5, -0.5, 0, 1, 0},
+            {-0.5,  0.5, 0, 0, 1},
+            { 0.5,  0.5, 0, 1, 1},
         };
 
         uint32_t indices[2][3] = {
-            {0, 1, 2},
-            {2, 1, 3},
+            {0, 1, 3},
+            {3, 2, 0},
         };
 
         // VA
@@ -49,6 +51,7 @@ class NothingLayer : public hazel::Layer
         }
         m_VertexArray->AddVertexBuffer(m_VertexBuffer);
         m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
 
         // Shader
         std::string vert = R"(
@@ -74,35 +77,46 @@ class NothingLayer : public hazel::Layer
             in vec3 pos;
             in vec2 v_TexCoord;
 
-            uniform vec4  u_Color  = vec4(1.f);
+            uniform sampler2D u_Texture;
 
             out vec4 out_color;
 
             void main(){
-                out_color =  u_Color * vec4(v_TexCoord, 1, 1);
+                out_color =  texture(u_Texture, v_TexCoord);
             }
         )";
         m_Shader.reset(hazel::Shader::Create(vert, frag));
+
+        m_Texture     = hazel::Texture2D::Create(FPath("res/texture/face.png"));
+        m_ArchTexture = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
     }
 
     void OnUpdate(Timestep ts) override
     {
         float dt = ts;
-
         //        HZ_TRACE("Delta time : {}s {}ms ", ts.GetSeconds(), ts.GetMiliseconds());
-
         RenderCommand::SetClearColor({0.3, 0.5, 0.7, 1});
         RenderCommand::Clear();
 
         Render::BeginScene(m_Camera);
-        m_Camera.SetRotation(m_CameraRotation);
-        m_Camera.SetPosition(m_CameraPosition);
+        {
+            m_Camera.SetRotation(m_CameraRotation);
+            m_Camera.SetPosition(m_CameraPosition);
 
-        glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
+            glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 
-        Render::Submit(m_Shader, m_VertexArray, glm::scale(glm::mat4(1), glm::vec3(1.5)));
+            m_Texture->Bind();
+            dynamic_pointer_cast<OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);
+            Render::Submit(m_Shader, m_VertexArray, glm::scale(glm::mat4(1), glm::vec3(1.5)));
+
+            m_ArchTexture->Bind(0);
+            dynamic_pointer_cast<OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);
+            Render::Submit(m_Shader, m_VertexArray,
+                           glm::translate(
+                               glm::scale(glm::mat4(1), glm::vec3(1.5)),
+                               {-0.5, -0.2, 0}));
+        }
         Render::EndScene();
-
 
 
         // clang-format off
@@ -132,7 +146,7 @@ class NothingLayer : public hazel::Layer
     }
 
   private:
-  private:
+
     float     m_CameraRotation     = 0.f;
     glm::vec3 m_CameraPosition     = glm::vec3(0.f);
     float     m_CameraSpeed        = 5.f;
@@ -141,7 +155,7 @@ class NothingLayer : public hazel::Layer
     Ref<VertexArray> m_VertexArray;
     glm::vec3        m_SquarePosition = glm::vec3(1.f);
 
-
+    Ref<Texture2D>      m_Texture, m_ArchTexture;
     Ref<Shader>         m_Shader;
     OrthographicsCamera m_Camera;
 };

@@ -38,7 +38,7 @@ static void MessageCallback(GLenum        source,
     else {
         HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
                       type, severity, message);
-        if (++faltal_error > 3)
+        if (++faltal_error > 10)
             PLATFORM_BREAK();
     }
 }
