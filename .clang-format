@@ -9,6 +9,7 @@ AllowShortFunctionsOnASingleLine: true
 AlignArrayOfStructures: Right
 
 IndentPPDirectives: BeforeHash
+IndentCaseLabels: true
 
 # 大括号换行，只有当 BreakBeforeBraces 设置为Custom时才有效
 BraceWrapping:

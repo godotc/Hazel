@@ -1,5 +1,4 @@
 add_requires("spdlog")
-add_requires("glad", {configs={debug=true}})
 add_requires( "glfw", {configs={debug=true}})
 
 add_packages("spdlog")
@@ -13,9 +12,8 @@ target("hazel")
 
     set_pcxxheader("hz_pch.h")
 
-    add_packages("fmt")
     add_packages("spdlog")
-    add_packages("glfw", "glad")
+    add_packages("glfw")
     add_packages("imgui")
 
     add_includedirs("./hazel")

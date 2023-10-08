@@ -8,14 +8,14 @@
 #include <cstdint>
 #include <string>
 
-#include <glm/glm.hpp>
 
 namespace hazel {
 
 class Shader
 {
   public:
-    static Shader *Create(const std::string &vert_src, const std::string &frag_src, const std::string &geom_src = "");
+    static Shader *Create(const std::string &shader_file_path);
+    static Shader *Create(const std::string &vert_src, const std::string &frag_src);
     virtual ~Shader() = default;
 
     virtual void Bind() const   = 0;

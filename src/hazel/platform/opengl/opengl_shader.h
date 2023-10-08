@@ -6,14 +6,17 @@
 #define HAZEL_OPEN_GL_SHADER_H
 
 #include "hazel/renderer/shader.h"
+#include <glad/glad.h>
 
 namespace hazel {
 
-class OpenGLShader : public Shader
 
+
+class OpenGLShader : public Shader
 {
   public:
-    OpenGLShader(const std::string &vert_src, const std::string &frag_src, const std::string &geom_src = "");
+    OpenGLShader(const std::string &shader_file_path);
+    OpenGLShader(const std::string &vert_src, const std::string &frag_src);
     ~OpenGLShader() override {}
 
     void Bind() const override;
@@ -30,10 +33,12 @@ class OpenGLShader : public Shader
     void UploadUniformMat4(const std::string name, const glm::mat4 &matrix);
 
   private:
-    static void checkCompileErrors(unsigned int object, const std::string &type);
+    std::string                             ReadFile(const std::string &file_path);
+    std::unordered_map<GLenum, std::string> PreProcess(const std::string &source);
+    void                                    Compile(const std::unordered_map<GLenum, std::string> &shader_sources);
 
   private:
-    uint32_t m_ShaderID;
+    uint32_t m_ShaderID{};
 };
 
 } // namespace hazel

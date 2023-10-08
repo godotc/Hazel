@@ -1,13 +1,9 @@
 #include <hazel.h>
 
 #include <hazel/imgui/imgui_layer.h>
-#include <ostream>
 
-
-#include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "glm/matrix.hpp"
 
 #include "platform/opengl/opengl_shader.h"
 
@@ -86,6 +82,7 @@ class NothingLayer : public hazel::Layer
             }
         )";
         m_Shader.reset(hazel::Shader::Create(vert, frag));
+        m_Shader.reset(hazel::Shader::Create(FPath("res/shader/texture.glsl")));
 
         m_Texture     = hazel::Texture2D::Create(FPath("res/texture/face.png"));
         m_ArchTexture = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
