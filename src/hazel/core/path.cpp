@@ -74,14 +74,10 @@ path find_directory_by_file_symbol(std::string target_symbol)
 }
 
 
-const std::string &FPath::ProjectRoot()
+const std::filesystem::path &ProjectRoot()
 {
-    static auto project_root = std::filesystem::absolute(find_directory_by_file_symbol(GetProjectRootSymbol())).string();
+    static auto project_root = std::filesystem::absolute(find_directory_by_file_symbol(GetProjectRootSymbol()));
     return project_root;
 }
 
-FPath::FPath(const char *path)
-{
-    absolute_path = ProjectRoot() + "/" + path;
-}
 } // namespace hazel
