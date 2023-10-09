@@ -81,8 +81,9 @@ class NothingLayer : public hazel::Layer
                 out_color =  texture(u_Texture, v_TexCoord);
             }
         )";
-        m_Shader.reset(hazel::Shader::Create(vert, frag));
-        m_Shader.reset(hazel::Shader::Create(FPath("res/shader/texture.glsl")));
+//        m_Shader         = hazel::Shader::Create("texture", vert, frag);
+
+        m_ShaderLibrary->Load("Texture", FPath("res/shader/texture.glsl"));
 
         m_Texture     = hazel::Texture2D::Create(FPath("res/texture/face.png"));
         m_ArchTexture = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
@@ -102,13 +103,15 @@ class NothingLayer : public hazel::Layer
 
             glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 
+            auto TexShader = m_ShaderLibrary->Get("Texture");
+
             m_Texture->Bind();
-            dynamic_pointer_cast<OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);
-            Render::Submit(m_Shader, m_VertexArray, glm::scale(glm::mat4(1), glm::vec3(1.5)));
+            dynamic_pointer_cast<OpenGLShader>(TexShader)->UploadUniformInt("u_Texture", 0);
+            Render::Submit(TexShader, m_VertexArray, glm::scale(glm::mat4(1), glm::vec3(1.5)));
 
             m_ArchTexture->Bind(0);
-            dynamic_pointer_cast<OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);
-            Render::Submit(m_Shader, m_VertexArray,
+            dynamic_pointer_cast<OpenGLShader>(TexShader)->UploadUniformInt("u_Texture", 0);
+            Render::Submit(TexShader, m_VertexArray,
                            glm::translate(
                                glm::scale(glm::mat4(1), glm::vec3(1.5)),
                                {-0.5, -0.2, 0}));
@@ -152,8 +155,9 @@ class NothingLayer : public hazel::Layer
     Ref<VertexArray> m_VertexArray;
     glm::vec3        m_SquarePosition = glm::vec3(1.f);
 
+    Ref<ShaderLibrary> m_ShaderLibrary{new ShaderLibrary};
+
     Ref<Texture2D>      m_Texture, m_ArchTexture;
-    Ref<Shader>         m_Shader;
     OrthographicsCamera m_Camera;
 };
 

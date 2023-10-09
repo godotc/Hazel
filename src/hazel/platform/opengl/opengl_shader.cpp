@@ -37,15 +37,21 @@ OpenGLShader::OpenGLShader(const std::string &shader_file_path)
     std::string source         = ReadFile(shader_file_path);
     auto        shader_sources = PreProcess(source);
     Compile(shader_sources);
+
+    m_Name = std::filesystem::path(shader_file_path).stem().string();
+    HZ_CORE_ASSERT(!m_Name.empty(), "Cannot derive the shader name from shader file.");
 }
 
-OpenGLShader::OpenGLShader(const std::string &vert_src, const std::string &frag_src)
+OpenGLShader::OpenGLShader(const std::string &name, const std::string &vert_src, const std::string &frag_src)
 {
     m_ShaderID = 0;
-    Compile({
-        {  GL_VERTEX_SHADER, vert_src},
-        {GL_FRAGMENT_SHADER, frag_src}
+
+    Compile(
+        {
+            {  GL_VERTEX_SHADER, vert_src},
+            {GL_FRAGMENT_SHADER, frag_src}
     });
+    m_Name = name;
 }
 
 void OpenGLShader::Bind() const
@@ -90,11 +96,15 @@ std::string OpenGLShader::ReadFile(const std::string &shader_file_path)
     std::string   result;
     std::ifstream file(shader_file_path, std::ios::in | std::ios::binary);
     if (!file.is_open() || file.bad() || file.fail()) {
-        HZ_CORE_ERROR("Failed to load shader from file: {}", shader_file_path);
+        auto msg = fmt::format("Failed to load shader from file: {}", shader_file_path);
+        HZ_CORE_ASSERT(false, msg);
+        HZ_CORE_ERROR(msg);
         return result;
     }
     if (!file) {
-        HZ_CORE_ERROR("Failed to load shader from file: {}", shader_file_path);
+        auto msg = fmt::format("Failed to load shader from file: {}", shader_file_path);
+        HZ_CORE_ASSERT(false, msg);
+        HZ_CORE_ERROR(msg);
         return result;
     }
 
@@ -106,6 +116,7 @@ std::string OpenGLShader::ReadFile(const std::string &shader_file_path)
 
     return result;
 }
+
 std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string &source)
 {
     std::unordered_map<GLenum, std::string> shader_sources;
@@ -139,10 +150,15 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 }
 
 void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader_sources)
+
 {
     GLuint program;
     GL_CALL(program = glCreateProgram());
-    std::vector<GLuint> shaders(shader_sources.size());
+    HZ_CORE_ASSERT((shader_sources.size() <= 2), "Only 2 shaders for now");
+
+    // TODO: use array for fixed numbers of shaders
+    std::vector<GLuint> shaders;
+    shaders.reserve(shader_sources.size());
 
     for (auto &[shader_type, source] : shader_sources)
     {
@@ -169,7 +185,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader
             break;
         }
 
-        shaders.emplace_back(shader_handle);
+        shaders.push_back(shader_handle);
     }
 
     for (auto shader : shaders) {
