@@ -15,33 +15,8 @@
 
 namespace hazel {
 
-static void MessageCallback(GLenum        source,
-                            GLenum        type,
-                            GLuint        id,
-                            GLenum        severity,
-                            GLsizei       length,
-                            const GLchar *message,
-                            const void   *userParam)
-{
-
-    // #define GL_DEBUG_SEVERITY_HIGH 0x9146
-    // #define GL_DEBUG_SEVERITY_MEDIUM 0x9147
-    // #define GL_DEBUG_SEVERITY_LOW 0x9148
-
-    static int faltal_error = 0;
-
-    if (severity < GL_DEBUG_SEVERITY_HIGH) {
-        faltal_error = 0;
-        HZ_CORE_WARN("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
-                     type, severity, message);
-    }
-    else {
-        HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
-                      type, severity, message);
-        if (++faltal_error > 10)
-            PLATFORM_BREAK();
-    }
-}
+static void MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+                            const GLchar *message, const void *userParam);
 
 OpenGLContext::OpenGLContext(GLFWwindow *glfw_window_handle)
 {
@@ -64,7 +39,7 @@ void OpenGLContext::Init()
         HZ_CORE_WARN("glDebugMessageCallback is nullptr. Maybe your driver is not supportting this extionsion!");
     }
 
-    printGLVerbose();
+    DebugGLVerbose();
 }
 
 void OpenGLContext::SwapBuffers()
@@ -72,7 +47,7 @@ void OpenGLContext::SwapBuffers()
     glfwSwapBuffers(m_WindowHandle);
 }
 
-void OpenGLContext::printGLVerbose()
+void OpenGLContext::DebugGLVerbose()
 {
     const GLubyte *renderer    = glGetString(GL_RENDERER);
     const GLubyte *vendor      = glGetString(GL_VENDOR);
@@ -86,7 +61,29 @@ void OpenGLContext::printGLVerbose()
     HZ_CORE_INFO("GL Version (string) : {}", (const char *)version);
     HZ_CORE_INFO("GL Version (integer) : {}, {}", major, minor);
     HZ_CORE_INFO("GLSL Version : {}\n", (const char *)glslVersion);
+
+    HZ_CORE_ASSERT(major * 100 + minor * 10 > 450, "Required opengl version >= 4.5");
 }
 
+static void MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+{
+    // #define GL_DEBUG_SEVERITY_HIGH 0x9146
+    // #define GL_DEBUG_SEVERITY_MEDIUM 0x9147
+    // #define GL_DEBUG_SEVERITY_LOW 0x9148
+
+    static int faltal_error = 0;
+
+    if (severity < GL_DEBUG_SEVERITY_HIGH) {
+        faltal_error = 0;
+        HZ_CORE_WARN("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
+                     type, severity, message);
+    }
+    else {
+        HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
+                      type, severity, message);
+        if (++faltal_error > 10)
+            PLATFORM_BREAK();
+    }
+}
 
 } // namespace hazel

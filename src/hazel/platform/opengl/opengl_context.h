@@ -18,10 +18,11 @@ class OpenGLContext : public GraphicsContext
     void SwapBuffers() override;
 
   private:
-    void printGLVerbose();
+    void DebugGLVerbose();
 
   private:
     GLFWwindow *m_WindowHandle;
 };
 
 } // namespace hazel
+

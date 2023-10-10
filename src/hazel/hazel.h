@@ -22,7 +22,5 @@
 #include "hazel/renderer/orthographic_camera_controller.h"
 
 //
-#include "hazel/core/path.h"
+#include "hazel/utils/path.h"
 
-// entry point
-#include "hazel/hazel/core/entry_point.h"

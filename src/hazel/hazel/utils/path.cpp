@@ -2,14 +2,9 @@
 // Created by nono on 10/7/23.
 //
 
-#include "hz_pch.h"
-
 
 #include "path.h"
 
-
-
-namespace hazel {
 
 
 path get_runtime_exe_path()
@@ -79,5 +74,3 @@ const std::filesystem::path &ProjectRoot()
     static auto project_root = std::filesystem::absolute(find_directory_by_file_symbol(GetProjectRootSymbol()));
     return project_root;
 }
-
-} // namespace hazel

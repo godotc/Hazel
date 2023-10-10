@@ -2,13 +2,11 @@
 // Created by nono on 10/7/23.
 //
 
-#ifndef HAZEL_PATH_H
-#define HAZEL_PATH_H
+#pragma once
 
 #include <filesystem>
 #include <memory>
 
-namespace hazel {
 
 using path = std::filesystem::path;
 
@@ -69,8 +67,3 @@ using FPath = impl::FPathImpl;
 //     return std::make_shared<impl::FPathImpl>(path);
 // }
 // std::shared_ptr<impl::FPathImpl> FPath(std::string &path) { return FPath(path.c_str()); }
-
-
-} // namespace hazel
-
-#endif // HAZEL_PATH_H
