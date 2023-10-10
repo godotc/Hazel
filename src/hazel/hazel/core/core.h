@@ -2,7 +2,7 @@
 
 #include "__microshit_api_hazel.h"
 
-#include "hazel/log.h"
+#include "log.h"
 #include <memory>
 
 

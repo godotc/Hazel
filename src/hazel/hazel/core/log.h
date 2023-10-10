@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hazel/core.h"
+#include "core.h"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>

@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "event/event.h"
-#include "renderer/graphics_context.h"
+#include "hazel/event/event.h"
+#include "hazel/renderer/graphics_context.h"
 #include <any>
 #include <type_traits>
 

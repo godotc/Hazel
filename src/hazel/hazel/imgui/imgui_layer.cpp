@@ -4,7 +4,7 @@
 
 
 #include "GLFW/glfw3.h"
-#include "core.h"
+#include "hazel/hazel/core/core.h"
 
 
 #include "imgui.h"
@@ -12,8 +12,8 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
 
-#include "app.h"
-#include "log.h"
+#include "hazel/hazel/core/app.h"
+#include "hazel/hazel/core/log.h"
 #include "platform/linux/linux_window.h"
 
 

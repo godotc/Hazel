@@ -8,15 +8,15 @@ target("hazel")
 
     add_files("**.cpp")
     add_headerfiles("**.h")
-    add_includedirs(".")
-
     set_pcxxheader("hz_pch.h")
+
+    add_includedirs(".")
+    add_includedirs("./hazel")
 
     add_packages("spdlog")
     add_packages("glfw")
     add_packages("imgui")
 
-    add_includedirs("./hazel")
 
     if is_os("windows") then
         if is_mode("debug") then

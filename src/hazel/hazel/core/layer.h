@@ -1,11 +1,11 @@
 
 #pragma once
 
-#include "event/event.h"
-#include "hazel/core.h"
+#include "core.h"
 #include "window.h"
+#include "timestep.h"
 
-#include "hazel/core/timestep.h"
+#include "hazel/event/event.h"
 
 namespace hazel {
 

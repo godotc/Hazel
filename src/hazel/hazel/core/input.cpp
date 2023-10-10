@@ -2,7 +2,7 @@
 // Created by nono on 9/16/23.
 //
 
-#include "hazel/log.h"
+#include "log.h"
 
 #include "input.h"
 

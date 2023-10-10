@@ -9,8 +9,8 @@
 #include "opengl_context.h"
 
 #include "GLFW/glfw3.h"
-#include "hazel/core.h"
-#include "hazel/log.h"
+#include "hazel/hazel/core/core.h"
+#include "hazel/hazel/core/log.h"
 
 
 namespace hazel {

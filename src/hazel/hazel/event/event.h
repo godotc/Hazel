@@ -2,7 +2,7 @@
 
 #include <hz_pch.h>
 
-#include "hazel/core.h"
+#include "hazel/core/core.h"
 
 
 namespace hazel {

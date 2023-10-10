@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "hazel/core.h"
+#include "hazel/hazel/core/core.h"
 
 namespace hazel {
 

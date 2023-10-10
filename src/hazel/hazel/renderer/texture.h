@@ -5,7 +5,7 @@
 #ifndef HAZEL_TEXTURE_H
 #define HAZEL_TEXTURE_H
 
-#include "hazel/core.h"
+#include "hazel/hazel/core/core.h"
 
 namespace hazel {
 

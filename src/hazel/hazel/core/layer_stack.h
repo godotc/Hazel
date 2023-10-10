@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "hazel/core.h"
+#include "core.h"
 
 #include "layer.h"
 

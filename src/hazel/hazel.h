@@ -1,11 +1,11 @@
 #pragma once
 
-#include "hazel/app.h"
-#include "hazel/input.h"
-#include "hazel/key_code.h"
-#include "hazel/layer.h"
-#include "hazel/log.h"
-#include "hazel/mouse_button.h"
+#include "hazel/hazel/core/app.h"
+#include "hazel/hazel/core/input.h"
+#include "hazel/hazel/core/key_code.h"
+#include "hazel/hazel/core/layer.h"
+#include "hazel/hazel/core/log.h"
+#include "hazel/hazel/core/mouse_button.h"
 
 #include "hazel/imgui/imgui_layer.h"
 
@@ -19,10 +19,10 @@
 
 #include "hazel/renderer/texture.h"
 
-#include "hazel/orthographic_camera_controller.h"
+#include "hazel/renderer/orthographic_camera_controller.h"
 
-
+//
 #include "hazel/core/path.h"
 
 // entry point
-#include "hazel/entry_point.h"
+#include "hazel/hazel/core/entry_point.h"

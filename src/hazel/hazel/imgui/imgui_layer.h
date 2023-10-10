@@ -3,7 +3,7 @@
 #include "hazel/event/application_event.h"
 #include "hazel/event/key_event.h"
 #include "hazel/event/mouse_event.h"
-#include "hazel/layer.h"
+#include "hazel/hazel/core/layer.h"
 #include "imgui.h"
 
 namespace hazel {

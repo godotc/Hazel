@@ -4,8 +4,8 @@
 
 #include "hz_pch.h"
 
-#include "hazel/input.h"
-#include "hazel/key_code.h"
+#include "hazel/hazel/core/input.h"
+#include "hazel/hazel/core/key_code.h"
 #include "orthographic_camera_controller.h"
 
 namespace hazel {

@@ -12,7 +12,7 @@
 
 #include "platform/opengl/opengl_context.h"
 
-#include "log.h"
+#include "hazel/hazel/core/log.h"
 
 
 

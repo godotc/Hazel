@@ -6,7 +6,7 @@
 #include "render.h"
 #include "vertex_array.h"
 
-#include "hazel/log.h"
+#include "hazel/hazel/core/log.h"
 #include "platform/opengl/opengl_vertex_array.h"
 
 namespace hazel {

@@ -15,7 +15,7 @@
 #include "hazel/renderer/render_command.h"
 
 #include "glm/gtc/type_ptr.hpp"
-#include "hazel/key_code.h"
+#include "key_code.h"
 
 
 // tmp

@@ -1,19 +1,21 @@
 #pragma once
-#include "hazel/core.h"
+#include "core.h"
 
-#include "event/event.h"
-#include "event/key_event.h"
-#include "imgui/imgui_layer.h"
-#include "layer_stack.h"
 #include "window.h"
+#include "hazel/imgui/imgui_layer.h"
+#include "layer_stack.h"
 
-#include "event/application_event.h"
+#include "hazel/event/event.h"
+#include "hazel/event/key_event.h"
+#include "hazel/event/application_event.h"
+
+
 #include "hazel/renderer/buffer.h"
 #include "hazel/renderer/vertex_array.h"
-#include "renderer/shader.h"
+#include "hazel/renderer/shader.h"
 
 #include "hazel/core/timestep.h"
-#include "renderer/orthographic_camera.h"
+#include "hazel/renderer/orthographic_camera.h"
 
 namespace hazel {
 

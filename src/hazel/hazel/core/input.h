@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include "hazel/core.h"
+#include "core.h"
 
 namespace hazel {
 

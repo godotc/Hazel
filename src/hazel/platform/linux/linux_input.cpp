@@ -6,7 +6,7 @@
 #include "linux_input.h"
 
 #include "GLFW/glfw3.h"
-#include "hazel/app.h"
+#include "hazel/hazel/core/app.h"
 
 namespace hazel {
 
