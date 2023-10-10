@@ -13,27 +13,26 @@ class OrthographicsCamera
 {
   public:
     OrthographicsCamera(float left, float right, float bottom, float top);
+    void SetProjection(float left, float right, float bottom, float top);
 
   public:
-    const glm::vec3 &GetPosition() const;
-    void             SetPosition(const glm::vec3 &mPosition);
+    [[nodiscard]] const glm::vec3 &GetPosition() const;
+    void                           SetPosition(const glm::vec3 &mPosition);
 
-    float GetRotation() const;
-    void  SetRotation(float mRotation);
+    [[nodiscard]] float GetRotation() const;
+    void                SetRotation(float mRotation);
 
+    [[nodiscard]] const glm::mat4 &GetProjectionMatrix() const;
+    void                           SetProjectionMatrix(const glm::mat4 &mProjectionMatrix);
 
-    const glm::mat4 &GetProjectionMatrix() const;
-    void             SetProjectionMatrix(const glm::mat4 &mProjectionMatrix);
+    [[nodiscard]] const glm::mat4 &GetViewMatrix() const;
+    void                           SetViewMatrix(const glm::mat4 &mViewMatrix);
 
-    const glm::mat4 &GetViewMatrix() const;
-    void             SetViewMatrix(const glm::mat4 &mViewMatrix);
-
-    const glm::mat4 &GetViewProjectionMatrix() const;
-    void             SetViewProjectionMatrix(const glm::mat4 &mViewProjectionMatrix);
+    [[nodiscard]] const glm::mat4 &GetViewProjectionMatrix() const;
+    void                           SetViewProjectionMatrix(const glm::mat4 &mViewProjectionMatrix);
 
   private:
     void RecalculateViewMatrix();
-
 
   private:
     glm::mat4 m_ProjectionMatrix;
@@ -45,6 +44,8 @@ class OrthographicsCamera
     glm::vec3 m_Position = {0.f, 0.f, 0.f};
     float     m_Rotation = {0.f};
 };
+
+
 
 } // namespace hazel
 

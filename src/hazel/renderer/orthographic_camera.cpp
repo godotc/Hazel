@@ -57,6 +57,13 @@ OrthographicsCamera::OrthographicsCamera(float left, float right, float bottom, 
     m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
 
+void OrthographicsCamera::SetProjection(float left, float right, float bottom, float top)
+{
+    m_ProjectionMatrix     = glm::ortho(left, right, bottom, top, -1.f, 1.f);
+    m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+}
+
+
 void OrthographicsCamera::RecalculateViewMatrix()
 {
     glm::mat4 transform =
