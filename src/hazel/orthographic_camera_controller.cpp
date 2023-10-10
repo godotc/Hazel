@@ -60,6 +60,11 @@ void OrthographicsCameraController::ResetCmaeraProjection()
 {
     m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 }
+void OrthographicsCameraController::SetZoomLevel(float level)
+{
+    m_ZoomLevel = level;
+    ResetCmaeraProjection();
+}
 
 
 

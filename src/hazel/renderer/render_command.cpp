@@ -13,4 +13,9 @@ RendererAPI *RenderCommand::Get()
     static RendererAPI *api = new OpenGLRenderAPI();
     return api;
 }
+
+void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
+{
+    Get()->SetViewPort(x, y, w, h);
+}
 } // namespace hazel

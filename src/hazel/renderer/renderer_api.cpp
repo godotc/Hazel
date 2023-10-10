@@ -6,4 +6,5 @@
 
 namespace hazel {
 RendererAPI::API RendererAPI::s_API = RendererAPI::API::OPENGL;
+
 } // namespace hazel

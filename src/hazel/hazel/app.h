@@ -40,16 +40,18 @@ class HAZEL_API App
     void OnEvent(Event &ev);
 
     bool OnWindowClose(WindowCloseEvent &ev);
+    bool OnWindowResized(WindowResizeEvent &ev);
     bool OnKeyPressed(KeyPressedEvent &ev);
 
 
   private:
     Scope<Window> m_Window;
-    ImGuiLayer             *m_ImGuiLayer;
-    LayerStack              m_LayerStack;
-    float                   m_LastFrameTime = 0.f;
+    ImGuiLayer   *m_ImGuiLayer;
+    LayerStack    m_LayerStack;
+    float         m_LastFrameTime = 0.f;
 
-    bool bRunning = true;
+    bool bRunning   = true;
+    bool bMinimized = false;
 
   private:
     static App *Application;

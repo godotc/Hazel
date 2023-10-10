@@ -17,6 +17,8 @@ class RenderCommand
 
     static inline void DrawIndex(const Ref<VertexArray> &vertexArray) { Get()->DrawIndexed(vertexArray); }
 
+    static void SetViewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+
   private:
     static hazel::RendererAPI *Get();
 };

@@ -132,6 +132,7 @@ class NothingLayer : public hazel::Layer
     void OnEvent(hazel::Event &event) override
     {
         m_CameraController.OnEvent(event);
+
         hazel::EventDispatcher dispatcher(event);
     }
 

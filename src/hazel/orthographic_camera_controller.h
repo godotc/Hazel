@@ -28,12 +28,16 @@ class OrthographicsCameraController
     const OrthographicsCamera &GetCamera() const { return m_Camera; }
     OrthographicsCamera       &GetCamera() { return m_Camera; }
 
+    void SetZoomLevel(float level);
+    float GetZoomLevel() { return m_ZoomLevel; }
+
 
   private:
     bool OnMouseScrooled(MouseScrolledEvent &ev);
     bool OnWindowResized(WindowResizeEvent &ev);
 
     void ResetCmaeraProjection();
+
 
   private:
     float               m_AspectRatio = 1.6f;
