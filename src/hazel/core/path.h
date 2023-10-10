@@ -25,8 +25,8 @@ static path find_directory_by_file_symbol(std::string target_symbol);
 const std::filesystem::path &ProjectRoot();
 
 namespace impl {
-struct FPathImpl {
 
+struct FPathImpl {
     FPathImpl(const char *the_path) { absolute_path = ProjectRoot() / the_path; }
 
     operator const char *() const { return absolute_path.c_str(); }
@@ -51,6 +51,8 @@ struct FPathImpl {
 
 using FPath = impl::FPathImpl;
 
+
+// Deprecated:  use the path instanced, or on stack, no need ptr
 // const char *a(std::shared_ptr<impl::FPathImpl> path)
 //{
 //     return path->operator const char *();

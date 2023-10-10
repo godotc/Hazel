@@ -19,7 +19,7 @@
 
 #include "hazel/renderer/texture.h"
 
-#include "hazel/renderer/orthographic_camera.h"
+#include "hazel/orthographic_camera_controller.h"
 
 
 #include "hazel/core/path.h"

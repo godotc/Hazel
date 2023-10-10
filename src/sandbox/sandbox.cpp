@@ -14,9 +14,8 @@ class NothingLayer : public hazel::Layer
   public:
     NothingLayer()
         : Layer("nothing"),
-          m_Camera(-1.6, 1.6, -0.9, 0.9)
+          m_CameraController(-1.6 / 0.9, true)
     {
-
 
         float vertices[4][5] = {
             {-0.5, -0.5, 0, 0, 0},
@@ -81,7 +80,7 @@ class NothingLayer : public hazel::Layer
                 out_color =  texture(u_Texture, v_TexCoord);
             }
         )";
-//        m_Shader         = hazel::Shader::Create("texture", vert, frag);
+        //        m_Shader         = hazel::Shader::Create("texture", vert, frag);
 
         m_ShaderLibrary->Load("Texture", FPath("res/shader/texture.glsl"));
 
@@ -91,15 +90,17 @@ class NothingLayer : public hazel::Layer
 
     void OnUpdate(Timestep ts) override
     {
-        float dt = ts;
-        //        HZ_TRACE("Delta time : {}s {}ms ", ts.GetSeconds(), ts.GetMiliseconds());
+        // HZ_TRACE("Delta time : {}s {}ms ", ts.GetSeconds(), ts.GetMiliseconds());
+
+        m_CameraController.OnUpdate(ts);
+
         RenderCommand::SetClearColor({0.3, 0.5, 0.7, 1});
         RenderCommand::Clear();
 
-        Render::BeginScene(m_Camera);
+        Render::BeginScene(m_CameraController.GetCamera());
         {
-            m_Camera.SetRotation(m_CameraRotation);
-            m_Camera.SetPosition(m_CameraPosition);
+            //            m_CameraController.GetCamera().SetRotation(m_CameraRotation);
+            //            m_CameraController.GetCamera().SetPosition(m_CameraPosition);
 
             glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 
@@ -117,48 +118,33 @@ class NothingLayer : public hazel::Layer
                                {-0.5, -0.2, 0}));
         }
         Render::EndScene();
-
-
-        // clang-format off
-        {
-            if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x -= m_CameraSpeed * dt;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_D)) m_CameraPosition.x += m_CameraSpeed * dt;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_W)) m_CameraPosition.y += m_CameraSpeed * dt;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_S)) m_CameraPosition.y -= m_CameraSpeed * dt;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_Q)) m_CameraRotation -= m_CameraRotateDegree * dt;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_E)) m_CameraRotation += m_CameraRotateDegree * dt;
-        }
-        // clang-format on
     };
 
     void OnImGuiRender() override
     {
         ImGui::Begin("Panel");
-        ImGui::SliderFloat("m_CameraRotation", &m_CameraRotation, 0, 360);
-        ImGui::SliderFloat3("m_CameraPosition", glm::value_ptr(m_CameraPosition), -1, 1);
+        //        ImGui::SliderFloat("m_CameraRotation", &m_CameraRotation, 0, 360);
+        //        ImGui::SliderFloat3("m_CameraPosition", glm::value_ptr(m_CameraPosition), -1, 1);
         ImGui::SliderFloat3("m_SquarePosition", glm::value_ptr(m_SquarePosition), -1, 1);
         ImGui::End();
     }
 
     void OnEvent(hazel::Event &event) override
     {
+        m_CameraController.OnEvent(event);
         hazel::EventDispatcher dispatcher(event);
     }
 
   private:
 
-    float     m_CameraRotation     = 0.f;
-    glm::vec3 m_CameraPosition     = glm::vec3(0.f);
-    float     m_CameraSpeed        = 5.f;
-    float     m_CameraRotateDegree = 120.f;
 
     Ref<VertexArray> m_VertexArray;
     glm::vec3        m_SquarePosition = glm::vec3(1.f);
 
     Ref<ShaderLibrary> m_ShaderLibrary{new ShaderLibrary};
 
-    Ref<Texture2D>      m_Texture, m_ArchTexture;
-    OrthographicsCamera m_Camera;
+    Ref<Texture2D>                m_Texture, m_ArchTexture;
+    OrthographicsCameraController m_CameraController;
 };
 
 
