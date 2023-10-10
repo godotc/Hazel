@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../../hazel.h"
-#include "../event/event.h"
+#include "hazel/hazel.h"
 
 #ifdef HAZEL_LINKAGE_PROGRAM
 

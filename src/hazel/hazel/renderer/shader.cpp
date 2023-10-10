@@ -2,9 +2,11 @@
 // Created by nono on 9/20/23.
 //
 #include "hz_pch.h"
-#include "renderer/render.h"
 
 #include "shader.h"
+
+#include "renderer/render.h"
+
 
 #include "platform/opengl/opengl_shader.h"
 
@@ -60,7 +62,7 @@ Ref<Shader> ShaderLibrary::Get(const std::string &name)
 
 void ShaderLibrary::Add(const std::string &name, const Ref<Shader> &shader)
 {
-//    HZ_CORE_ASSERT(!Exist(name), "Shader already exist");
+    //    HZ_CORE_ASSERT(!Exist(name), "Shader already exist");
     m_Shaders.insert({name, shader});
 }
 void ShaderLibrary::Add(const Ref<Shader> &shader)

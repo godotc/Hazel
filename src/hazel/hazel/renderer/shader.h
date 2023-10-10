@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+#include <hazel/core/core.h>
 
 namespace hazel {
 
