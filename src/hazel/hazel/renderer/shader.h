@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+#include <glm/fwd.hpp>
 #include <hazel/core/core.h>
 
 namespace hazel {
@@ -23,6 +24,13 @@ class Shader
     virtual void Unbind() const = 0;
 
     virtual const std::string GetName() const = 0;
+
+  public:
+    virtual void SetInt(const std::string name, const int32_t value)        = 0;
+    virtual void SetFloat3(const std::string name, const glm::vec3 &values) = 0;
+    virtual void SetFloat4(const std::string name, const glm::vec4 &float4) = 0;
+    virtual void SetMat4(const std::string name, const glm::mat4 &matrix)   = 0;
+
 
   private:
     uint32_t m_ShaderID;

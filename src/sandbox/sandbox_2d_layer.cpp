@@ -11,7 +11,6 @@
 
 void Sandbox2D::OnAttach()
 {
-
     m_Texture     = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     m_ArchTexture = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
 }
@@ -30,13 +29,8 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
 
     hazel::Render2D::BeginScene(m_CameraController.GetCamera());
 
-    //    if (auto ogl_shader = dynamic_pointer_cast<hazel::OpenGLShader>(m_FlatShader)) {
-    //        ogl_shader->Bind();
-    //        ogl_shader->UploadUniformFloat4("u_Color", m_FlatColor);
-    //    }
-    //
-    //    hazel::Render::Submit(m_FlatShader, m_FlatVA, glm::mat4(1.f));
     hazel::Render2D::DrawQuad(m_QuadPosition, {2, 2}, m_FlatColor);
+    hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0}, {1, 1}, {1.f, 0.1f, 0.1f, 0});
 
     hazel::Render2D::EndScene();
 }

@@ -221,5 +221,22 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader
     m_ShaderID = program;
 }
 
+void OpenGLShader::SetInt(const std::string name, const int32_t value)
+{
+    UploadUniformInt(name, value);
+}
+void OpenGLShader::SetFloat3(const std::string name, const glm::vec3 &values)
+{
+    UploadUniformFloat3(name, values);
+}
+void OpenGLShader::SetFloat4(const std::string name, const glm::vec4 &float4)
+{
+    UploadUniformFloat4(name, float4);
+}
+void OpenGLShader::SetMat4(const std::string name, const glm::mat4 &matrix)
+{
+    UploadUniformMat4(name, matrix);
+}
+
 
 } // namespace hazel

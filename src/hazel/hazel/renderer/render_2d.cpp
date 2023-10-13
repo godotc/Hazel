@@ -57,10 +57,10 @@ void Render2D::Shutdown()
 
 void Render2D::BeginScene(const OrthographicsCamera &camera)
 {
-    auto ogl_shader = dynamic_pointer_cast<OpenGLShader>(s_Render2D_Data->FlatColorShader);
-    ogl_shader->Bind();
-    ogl_shader->UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-    ogl_shader->UploadUniformMat4("u_Transform", glm::mat4(1.f));
+    auto &shader = s_Render2D_Data->FlatColorShader;
+    shader->Bind();
+    shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+    shader->SetMat4("u_Transform", glm::mat4(1.f));
 }
 
 void Render2D::EndScene()
@@ -69,10 +69,15 @@ void Render2D::EndScene()
 
 void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color)
 {
-    auto ogl_shader = dynamic_pointer_cast<OpenGLShader>(s_Render2D_Data->FlatColorShader);
-    ogl_shader->Bind();
-    ogl_shader->UploadUniformFloat4("u_Color", color);
-    ogl_shader->UploadUniformMat4("u_Model", glm::translate(glm::mat4(1.f), pos));
+    auto &shader = s_Render2D_Data->FlatColorShader;
+    shader->Bind();
+
+    shader->SetFloat4("u_Color", color);
+
+    glm::mat4 transform(1.f);
+    transform = glm::translate(transform, pos);
+    transform = glm::scale(transform, {size.x, size.y, 1.f});
+    shader->SetMat4("u_Transform", transform);
 
     s_Render2D_Data->QuadVertexArray->Bind();
     RenderCommand::DrawIndex(s_Render2D_Data->QuadVertexArray);
