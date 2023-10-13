@@ -28,7 +28,7 @@ class Sandbox2D : public hazel::Layer
     //
     hazel::Ref<hazel::VertexArray> m_FlatVA;
 
-    glm::vec3                 m_SquarePosition = glm::vec3(1.f);
+    glm::vec3                 m_QuadPosition = glm::vec3(0.f);
     hazel::Ref<hazel::Shader> m_FlatShader;
     glm::vec4                 m_FlatColor{0, 0.7, 0.3, 0.5};
 

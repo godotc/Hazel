@@ -1,7 +1,6 @@
 //
 // Created by nono on 9/20/23.
 //
-#include "hz_pch.h"
 
 #include "render.h"
 #include "vertex_array.h"

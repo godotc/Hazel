@@ -1,22 +1,19 @@
 #include "hz_pch.h"
 
+#include "app.h"
+
 #include "event/event.h"
 #include "event/key_event.h"
-
-#include "app.h"
+#include "log.h"
 
 
 #include "imgui/imgui_layer.h"
-#include "input.h"
 #include "layer.h"
-#include "log.h"
 
 #include "hazel/renderer/render.h"
-#include "hazel/renderer/render_command.h"
-
-#include "glm/gtc/type_ptr.hpp"
 #include "key_code.h"
 
+#include "renderer/render_2d.h"
 
 // tmp
 #include "GLFW/glfw3.h"
@@ -37,6 +34,7 @@ App::App()
     m_Window->SetVSync(true);
 
     Render::Init();
+    Render2D::Init();
 
     m_ImGuiLayer = new ImGuiLayer();
     m_LayerStack.PushOverlay(m_ImGuiLayer);

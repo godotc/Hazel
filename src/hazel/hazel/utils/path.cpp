@@ -5,6 +5,9 @@
 
 #include "path.h"
 
+#if __linux__
+    #include "unistd.h"
+#endif
 
 
 path get_runtime_exe_path()

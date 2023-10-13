@@ -11,7 +11,7 @@
 // entry point
 
 #include "example_layer.h"
-#include "sandbox2d_layer.h"
+#include "sandbox_2d_layer.h"
 
 
 class Sandbox : public hazel::App
