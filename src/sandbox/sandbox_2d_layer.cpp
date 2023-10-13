@@ -11,6 +11,8 @@
 
 void Sandbox2D::OnAttach()
 {
+    m_CameraController.SetZoomLevel(3);
+
     m_Texture     = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     m_ArchTexture = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
 }
