@@ -19,27 +19,27 @@ OrthographicsCameraController::OrthographicsCameraController(float aspect_ratio,
 
 void OrthographicsCameraController::OnUpdate(Timestep dt)
 {
-    //    if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
-    //    if (hazel::Input::IsKeyPressed(HZ_KEY_D)) m_CameraPosition.x += m_CameraTranslationSpeed * dt;
-    //    if (hazel::Input::IsKeyPressed(HZ_KEY_W)) m_CameraPosition.y += m_CameraTranslationSpeed * dt;
-    //    if (hazel::Input::IsKeyPressed(HZ_KEY_S)) m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_D)) m_CameraPosition.x += m_CameraTranslationSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_W)) m_CameraPosition.y += m_CameraTranslationSpeed * dt;
+        if (hazel::Input::IsKeyPressed(HZ_KEY_S)) m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
     // for right forward within camera rotation
-    if (hazel::Input::IsKeyPressed(HZ_KEY_A)) {
-        m_CameraPosition.x -= std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-    }
-    if (hazel::Input::IsKeyPressed(HZ_KEY_D)) {
-        m_CameraPosition.x += std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-    }
-    if (hazel::Input::IsKeyPressed(HZ_KEY_W)) {
-        m_CameraPosition.x += -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-    }
-    if (hazel::Input::IsKeyPressed(HZ_KEY_S)) {
-        m_CameraPosition.x -= -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-    }
+//    if (hazel::Input::IsKeyPressed(HZ_KEY_A)) {
+//        m_CameraPosition.x -= std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//    }
+//    if (hazel::Input::IsKeyPressed(HZ_KEY_D)) {
+//        m_CameraPosition.x += std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//    }
+//    if (hazel::Input::IsKeyPressed(HZ_KEY_W)) {
+//        m_CameraPosition.x += -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//    }
+//    if (hazel::Input::IsKeyPressed(HZ_KEY_S)) {
+//        m_CameraPosition.x -= -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+//    }
     m_Camera.SetPosition(m_CameraPosition);
 
     // clang-format off

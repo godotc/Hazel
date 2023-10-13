@@ -21,16 +21,13 @@ class Sandbox2D : public hazel::Layer
     void OnImGuiRender() override;
 
   private:
+    hazel::ShaderLibrary m_ShaderLibrary;
+
     hazel::OrthographicsCameraController m_CameraController{16 / 9.f, true};
-    glm::vec4                            m_ClearColor{0.3, 0.4, 0.5, 1};
-    hazel::ShaderLibrary                 m_ShaderLibrary;
 
-    //
-    hazel::Ref<hazel::VertexArray> m_FlatVA;
+    glm::vec4 m_ClearColor{0.3, 0.4, 0.5, 1};
+    glm::vec3 m_QuadPosition = glm::vec3(0.f);
+    glm::vec4 m_FlatColor{1, 0.1, 0.1, 1};
 
-    glm::vec3                 m_QuadPosition = glm::vec3(0.f);
-    hazel::Ref<hazel::Shader> m_FlatShader;
-    glm::vec4                 m_FlatColor{1, 0.1, 0.1, 1};
-
-    hazel::Ref<hazel::Texture2D> m_Texture, m_ArchTexture;
+    hazel::Ref<hazel::Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
 };

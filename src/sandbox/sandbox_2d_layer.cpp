@@ -13,8 +13,9 @@ void Sandbox2D::OnAttach()
 {
     m_CameraController.SetZoomLevel(3);
 
-    m_Texture     = hazel::Texture2D::Create(FPath("res/texture/face.png"));
-    m_ArchTexture = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
+    m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
+    m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
+    m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
 }
 
 void Sandbox2D::OnDetach()
@@ -31,8 +32,13 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
 
     hazel::Render2D::BeginScene(m_CameraController.GetCamera());
 
-    hazel::Render2D::DrawQuad(m_QuadPosition, {2, 2}, m_FlatColor);
-    hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0}, {1, 1}, {1.f, 0.1f, 0.1f, 0});
+    //    hazel::Render2D::DrawQuad(m_QuadPosition, {2, 2}, m_FlatColor);
+    //    hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0}, {1, 1}, {1.f, 0.1f, 0.1f, 0});
+
+    hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{3, 3, 0}, {1, 1}, m_FaceTexture);
+    hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, m_ArchTexture);
+
+    hazel::Render2D::DrawQuad({0, 0, -0.9}, {10, 10}, m_BlockTexture);
 
     hazel::Render2D::EndScene();
 }

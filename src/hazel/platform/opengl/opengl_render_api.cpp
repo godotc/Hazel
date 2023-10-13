@@ -13,8 +13,8 @@ namespace hazel {
 void OpenGLRenderAPI::Init()
 {
     glEnable(GL_BLEND);
-    //    glEnable(GL_DEPTH_TEST);
-    glBlendFunc(GL_BLEND_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void OpenGLRenderAPI::SetClearColor(const glm::vec4 &color)
@@ -23,7 +23,7 @@ void OpenGLRenderAPI::SetClearColor(const glm::vec4 &color)
 }
 void OpenGLRenderAPI::Clear()
 {
-    glClear(GL_COLOR_BUFFER_BIT); // | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray> &vertex_array)
 {
