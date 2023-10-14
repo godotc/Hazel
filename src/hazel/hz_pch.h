@@ -9,6 +9,7 @@
 #endif
 
 #include <any>
+#include <chrono>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
@@ -23,6 +24,7 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <ranges>
 
 #include <fmt/format.h>
 

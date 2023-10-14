@@ -1,6 +1,7 @@
 add_rules("mode.debug", "mode.release")
+-- add_rules("debug_game")
 
-set_languages("c++20")
+set_languages("c++latest")
 
 set_targetdir("bin/$(plat)/$(mode)/$(arch)/")
 

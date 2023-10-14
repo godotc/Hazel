@@ -15,12 +15,9 @@
 
 namespace hazel {
 
-
-
 void Render2D::Init()
 {
-    s_Render2D_Data = new Render2dStorage;
-
+    s_Render2D_Data                  = new Render2dStorage;
     s_Render2D_Data->QuadVertexArray = VertexArray::Create();
 
     float vertices[4][5] = {
@@ -48,8 +45,16 @@ void Render2D::Init()
     s_Render2D_Data->QuadVertexArray->AddVertexBuffer(VB);
     s_Render2D_Data->QuadVertexArray->SetIndexBuffer(IB);
 
-    s_Render2D_Data->FlatColorShader = Shader::Create(FPath("res/shader/flat_color.glsl"));
-    s_Render2D_Data->TextureShader   = Shader::Create(FPath("res/shader/texture.glsl"));
+    s_Render2D_Data->WhileTexture = Texture2D::Create(1, 1);
+    // R G B A 8bit x 4
+    // f == 16 == 2^5
+    // 5 * 8 or 4 * 8 orz
+    //    uint32_t white_texture_data = 0xffffffff;
+    unsigned char white_texture_data[4] = {255, 255, 255, 255};
+    s_Render2D_Data->WhileTexture->SetData(white_texture_data, sizeof(uint32_t));
+
+
+    s_Render2D_Data->TextureShader = Shader::Create(FPath("res/shader/texture.glsl"));
     s_Render2D_Data->TextureShader->Bind();
     s_Render2D_Data->TextureShader->SetInt("u_Texture", 0);
 }
@@ -61,9 +66,6 @@ void Render2D::Shutdown()
 
 void Render2D::BeginScene(const OrthographicsCamera &camera)
 {
-    s_Render2D_Data->FlatColorShader->Bind();
-    s_Render2D_Data->FlatColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-
     s_Render2D_Data->TextureShader->Bind();
     s_Render2D_Data->TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 }
@@ -74,10 +76,13 @@ void Render2D::EndScene()
 
 void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color)
 {
-    auto &shader = s_Render2D_Data->FlatColorShader;
-    shader->Bind();
-
+    auto &shader = s_Render2D_Data->TextureShader;
     shader->SetFloat4("u_Color", color);
+
+    // bind white texture
+    s_Render2D_Data->WhileTexture->Bind(0);
+
+
 
     glm::mat4 transform(1.f);
     transform = glm::translate(transform, pos);
@@ -96,14 +101,13 @@ void Render2D::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::
 void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<Texture2D> &texture)
 {
     auto &shader = s_Render2D_Data->TextureShader;
-    shader->Bind();
+    shader->SetFloat4("u_Color", {1, 1, 1, 1}); // tint
+    texture->Bind();
 
     glm::mat4 transform(1.f);
     transform = glm::translate(transform, pos);
     transform = glm::scale(transform, {size.x, size.y, 1.f});
     shader->SetMat4("u_Transform", transform);
-
-    texture->Bind();
 
     s_Render2D_Data->QuadVertexArray->Bind();
     RenderCommand::DrawIndex(s_Render2D_Data->QuadVertexArray);
