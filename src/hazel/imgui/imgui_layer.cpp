@@ -6,12 +6,15 @@
 #include "GLFW/glfw3.h"
 #include "core.h"
 
+
+#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
 
 #include "app.h"
 #include "log.h"
+#include <any>
 
 
 
@@ -60,6 +63,13 @@ void ImGuiLayer::OnAttach()
     // HZ_CORE_INFO("Imgui detect the GL version: {}", glversion);
 
     bool bSuccess = ImGui_ImplOpenGL3_Init("#version 420");
+#if _WIN32
+    auto &app    = App::Get();
+    auto *window = std::any_cast<GLFWwindow *>(app.GetWindow().GetNativeWindow());
+    HZ_CORE_ASSERT(window, "Get native OpenGL Windows failed!");
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+#endif
+
     HZ_CORE_ASSERT(bSuccess, "imgui opengl3 backend initialize failed");
 }
 
