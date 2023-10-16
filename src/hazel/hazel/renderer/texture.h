@@ -5,11 +5,11 @@
 #ifndef HAZEL_TEXTURE_H
 #define HAZEL_TEXTURE_H
 
-#include "hazel/hazel/core/core.h"
+#include "hazel/core/core.h"
 
 namespace hazel {
 
-class Texture
+class HAZEL_API Texture
 {
   public:
     virtual ~Texture() = default;
@@ -22,7 +22,7 @@ class Texture
 };
 
 
-class Texture2D : public Texture
+class HAZEL_API Texture2D : public Texture
 {
   public:
     [[nodiscard]] static Ref<Texture2D> Create(const std::string &path);

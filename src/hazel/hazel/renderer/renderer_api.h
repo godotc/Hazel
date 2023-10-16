@@ -3,13 +3,15 @@
 //
 #pragma once
 
+#include "hazel/__microshit_api_hazel.h"
+
 #include "vertex_array.h"
 #include <glm/glm.hpp>
 
 
 namespace hazel {
 
-class RendererAPI
+class HAZEL_API RendererAPI
 {
   public:
     enum class API

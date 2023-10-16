@@ -13,7 +13,7 @@ namespace hazel {
 class Shader;
 class OrthographicsCamera;
 
-class Render
+class HAZEL_API Render
 {
   public:
     static void Init();

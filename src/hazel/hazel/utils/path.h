@@ -4,33 +4,43 @@
 
 #pragma once
 
-#include <filesystem>
+#include "__microshit_api_utils.h"
+
+#ifndef UTILS_API
+    #define UTILS_API
+#endif
+
+#if 0
+    #include <experimental/filesystem>
+    using path = std::experimental::filesystem::path;
+#else
+    #include <filesystem>
+using path = std::filesystem::path;
+#endif
 #include <memory>
 
 
-using path = std::filesystem::path;
 
-
-inline static std::string        project_root_symbol = ".project-root-symbol";
-inline static void               SetProjectRootSymbol(std::string symbol) { project_root_symbol = symbol; }
-inline static const std::string &GetProjectRootSymbol() { return project_root_symbol; }
+inline  static std::string        project_root_symbol = ".project-root-symbol";
+inline  static void               SetProjectRootSymbol(std::string symbol) { project_root_symbol = symbol; }
+inline  static const std::string &GetProjectRootSymbol() { return project_root_symbol; }
 
 static path get_runtime_exe_path();
 
 // I will find `bin`'s  parent dir as the root dir;
 static path find_directory_by_file_symbol(std::string target_symbol);
 
-const std::filesystem::path &ProjectRoot();
+const UTILS_API std::filesystem::path &ProjectRoot();
 
 namespace impl {
 
-struct FPathImpl {
+struct UTILS_API FPathImpl {
     FPathImpl(const char *the_path) { absolute_path = ProjectRoot() / the_path; }
 
-    operator const char *() const { return absolute_path.c_str(); }
+    operator const char *() const { return absolute_path.string().c_str(); }
 
     // FIXME: method 2, only return the copy
-    [[nodiscard]] operator std::string() const { return absolute_path; }
+    [[nodiscard]] operator std::string() const { return absolute_path.string(); }
     //    const std::string &string() const { return absolute_path; }
 
     path absolute_path;
