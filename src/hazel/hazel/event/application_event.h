@@ -2,8 +2,8 @@
 
 #include "hz_pch.h"
 
-#include "hazel/core.h"
 #include "hazel/event/event.h"
+#include "hazel/hazel/core/core.h"
 
 
 namespace hazel {

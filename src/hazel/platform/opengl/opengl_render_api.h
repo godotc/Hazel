@@ -12,10 +12,13 @@ namespace hazel {
 class OpenGLRenderAPI : public RendererAPI
 {
   public:
+    void Init() override;
     void SetClearColor(const glm::vec4 &color) override;
     void Clear() override;
 
-    void DrawIndexed(const std::shared_ptr<VertexArray> &vertex_array) override;
+    void SetViewPort(uint32_t x, uint32_t y, uint32_t w, uint32_t h) override;
+
+    void DrawIndexed(const Ref<VertexArray> &vertex_array) override;
 };
 
 } // namespace hazel

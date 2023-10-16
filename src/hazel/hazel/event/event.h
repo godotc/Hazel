@@ -2,7 +2,7 @@
 
 #include <hz_pch.h>
 
-#include "hazel/core.h"
+#include "hazel/core/core.h"
 
 
 namespace hazel {
@@ -10,7 +10,6 @@ namespace hazel {
 
 enum class EventType
 {
-
     None = 0,
 
     WindowClose,

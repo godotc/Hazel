@@ -12,7 +12,7 @@
 
 #include "platform/opengl/opengl_context.h"
 
-#include "log.h"
+#include "hazel/hazel/core/log.h"
 
 
 
@@ -57,9 +57,8 @@ void LinuxWindow::Init(const WindowProps &props)
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
 
-    //    printGLVerbose();
+    //    DebugGLVerbose();
     initCallbacks();
-
 
     SetVSync(true);
 }
@@ -96,6 +95,7 @@ void LinuxWindow::initCallbacks()
             data->Width  = w;
             data->Height = h;
             WindowResizeEvent ev(w, h);
+            HZ_CORE_INFO(ev.to_string());
             data->EventCallback(ev);
         }
     });
@@ -110,24 +110,24 @@ void LinuxWindow::initCallbacks()
     glfwSetKeyCallback(m_Window, [](GLFWwindow *win, int key, int scancode, int action, int mods) {
         if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
             switch (action) {
-            case GLFW_PRESS:
-            {
-                KeyPressedEvent ev(key, 0);
-                data->EventCallback(ev);
-                break;
-            }
-            case GLFW_RELEASE:
-            {
-                KeyReleasedEvent ev(key);
-                data->EventCallback(ev);
-                break;
-            }
-            case GLFW_REPEAT:
-            {
-                KeyPressedEvent ev(key, 1);
-                data->EventCallback(ev);
-                break;
-            }
+                case GLFW_PRESS:
+                {
+                    KeyPressedEvent ev(key, 0);
+                    data->EventCallback(ev);
+                    break;
+                }
+                case GLFW_RELEASE:
+                {
+                    KeyReleasedEvent ev(key);
+                    data->EventCallback(ev);
+                    break;
+                }
+                case GLFW_REPEAT:
+                {
+                    KeyPressedEvent ev(key, 1);
+                    data->EventCallback(ev);
+                    break;
+                }
             }
         }
     });
@@ -143,18 +143,18 @@ void LinuxWindow::initCallbacks()
         if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
             switch (action) {
 
-            case GLFW_PRESS:
-            {
-                MouseButtonPressedEvent ev(button);
-                data->EventCallback(ev);
-                break;
-            }
-            case GLFW_RELEASE:
-            {
-                MouseButtonReleasedEvent ev(button);
-                data->EventCallback(ev);
-                break;
-            }
+                case GLFW_PRESS:
+                {
+                    MouseButtonPressedEvent ev(button);
+                    data->EventCallback(ev);
+                    break;
+                }
+                case GLFW_RELEASE:
+                {
+                    MouseButtonReleasedEvent ev(button);
+                    data->EventCallback(ev);
+                    break;
+                }
             }
         }
     });

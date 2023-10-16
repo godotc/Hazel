@@ -6,6 +6,7 @@
 
 #include "glad/glad.h"
 #include "opengl_vertex_array.h"
+#include "hazel/renderer/buffer.h"
 
 namespace hazel {
 
@@ -47,7 +48,7 @@ void OpenGLVertexArray::Unbind()
 {
     glBindVertexArray(0);
 }
-void OpenGLVertexArray::AddVertexBuffer(std::shared_ptr<VertexBuffer> &vertex_buffer)
+void OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer> &vertex_buffer)
 {
     HZ_CORE_ASSERT(vertex_buffer->GetLayout().GetElements().size(), "Vertex buffer has no layout!");
 
@@ -71,7 +72,7 @@ void OpenGLVertexArray::AddVertexBuffer(std::shared_ptr<VertexBuffer> &vertex_bu
     m_VertexBuffers.push_back(vertex_buffer);
 }
 
-void OpenGLVertexArray::SetIndexBuffer(std::shared_ptr<IndexBuffer> &index_buffer)
+void OpenGLVertexArray::SetIndexBuffer(Ref<IndexBuffer> &index_buffer)
 {
     glBindVertexArray(m_VertexArrayID);
     index_buffer->Bind();

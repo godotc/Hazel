@@ -11,6 +11,8 @@
 #include <any>
 #include <cstdint>
 #include <cstdio>
+#include <filesystem>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <list>
@@ -18,7 +20,10 @@
 #include <ostream>
 #include <queue>
 #include <stack>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 
 #include <fmt/format.h>
+
+#include "hazel/utils/path.h"

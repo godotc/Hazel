@@ -1,7 +1,7 @@
-add_requires("spdlog","glad")
+add_requires("spdlog")
 add_requires( "glfw", {configs={debug=true}})
-add_packages("spdlog")
 
+add_packages("spdlog")
 
 target("hazel")
     set_kind("shared")
@@ -10,11 +10,13 @@ target("hazel")
     add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")
 
-    add_packages("fmt")
-    add_packages("spdlog")
-    add_packages("glfw", "glad")
-
+    add_includedirs(".")
     add_includedirs("./hazel")
+
+    add_packages("spdlog")
+    add_packages("glfw")
+    add_packages("imgui")
+
 
     if is_os("windows") then
         if is_mode("debug") then
