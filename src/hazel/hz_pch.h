@@ -20,12 +20,15 @@
 #include <memory>
 #include <ostream>
 #include <queue>
+#include <ranges>
 #include <stack>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
-#include <ranges>
 
 #include <fmt/format.h>
+
+#include <hazel/core/log.h>
+#include <hazel/debug/instrumentor.h>
 
 #include "hazel/utils/path.h"

@@ -9,41 +9,6 @@
 #include "sandbox_2d_layer.h"
 
 
-template <class Fn>
-class Timer
-{
-    const char                                        *m_Name;
-    std::chrono::time_point<std::chrono::steady_clock> m_StartTimePoint;
-    bool                                               m_Stopped = {false};
-    Fn                                                 m_Func;
-
-  public:
-
-    Timer(const char *name, Fn &&func) : m_Name(name), m_Func(func) { m_StartTimePoint = std::chrono::steady_clock::now(); }
-
-    void Stop()
-    {
-        auto end_tp = std::chrono::steady_clock::now();
-
-        using ll = long long;
-        ll start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimePoint).time_since_epoch().count();
-        ll end   = std::chrono::time_point_cast<std::chrono::microseconds>(end_tp).time_since_epoch().count();
-
-        m_Stopped      = true;
-        float duration = (end - start) * 0.001f;
-
-        m_Func({m_Name, duration});
-    }
-
-    ~Timer()
-    {
-        if (!m_Stopped)
-            Stop();
-    }
-};
-
-
-#define PROFILE_SCOPE(name) Timer timer##__LINE__(name, [&](ProfileResult res) { m_ProfileResults.emplace_back(res); })
 
 void Sandbox2D::OnAttach()
 {
@@ -61,21 +26,21 @@ void Sandbox2D::OnDetach()
 
 void Sandbox2D::OnUpdate(hazel::Timestep timestep)
 {
-    PROFILE_SCOPE("Sandbox2d::OnUpdate");
+    HZ_PROFILE_SCOPE("Sandbox2d::OnUpdate");
 
     {
-        PROFILE_SCOPE("Renderer Prep");
+        HZ_PROFILE_SCOPE("Renderer Prep");
         hazel::RenderCommand::SetClearColor(m_ClearColor);
         hazel::RenderCommand::Clear();
     }
 
     {
-        PROFILE_SCOPE("Camera::OnUpdate");
+        HZ_PROFILE_SCOPE("Camera::OnUpdate");
         m_CameraController.OnUpdate(timestep);
     }
 
     {
-        PROFILE_SCOPE("Renderer Drawcalls");
+        HZ_PROFILE_SCOPE("Renderer Drawcalls");
         hazel::Render2D::BeginScene(m_CameraController.GetCamera());
 
         hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{0, 0, 0.1}, {2, 2}, m_FlatColor);
@@ -87,7 +52,6 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture);
         hazel::Render2D::EndScene();
     }
-
 }
 
 void Sandbox2D::OnImGuiRender()
