@@ -21,6 +21,18 @@ end
 
 includes("./src")
 
+
+
+for _,file in ipairs(os.files("./test")) do
+    local name = path.basename(file)
+    target("test."..name)
+        set_group("test")
+        set_kind("binary")
+        add_files(file)
+    target_end()
+end
+
+
 task("cpcm")
     set_menu {
         usage = "xmake cpcm"
@@ -41,3 +53,12 @@ task_end()
 
 
 
+task("test")
+    set_menu{}
+    on_run(function()
+--         print(os.exec("xmake f -m debug --test=y")
+            os.exec("xmake f -m debug")
+            print(os.exec("xmake build -g test"))
+            print(os.exec("xmake run -g test"))
+    end)
+task_end()
