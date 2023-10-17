@@ -11,6 +11,8 @@
 #include "texture.h"
 #include "vertex_array.h"
 
+#include "hazel/__microshit_api_hazel.h"
+
 
 namespace hazel {
 
@@ -23,7 +25,7 @@ struct Render2dStorage {
 
 static Render2dStorage *s_Render2D_Data;
 
-class Render2D
+class HAZEL_API Render2D
 {
   public:
     static void Init();

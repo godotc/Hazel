@@ -8,7 +8,7 @@
 
 namespace hazel {
 
-class RenderCommand
+class HAZEL_API RenderCommand
 {
   public:
     inline static void Init() { Get()->Init(); }

@@ -16,6 +16,7 @@ end
 if is_plat("windows") then
     add_requires("opengl")
     add_packages("opengl")
+    add_defines("_MSVC_LANG=201402L")
 end
 
 includes("./src")

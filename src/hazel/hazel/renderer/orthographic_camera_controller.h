@@ -5,6 +5,7 @@
 #ifndef HAZEL_ORTHOGRAPHIC_CAMERA_CONTROLLER_H
 #define HAZEL_ORTHOGRAPHIC_CAMERA_CONTROLLER_H
 
+#include "hazel/__microshit_api_hazel.h"
 
 #include "hazel/core/timestep.h"
 #include "hazel/renderer/orthographic_camera.h"
@@ -17,7 +18,7 @@ namespace hazel {
 
 class OrthographicsCamera;
 
-class OrthographicsCameraController
+class HAZEL_API OrthographicsCameraController
 {
   public:
     OrthographicsCameraController(float aspect_ratio, bool rotation);
