@@ -21,24 +21,25 @@ class OpenGLShader : public Shader
     void Bind() const override;
     void Unbind() const override;
 
-    const std::string GetName() const override { return m_Name; }
+    [[nodiscard]] const std::string &GetName() const override { return m_Name; }
 
   public:
-    void SetInt(const std::string name, const int32_t value) override;
-    void SetFloat3(const std::string name, const glm::vec3 &values) override;
-    void SetFloat4(const std::string name, const glm::vec4 &float4) override;
-    void SetMat4(const std::string name, const glm::mat4 &matrix) override;
+    void SetInt(const std::string &name, const int32_t value) override;
+    void SetFloat(const std::string &name, const float value) override;
+    void SetFloat3(const std::string &name, const glm::vec3 &values) override;
+    void SetFloat4(const std::string &name, const glm::vec4 &float4) override;
+    void SetMat4(const std::string &name, const glm::mat4 &matrix) override;
 
 
   public:
-    void UploadUniformFloat(const std::string name, const float value);
-    void UploadUniformFloat2(const std::string name, const glm::vec2 &values);
-    void UploadUniformFloat3(const std::string name, const glm::vec3 &values);
-    void UploadUniformFloat4(const std::string name, const glm::vec4 &float4);
+    void UploadUniformFloat(const std::string &name, const float value);
+    void UploadUniformFloat2(const std::string &name, const glm::vec2 &values);
+    void UploadUniformFloat3(const std::string &name, const glm::vec3 &values);
+    void UploadUniformFloat4(const std::string &name, const glm::vec4 &float4);
 
-    void UploadUniformInt(const std::string name, const int32_t value);
+    void UploadUniformInt(const std::string &name, const int32_t value);
 
-    void UploadUniformMat4(const std::string name, const glm::mat4 &matrix);
+    void UploadUniformMat4(const std::string &name, const glm::mat4 &matrix);
 
   private:
     std::string                             ReadFile(const std::string &file_path);

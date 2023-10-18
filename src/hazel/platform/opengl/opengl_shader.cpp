@@ -14,13 +14,13 @@ namespace hazel {
 
 static const char *eol_flag =
 #if _WIN32
-    "\r\n"
+    "\r\n";
 #elif __linux__
-    "\n"
+    "\n";
 #endif
-    ;
 
-static GLenum ShaderTypeFromString(const std::string &type)
+static GLenum
+ShaderTypeFromString(const std::string &type)
 {
     if (type == "vertex")
         return GL_VERTEX_SHADER;
@@ -33,7 +33,7 @@ static GLenum ShaderTypeFromString(const std::string &type)
 
 OpenGLShader::OpenGLShader(const std::string &shader_file_path)
 {
-    HZ_PROFILE_FUNCTION();;
+    HZ_PROFILE_FUNCTION();
 
     m_ShaderID                 = 0;
     std::string source         = ReadFile(shader_file_path);
@@ -46,7 +46,8 @@ OpenGLShader::OpenGLShader(const std::string &shader_file_path)
 
 OpenGLShader::OpenGLShader(const std::string &name, const std::string &vert_src, const std::string &frag_src)
 {
-    HZ_PROFILE_FUNCTION();;
+    HZ_PROFILE_FUNCTION();
+    ;
 
     m_ShaderID = 0;
 
@@ -67,29 +68,29 @@ void OpenGLShader::Unbind() const
     glUseProgram(0);
 }
 
-void OpenGLShader::UploadUniformMat4(const std::string name, const glm::mat4 &matrix)
+void OpenGLShader::UploadUniformMat4(const std::string &name, const glm::mat4 &matrix)
 {
     // transpose: A^t
     glUniformMatrix4fv(glGetUniformLocation(m_ShaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
-void OpenGLShader::UploadUniformFloat4(const std::string name, const glm::vec4 &float4)
+void OpenGLShader::UploadUniformFloat4(const std::string &name, const glm::vec4 &float4)
 {
     //    glUniform4fv(glGetUniformLocation(m_ShaderID, name.c_str()), 1, glm::value_ptr(float4));
     glUniform4f(glGetUniformLocation(m_ShaderID, name.c_str()), float4.x, float4.y, float4.z, float4.z);
 }
-void OpenGLShader::UploadUniformFloat(const std::string name, const float value)
+void OpenGLShader::UploadUniformFloat(const std::string &name, const float value)
 {
     glUniform1f(glGetUniformLocation(m_ShaderID, name.c_str()), value);
 }
-void OpenGLShader::UploadUniformFloat2(const std::string name, const glm::vec2 &values)
+void OpenGLShader::UploadUniformFloat2(const std::string &name, const glm::vec2 &values)
 {
     glUniform2f(glGetUniformLocation(m_ShaderID, name.c_str()), values.x, values.y);
 }
-void OpenGLShader::UploadUniformFloat3(const std::string name, const glm::vec3 &values)
+void OpenGLShader::UploadUniformFloat3(const std::string &name, const glm::vec3 &values)
 {
     GL_CALL(glUniform3f(glGetUniformLocation(m_ShaderID, name.c_str()), values.x, values.y, values.z));
 }
-void OpenGLShader::UploadUniformInt(const std::string name, const int32_t value)
+void OpenGLShader::UploadUniformInt(const std::string &name, const int32_t value)
 {
     // GL_CALL(
     glUniform1i(glGetUniformLocation(m_ShaderID, name.c_str()), value) /*)*/;
@@ -97,7 +98,7 @@ void OpenGLShader::UploadUniformInt(const std::string name, const int32_t value)
 
 std::string OpenGLShader::ReadFile(const std::string &shader_file_path)
 {
-    HZ_PROFILE_FUNCTION();;
+    HZ_PROFILE_FUNCTION();
 
     std::string   result;
     std::ifstream file(shader_file_path, std::ios::in | std::ios::binary);
@@ -125,7 +126,7 @@ std::string OpenGLShader::ReadFile(const std::string &shader_file_path)
 
 std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string &source)
 {
-    HZ_PROFILE_FUNCTION();;
+    HZ_PROFILE_FUNCTION();
 
     std::unordered_map<GLenum, std::string> shader_sources;
 
@@ -138,7 +139,7 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 
         // get the type string
         size_t eol = source.find_first_of(eol_flag, pos);
-        HZ_CORE_ASSERT(eol != std::string::npos, "Syntax error");
+        HZ_CORE_ASSERT(eol != std::string ::npos, "Syntax error");
         size_t      begin = pos + type_token_len + 1;
         std::string type  = source.substr(begin, eol - begin);
 
@@ -151,7 +152,7 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 
         shader_sources[shader_type] =
             source.substr(next_line_pos,
-                          pos - (next_line_pos == std::string::npos ? source.size() - 1 : next_line_pos));
+                          pos - (next_line_pos == std::string ::npos ? source.size() - 1 : next_line_pos));
     }
 
     return shader_sources;
@@ -159,7 +160,7 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 
 void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader_sources)
 {
-    HZ_PROFILE_FUNCTION();;
+    HZ_PROFILE_FUNCTION();
 
     GLuint program;
     GL_CALL(program = glCreateProgram());
@@ -230,21 +231,26 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader
     m_ShaderID = program;
 }
 
-void OpenGLShader::SetInt(const std::string name, const int32_t value)
+void OpenGLShader::SetInt(const std::string &name, const int32_t value)
 {
     UploadUniformInt(name, value);
 }
-void OpenGLShader::SetFloat3(const std::string name, const glm::vec3 &values)
+void OpenGLShader::SetFloat3(const std::string &name, const glm::vec3 &values)
 {
     UploadUniformFloat3(name, values);
 }
-void OpenGLShader::SetFloat4(const std::string name, const glm::vec4 &float4)
+void OpenGLShader::SetFloat4(const std::string &name, const glm::vec4 &float4)
 {
     UploadUniformFloat4(name, float4);
 }
-void OpenGLShader::SetMat4(const std::string name, const glm::mat4 &matrix)
+void OpenGLShader::SetMat4(const std::string &name, const glm::mat4 &matrix)
 {
     UploadUniformMat4(name, matrix);
+}
+
+void OpenGLShader::SetFloat(const std::string &name, const float value)
+{
+    UploadUniformFloat(name, value);
 }
 
 
