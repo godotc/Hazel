@@ -1,0 +1,4 @@
+[submodule "src/hazel/pkgs/imgui"]
+	path = src/hazel/pkgs/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
