@@ -13,9 +13,8 @@ target("hazel")
     add_includedirs(".")
     add_includedirs("./hazel")
 
-    add_packages("spdlog")
-    add_packages("glfw")
-    add_packages("imgui")
+    add_packages("spdlog","glfw")
+
 
 
     if is_os("windows") then

@@ -8,8 +8,8 @@
 #include "glm/glm.hpp"
 #include "orthographic_camera.h"
 #include "shader.h"
-#include "vertex_array.h"
 #include "texture.h"
+#include "vertex_array.h"
 
 #include "hazel/__microshit_api_hazel.h"
 
@@ -19,8 +19,8 @@ namespace hazel {
 
 struct Render2dStorage {
     Ref<VertexArray> QuadVertexArray;
-    Ref<Shader>      FlatColorShader;
     Ref<Shader>      TextureShader;
+    Ref<Texture2D>   WhileTexture;
 };
 
 static Render2dStorage *s_Render2D_Data;
