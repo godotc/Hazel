@@ -37,6 +37,9 @@ LinuxWindow::~LinuxWindow()
 
 void LinuxWindow::Init(const WindowProps &props)
 {
+
+    HZ_PROFILE_FUNCTION();
+
     m_Data.Title  = props.Title;
     m_Data.Width  = props.Width;
     m_Data.Height = props.Height;
@@ -44,18 +47,26 @@ void LinuxWindow::Init(const WindowProps &props)
     HZ_CORE_INFO("Creating Window \"{}\" [{}, {}]", props.Title, props.Width, props.Height);
 
     if (!bGLFWInitialized) {
-        int bSuccess = glfwInit();
-        HZ_CORE_ASSERT(GLFW_FALSE != bSuccess, "Could not initialize GLFW!");
-        bGLFWInitialized = true;
+
+        {
+            HZ_PROFILE_SCOPE("Load GLAD");
+            int bSuccess = glfwInit();
+            HZ_CORE_ASSERT(GLFW_FALSE != bSuccess, "Could not initialize GLFW!");
+            bGLFWInitialized = true;
+        }
     }
 
-    m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(m_Window);
+    {
+        HZ_PROFILE_SCOPE("Create/Init GLFW Contex");
+        m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
+        glfwMakeContextCurrent(m_Window);
 
-    Window::m_Context = new hazel::OpenGLContext(m_Window);
-    Window::m_Context->Init();
+        Window::m_Context = new hazel::OpenGLContext(m_Window);
+        Window::m_Context->Init();
 
-    glfwSetWindowUserPointer(m_Window, &m_Data);
+        glfwSetWindowUserPointer(m_Window, &m_Data);
+    }
+
 
     //    DebugGLVerbose();
     initCallbacks();
@@ -65,17 +76,26 @@ void LinuxWindow::Init(const WindowProps &props)
 
 void LinuxWindow::ShutDown()
 {
+    HZ_PROFILE_FUNCTION();
+    ;
+
     glfwDestroyWindow(m_Window);
 }
 
 void LinuxWindow::OnUpdate()
 {
+    HZ_PROFILE_FUNCTION();
+    ;
+
     glfwPollEvents();
     m_Context->SwapBuffers();
 }
 
 void LinuxWindow::SetVSync(bool bEnable)
 {
+    HZ_PROFILE_FUNCTION();
+    ;
+
     glfwSwapInterval(bEnable ? 1 : 0);
     m_Data.bVSync = bEnable;
 }
@@ -90,6 +110,8 @@ unsigned int LinuxWindow::GetHeight() const { return m_Data.Height; }
 
 void LinuxWindow::initCallbacks()
 {
+    HZ_PROFILE_FUNCTION();
+
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *win, int w, int h) {
         if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
             data->Width  = w;

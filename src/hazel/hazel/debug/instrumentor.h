@@ -33,12 +33,12 @@
     #define HZ_PROFILE_SESSION_BEGIN(session_name, filepath) ::hazel::Instrumentor::Get().BeginSession(session_name, filepath)
     #define HZ_PROFILE_SESSION_END() ::hazel::Instrumentor::Get().EndSession()
     #define HZ_PROFILE_SCOPE(name) ::hazel::InstrumentationTimer timer##__LINE__(name)
-    #define HZ_PROFILE_FUNCTION() ::hazel::PROFILE_SCOPE(THE_PRETTY_FUNCTION)
+    #define HZ_PROFILE_FUNCTION() HZ_PROFILE_SCOPE(THE_PRETTY_FUNCTION)
 #else
     #define HZ_PROFILE_SESSION_BEGIN(session_name, filepath)
     #define HZ_PROFILE_SESSION_END()
     #define HZ_PROFILE_SCOPE(name)
-    #define HZ_PROFILE_FUNCTION()
+    #define HZ_PROFILE_FUNCTION() ;
 #endif
 
 namespace hazel {
@@ -58,7 +58,8 @@ class Instrumentor
 {
     InstrumentationSession *m_CurrentSession = nullptr;
     std::ofstream           m_OutputStream;
-    int                     m_ProfileCount = 0;
+
+    size_t m_ProfileCount = 0;
 
   public:
     Instrumentor() = default;

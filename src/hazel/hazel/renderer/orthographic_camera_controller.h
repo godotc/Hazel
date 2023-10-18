@@ -34,7 +34,7 @@ class HAZEL_API OrthographicsCameraController
 
 
   private:
-    bool OnMouseScrooled(MouseScrolledEvent &ev);
+    bool OnMouseScrolled(MouseScrolledEvent &ev);
     bool OnWindowResized(WindowResizeEvent &ev);
 
     void ResetCmaeraProjection();

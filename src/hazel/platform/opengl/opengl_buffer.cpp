@@ -11,6 +11,8 @@ namespace hazel {
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices, uint32_t size)
 {
+    HZ_PROFILE_FUNCTION();
+
     glGenBuffers(1, &m_BufferID);
     glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -31,6 +33,8 @@ void OpenGLVertexBuffer::Unbind()
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t *indices, uint32_t count)
 {
+    HZ_PROFILE_FUNCTION();
+
     m_Count = count;
     glGenBuffers(1, &m_BufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_BufferID);

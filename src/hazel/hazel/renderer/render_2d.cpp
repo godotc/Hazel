@@ -17,6 +17,8 @@ namespace hazel {
 
 void Render2D::Init()
 {
+    HZ_PROFILE_FUNCTION();
+
     s_Render2D_Data                  = new Render2dStorage;
     s_Render2D_Data->QuadVertexArray = VertexArray::Create();
 
@@ -61,28 +63,32 @@ void Render2D::Init()
 
 void Render2D::Shutdown()
 {
+    HZ_PROFILE_FUNCTION();
     delete s_Render2D_Data;
 }
 
 void Render2D::BeginScene(const OrthographicsCamera &camera)
 {
+    HZ_PROFILE_FUNCTION();
+
     s_Render2D_Data->TextureShader->Bind();
     s_Render2D_Data->TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 }
 
 void Render2D::EndScene()
 {
+    HZ_PROFILE_FUNCTION();
 }
 
 void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color)
 {
+    HZ_PROFILE_FUNCTION();
+
     auto &shader = s_Render2D_Data->TextureShader;
     shader->SetFloat4("u_Color", color);
 
     // bind white texture
     s_Render2D_Data->WhileTexture->Bind(0);
-
-
 
     glm::mat4 transform(1.f);
     transform = glm::translate(transform, pos);
@@ -95,11 +101,14 @@ void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::
 
 void Render2D::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color)
 {
+
     DrawQuad({pos.x, pos.y, 0.f}, size, color);
 }
 
 void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<Texture2D> &texture)
 {
+    HZ_PROFILE_FUNCTION();
+
     auto &shader = s_Render2D_Data->TextureShader;
     shader->SetFloat4("u_Color", {1, 1, 1, 1}); // tint
     texture->Bind();

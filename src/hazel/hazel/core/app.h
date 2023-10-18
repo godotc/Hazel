@@ -1,18 +1,18 @@
 #pragma once
 #include "core.h"
 
-#include "window.h"
 #include "hazel/imgui/imgui_layer.h"
 #include "layer_stack.h"
+#include "window.h"
 
+#include "hazel/event/application_event.h"
 #include "hazel/event/event.h"
 #include "hazel/event/key_event.h"
-#include "hazel/event/application_event.h"
 
 
 #include "hazel/renderer/buffer.h"
-#include "hazel/renderer/vertex_array.h"
 #include "hazel/renderer/shader.h"
+#include "hazel/renderer/vertex_array.h"
 
 #include "hazel/core/timestep.h"
 #include "hazel/renderer/orthographic_camera.h"
@@ -35,6 +35,9 @@ class HAZEL_API App
   public:
     void PushLayer(Layer *layer);
     void PopLayer(Layer *layer);
+
+    void PushOverlay(Layer *layer);
+    void PopOverlay(Layer *layer);
 
     inline Window &GetWindow() { return *m_Window; }
 

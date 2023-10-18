@@ -34,13 +34,10 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         hazel::RenderCommand::Clear();
     }
 
-    {
-        HZ_PROFILE_SCOPE("Camera::OnUpdate");
-        m_CameraController.OnUpdate(timestep);
-    }
+    m_CameraController.OnUpdate(timestep);
 
     {
-        HZ_PROFILE_SCOPE("Renderer Drawcalls");
+        HZ_PROFILE_SCOPE("Renderer Draw-Calls");
         hazel::Render2D::BeginScene(m_CameraController.GetCamera());
 
         hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{0, 0, 0.1}, {2, 2}, m_FlatColor);

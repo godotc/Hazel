@@ -19,6 +19,7 @@ OrthographicsCameraController::OrthographicsCameraController(float aspect_ratio,
 
 void OrthographicsCameraController::OnUpdate(Timestep dt)
 {
+    HZ_PROFILE_FUNCTION();
         if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
         if (hazel::Input::IsKeyPressed(HZ_KEY_D)) m_CameraPosition.x += m_CameraTranslationSpeed * dt;
         if (hazel::Input::IsKeyPressed(HZ_KEY_W)) m_CameraPosition.y += m_CameraTranslationSpeed * dt;
@@ -55,12 +56,15 @@ void OrthographicsCameraController::OnUpdate(Timestep dt)
 }
 void OrthographicsCameraController::OnEvent(Event &ev)
 {
+    HZ_PROFILE_FUNCTION();
+
     EventDispatcher dispatcher(ev);
-    dispatcher.Dispatch<MouseScrolledEvent>(HZ_BIND_EVENT(this, &OrthographicsCameraController::OnMouseScrooled));
+    dispatcher.Dispatch<MouseScrolledEvent>(HZ_BIND_EVENT(this, &OrthographicsCameraController::OnMouseScrolled));
     dispatcher.Dispatch<WindowResizeEvent>(HZ_BIND_EVENT(this, &OrthographicsCameraController::OnWindowResized));
 }
-bool OrthographicsCameraController::OnMouseScrooled(MouseScrolledEvent &ev)
+bool OrthographicsCameraController::OnMouseScrolled(MouseScrolledEvent &ev)
 {
+    HZ_PROFILE_FUNCTION();
     m_ZoomLevel -= ev.GetOffsetY();
     m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
     ResetCmaeraProjection();
@@ -68,6 +72,8 @@ bool OrthographicsCameraController::OnMouseScrooled(MouseScrolledEvent &ev)
 }
 bool OrthographicsCameraController::OnWindowResized(WindowResizeEvent &ev)
 {
+    HZ_PROFILE_FUNCTION();
+
     // TODO: Optimizing the zoom operation
     m_AspectRatio = ev.GetWidth() / (float)ev.GetHeight();
     ResetCmaeraProjection();

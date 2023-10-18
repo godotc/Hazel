@@ -2,8 +2,8 @@
 // Created by nono on 9/20/23.
 //
 
-#include "render.h"
 #include "vertex_array.h"
+#include "render.h"
 
 #include "hazel/hazel/core/log.h"
 #include "platform/opengl/opengl_vertex_array.h"

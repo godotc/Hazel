@@ -27,6 +27,8 @@ ImGuiLayer::ImGuiLayer() : Layer("ImGuILayer") {}
 
 void ImGuiLayer::OnAttach()
 {
+    HZ_PROFILE_FUNCTION();
+
     HZ_CORE_TRACE("{} Attacting...", GetName());
 
     IMGUI_CHECKVERSION();
@@ -75,6 +77,8 @@ void ImGuiLayer::OnAttach()
 
 void ImGuiLayer::OnDetach()
 {
+    HZ_PROFILE_FUNCTION();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -82,6 +86,8 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::Begin()
 {
+    HZ_PROFILE_FUNCTION();
+
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
@@ -89,6 +95,8 @@ void ImGuiLayer::Begin()
 
 void ImGuiLayer::End()
 {
+    HZ_PROFILE_FUNCTION();
+
     auto io        = ImGui::GetIO();
     App &app       = App::Get();
     io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
@@ -110,6 +118,7 @@ void ImGuiLayer::End()
         glfwMakeContextCurrent(backup_current_context);
     }
 }
+
 void ImGuiLayer::OnImGuiRender()
 {
 }

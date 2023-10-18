@@ -19,8 +19,8 @@ void Instrumentor::BeginSession(const std::string &name, const std::string &file
 
     m_OutputStream.open(filepath, std::ios::trunc);
     HZ_CORE_ASSERT(m_OutputStream.is_open() && !m_OutputStream.fail(), "Opening result file failed");
-    WriteHeader();
     m_CurrentSession = new InstrumentationSession{name};
+    WriteHeader();
 }
 void Instrumentor::EndSession()
 {
@@ -33,8 +33,9 @@ void Instrumentor::EndSession()
 
 void Instrumentor::WriteProfile(const ProfileResult &result)
 {
-    if (m_ProfileCount++ > 0)
+    if (m_ProfileCount++ > 0) {
         m_OutputStream << ",";
+    }
 
     std::string name = result.Name;
     std::replace(name.begin(), name.end(), '"', '\'');

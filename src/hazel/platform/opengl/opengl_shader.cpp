@@ -33,6 +33,8 @@ static GLenum ShaderTypeFromString(const std::string &type)
 
 OpenGLShader::OpenGLShader(const std::string &shader_file_path)
 {
+    HZ_PROFILE_FUNCTION();;
+
     m_ShaderID                 = 0;
     std::string source         = ReadFile(shader_file_path);
     auto        shader_sources = PreProcess(source);
@@ -44,6 +46,8 @@ OpenGLShader::OpenGLShader(const std::string &shader_file_path)
 
 OpenGLShader::OpenGLShader(const std::string &name, const std::string &vert_src, const std::string &frag_src)
 {
+    HZ_PROFILE_FUNCTION();;
+
     m_ShaderID = 0;
 
     Compile(
@@ -93,6 +97,8 @@ void OpenGLShader::UploadUniformInt(const std::string name, const int32_t value)
 
 std::string OpenGLShader::ReadFile(const std::string &shader_file_path)
 {
+    HZ_PROFILE_FUNCTION();;
+
     std::string   result;
     std::ifstream file(shader_file_path, std::ios::in | std::ios::binary);
     if (!file.is_open() || file.bad() || file.fail()) {
@@ -119,6 +125,8 @@ std::string OpenGLShader::ReadFile(const std::string &shader_file_path)
 
 std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string &source)
 {
+    HZ_PROFILE_FUNCTION();;
+
     std::unordered_map<GLenum, std::string> shader_sources;
 
     const char  *type_token     = "#type";
@@ -150,8 +158,9 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 }
 
 void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader_sources)
-
 {
+    HZ_PROFILE_FUNCTION();;
+
     GLuint program;
     GL_CALL(program = glCreateProgram());
     HZ_CORE_ASSERT((shader_sources.size() <= 2), "Only 2 shaders for now");

@@ -17,13 +17,11 @@ void LayerStack ::PushLayer(Layer *layer)
 {
     m_Layers.emplace(m_Layers.begin() + m_LayerIndex, layer);
     ++m_LayerIndex;
-    layer->OnAttach();
 }
 
 void LayerStack ::PushOverlay(Layer *overlay)
 {
     m_Layers.emplace_back(overlay);
-    overlay->OnAttach();
 }
 
 void LayerStack ::PophLayer(Layer *layer)

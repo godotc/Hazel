@@ -100,7 +100,7 @@ path find_directory_by_file_symbol(path &initial_pos, std::string target_symbol)
 {
     // to parent
     if (!initial_pos.empty()) {
-        if (is_dir_contain_file_symbol(initial_pos, target_symbol)) {
+        if (is_directory(initial_pos) && is_dir_contain_file_symbol(initial_pos, target_symbol)) {
             return initial_pos;
         }
 
@@ -125,9 +125,9 @@ const std::filesystem::path &ProjectRoot()
     if (!bInitialized) {
         path exe_path = get_runtime_exe_path();
 
-        if (exe_path.empty() || !exe_path.has_parent_path() ||
+        if (exe_path.empty() || !exe_path.has_parent_path()
 #if _WIN32
-            exe_path.extension() != ".exe" // not work on linux
+            || exe_path.extension() != ".exe" // not work on linux
 #endif
         )
         {

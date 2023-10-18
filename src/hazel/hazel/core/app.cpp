@@ -25,6 +25,8 @@ App *App::Application = nullptr;
 
 App::App()
 {
+    HZ_PROFILE_FUNCTION();
+
     HZ_INFO("App construct");
     HZ_CORE_ASSERT(!Application, "Already a application instance");
     Application = this;
@@ -37,48 +39,83 @@ App::App()
     Render2D::Init();
 
     m_ImGuiLayer = new ImGuiLayer();
-    m_LayerStack.PushOverlay(m_ImGuiLayer);
+    PushOverlay(m_ImGuiLayer);
 }
 
 void App::Run()
 {
+    HZ_PROFILE_FUNCTION();
+
     while (bRunning)
     {
+        HZ_PROFILE_SCOPE("Main Loop");
+
         float    time     = (float)glfwGetTime();
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime   = time;
 
         if (!bMinimized) {
-            for (Layer *layer : m_LayerStack.GetLayers()) {
-                layer->OnUpdate(timestep);
+
+            {
+                HZ_PROFILE_SCOPE("LayerStack: All Layers OnUpdate");
+                for (Layer *layer : m_LayerStack.GetLayers()) {
+                    layer->OnUpdate(timestep);
+                }
+            }
+
+            {
+                m_ImGuiLayer->Begin();
+                {
+                    HZ_PROFILE_SCOPE("LayerStack: Imgui Render");
+                    for (Layer *layer : m_LayerStack.GetLayers())
+                        layer->OnImGuiRender();
+                }
+                m_ImGuiLayer->End();
             }
         }
 
-        // clang-format off
-        m_ImGuiLayer->Begin();
-        for (Layer *layer : m_LayerStack.GetLayers()) layer->OnImGuiRender();
-        m_ImGuiLayer->End();
-        // clang-format on
 
         m_Window->OnUpdate();
     }
 
-    for (auto layer : m_LayerStack.GetLayers()) {
-        layer->OnDetach();
+    {
+        HZ_PROFILE_SCOPE("LayerStack: all OnDetach");
+        for (auto layer : m_LayerStack.GetLayers()) {
+            layer->OnDetach();
+        }
     }
 }
+
 void App::PushLayer(Layer *layer)
 {
+    HZ_PROFILE_FUNCTION();
     m_LayerStack.PushLayer(layer);
+    layer->OnAttach();
 }
 
 void App::PopLayer(Layer *layer)
 {
+    HZ_PROFILE_FUNCTION();
     m_LayerStack.PophLayer(layer);
 }
 
+void App::PushOverlay(Layer *layer)
+{
+    HZ_PROFILE_FUNCTION();
+    m_LayerStack.PushOverlay(layer);
+    layer->OnAttach();
+}
+void App::PopOverlay(Layer *layer)
+{
+    HZ_PROFILE_FUNCTION();
+    m_LayerStack.PophOverlay(layer);
+}
+
+
 void App::OnEvent(Event &ev)
 {
+    HZ_PROFILE_FUNCTION();
+
     if (!ev.IsInCategory(EventCategoryInput)) {
         HZ_CORE_INFO(ev.to_string());
     }
@@ -112,6 +149,8 @@ bool App::OnWindowClose(WindowCloseEvent &ev)
 }
 bool App::OnWindowResized(WindowResizeEvent &ev)
 {
+    HZ_PROFILE_FUNCTION();
+
     // NOTICE: on window minimize will be (0, 0)
     if (ev.GetHeight() == 0 || ev.GetHeight() == 0) {
         bMinimized = true;
