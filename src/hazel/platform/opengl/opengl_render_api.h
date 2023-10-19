@@ -18,7 +18,7 @@ class OpenGLRenderAPI : public RendererAPI
 
     void SetViewPort(uint32_t x, uint32_t y, uint32_t w, uint32_t h) override;
 
-    void DrawIndexed(const Ref<VertexArray> &vertex_array) override;
+    void DrawIndexed(const Ref<VertexArray> &vertex_array, uint32_t index_count) override;
 };
 
 } // namespace hazel

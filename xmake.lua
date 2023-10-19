@@ -5,6 +5,8 @@ set_languages("c++20")
 
 set_targetdir("bin/$(plat)/$(mode)/$(arch)/")
 
+-- set_symbols("debug")
+
 if is_mode("debug") then
     add_defines("__HZ_DEBUG")
 end

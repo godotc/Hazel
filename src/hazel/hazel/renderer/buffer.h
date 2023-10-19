@@ -5,6 +5,7 @@
 #ifndef HAZEL_BUFFER_H
 #define HAZEL_BUFFER_H
 
+#include <cstdint>
 #include <utility>
 #include <vector>
 
@@ -120,9 +121,13 @@ class VertexBuffer
     virtual void          SetLayout(const BufferLayout &layout) = 0;
     virtual BufferLayout &GetLayout()                           = 0;
 
-    static VertexBuffer *Create(float *vertices, uint32_t size);
+    static Ref<VertexBuffer> Create(float *vertices, uint32_t size);
+    static Ref<VertexBuffer> Create(uint32_t size);
+
+    virtual void SetData(void *data, uint32_t size) = 0;
 };
 
+// 32bit currently
 class IndexBuffer
 {
   public:
@@ -133,7 +138,7 @@ class IndexBuffer
 
     [[nodiscard]] virtual uint32_t GetCount() const { return m_Count; };
 
-    static IndexBuffer *Create(uint32_t *indeices, uint32_t count);
+    static Ref<IndexBuffer> Create(uint32_t *indices, uint32_t count);
 
     uint32_t m_Count;
 };

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CLionExternalBuildManager">
-    <target id="ccc16fab-0a3f-41fa-81d1-5a4a5ccd218d" name="xmake-build" defaultType="TOOL">
-      <configuration id="3df139fc-7070-49de-99bc-dc8e65c7d3c2" name="xmake-build">
-        <build type="TOOL">
-          <tool actionId="Tool_External Tools_xmake-build" />
-        </build>
-        <clean type="TOOL">
-          <tool actionId="Tool_External Tools_xmake-clean" />
-        </clean>
-      </configuration>
-    </target>
-  </component>
+    <component name="CLionExternalBuildManager">
+        <target id="ccc16fab-0a3f-41fa-81d1-5a4a5ccd218d" name="xmake-build" defaultType="TOOL">
+            <configuration id="3df139fc-7070-49de-99bc-dc8e65c7d3c2" name="xmake-build" toolchainName="Default">
+                <build type="TOOL">
+                    <tool actionId="Tool_External Tools_xmake-build"/>
+                </build>
+                <clean type="TOOL">
+                    <tool actionId="Tool_External Tools_xmake-clean"/>
+                </clean>
+            </configuration>
+        </target>
+    </component>
 </project>

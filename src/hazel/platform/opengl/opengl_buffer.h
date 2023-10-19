@@ -14,10 +14,13 @@ class OpenGLVertexBuffer : public VertexBuffer
 {
   public:
     OpenGLVertexBuffer(float *vertices, uint32_t size);
+    OpenGLVertexBuffer(uint32_t size);
     ~OpenGLVertexBuffer() override;
 
     inline void          SetLayout(const hazel::BufferLayout &layout) override { m_Layout = layout; }
     inline BufferLayout &GetLayout() override { return m_Layout; }
+
+    void SetData(void *data, uint32_t size) override;
 
 
     void Bind() override;

@@ -32,14 +32,13 @@ const UTILS_API std::filesystem::path &ProjectRoot();
 
 namespace impl {
 struct UTILS_API FPathImpl {
-    FPathImpl(const char *the_path)
+    explicit FPathImpl(const char *the_path)
     {
-//        HZ_PROFILE_FUNCTION();
+        //        HZ_PROFILE_FUNCTION();
         absolute_path = ProjectRoot() / the_path;
     }
 
     operator const char *() const { return absolute_path.string().c_str(); }
-    operator const char *&&() const { return std::move(absolute_path).string().c_str(); }
 
     [[nodiscard]] operator std::string() const { return absolute_path.string(); }
     //    const std::string &string() const { return absolute_path; }

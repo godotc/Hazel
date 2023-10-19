@@ -5,11 +5,8 @@
 #ifndef HAZEL_RENDER_2_D_H
 #define HAZEL_RENDER_2_D_H
 
-#include "glm/glm.hpp"
 #include "orthographic_camera.h"
-#include "shader.h"
 #include "texture.h"
-#include "vertex_array.h"
 
 #include "hazel/__microshit_api_hazel.h"
 
@@ -17,13 +14,6 @@
 namespace hazel {
 
 
-struct Render2dStorage {
-    Ref<VertexArray> QuadVertexArray;
-    Ref<Shader>      TextureShader;
-    Ref<Texture2D>   WhileTexture;
-};
-
-static Render2dStorage *s_Render2D_Data;
 
 class HAZEL_API Render2D
 {
@@ -34,8 +24,8 @@ class HAZEL_API Render2D
 
     static void BeginScene(const OrthographicsCamera &camera);
     static void EndScene();
+    static void Flush();
 
-    // TODO: tint
 
     static void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color);
     static void DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color);

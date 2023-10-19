@@ -6,6 +6,7 @@
 #include "glad/glad.h"
 #include "hazel/renderer/buffer.h"
 #include "opengl_render_api.h"
+#include <cstdint>
 
 namespace hazel {
 
@@ -27,10 +28,15 @@ void OpenGLRenderAPI::Clear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray> &vertex_array)
+
+void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray> &vertex_array, uint32_t index_count)
 {
-    glDrawElements(GL_TRIANGLES, (GLsizei)vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    uint32_t count = index_count ? index_count : vertex_array->GetIndexBuffer()->GetCount();
+    glDrawElements(GL_TRIANGLES, (GLsizei)count, GL_UNSIGNED_INT, nullptr);
+    // FIXME:
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
+
 void OpenGLRenderAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     glViewport(x, y, w, h);
