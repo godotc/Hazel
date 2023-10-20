@@ -20,7 +20,7 @@ class Sandbox : public hazel::App
     Sandbox()
     {
         HZ_INFO("Sandbox construct");
-        //        PushLayer(new hazel::ExampleLayer);
+        // PushLayer(new hazel::ExampleLayer);
         PushLayer(new Sandbox2D());
         GetWindow().SetVSync(true);
     }

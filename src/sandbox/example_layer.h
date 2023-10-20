@@ -33,14 +33,14 @@ class ExampleLayer : public hazel::Layer
         Ref<IndexBuffer>  m_IndexBuffer;
         {
             // VB
-            m_VertexBuffer.reset(VertexBuffer::Create((float *)vertices, sizeof(vertices)));
+            m_VertexBuffer = VertexBuffer::Create((float *)vertices, sizeof(vertices));
             // Layout
             m_VertexBuffer->SetLayout({
                 {ShaderDataType::Float3, "a_Position"},
                 {ShaderDataType::Float2, "a_TexCoord"},
             });
             // IB
-            m_IndexBuffer.reset(IndexBuffer::Create((uint32_t *)indices, sizeof(indices) / sizeof(uint32_t)));
+            m_IndexBuffer = IndexBuffer::Create((uint32_t *)indices, sizeof(indices) / sizeof(uint32_t));
         }
         m_VertexArray->AddVertexBuffer(m_VertexBuffer);
         m_VertexArray->SetIndexBuffer(m_IndexBuffer);

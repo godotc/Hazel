@@ -5,7 +5,7 @@
 #ifndef HAZEL_VERTEX_ARRAY_H
 #define HAZEL_VERTEX_ARRAY_H
 
-#include "hazel/hazel/core/core.h"
+#include "hazel/core/core.h"
 
 #include <memory>
 

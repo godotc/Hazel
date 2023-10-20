@@ -17,10 +17,27 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices, uint32_t size)
     glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
+
+OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+{
+    HZ_PROFILE_FUNCTION();
+
+    glGenBuffers(1, &m_BufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
+    glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+}
+
 OpenGLVertexBuffer::~OpenGLVertexBuffer()
 {
     glDeleteBuffers(1, &m_BufferID);
 }
+
+void OpenGLVertexBuffer::SetData(void *data, uint32_t size)
+{
+    glad_glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+}
+
 void OpenGLVertexBuffer::Bind()
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);

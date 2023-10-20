@@ -41,7 +41,7 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         hazel::Render2D::BeginScene(m_CameraController.GetCamera());
 
         hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{0, 0, 0.1}, {2, 2}, m_FlatColor);
-        hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0.1}, {1, 1}, {1.f, 0.1f, 0.1f, 1.f});
+        hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0.1}, {1, 1}, {1.f, 1.1f, 1.1f, 1.f});
 
         hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{3, 3, 0}, {1, 1}, m_FaceTexture);
         hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(45.f), m_ArchTexture);
