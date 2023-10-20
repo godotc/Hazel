@@ -12,6 +12,7 @@
 
 #include <hazel/config/config.h>
 
+#include "__microshit_api_hazel.h"
 #include "hazel/core/core.h"
 
 
@@ -54,7 +55,7 @@ struct InstrumentationSession {
     std::string Name;
 };
 
-class Instrumentor
+class HAZEL_API Instrumentor
 {
     InstrumentationSession *m_CurrentSession = nullptr;
     std::ofstream           m_OutputStream;

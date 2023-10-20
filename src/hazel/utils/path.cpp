@@ -122,17 +122,23 @@ const std::filesystem::path &ProjectRoot()
 {
     static bool bInitialized = false;
     static path project_root;
-    if (!bInitialized) {
+
+
+    if (!bInitialized)
+    {
         path exe_path = get_runtime_exe_path();
 
-        if (exe_path.empty() || !exe_path.has_parent_path()
+
+
+        if (exe_path.empty())
+            if (!exe_path.has_parent_path())
 #if _WIN32
-            || exe_path.extension() != ".exe" // not work on linux
+                if (!std::filesystem::is_directory(exe_path))
 #endif
-        )
-        {
-            throw std::runtime_error("Failed to get runtime path");
-        }
+
+                {
+                    throw std::runtime_error("Failed to get runtime path");
+                }
 
         path project_root_dir = find_directory_by_file_symbol(exe_path, GetProjectRootSymbol());
         project_root          = std::filesystem::absolute(project_root_dir);

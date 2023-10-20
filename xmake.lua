@@ -17,6 +17,9 @@ elseif  is_plat("windows") then
     add_defines("_MSVC_LANG=202002L")
 end
 
+
+set_symbols("debug")
+
 includes("./src")
 
 

@@ -31,10 +31,13 @@ void ImGuiLayer::OnAttach()
 
     HZ_CORE_TRACE("{} Attacting...", GetName());
 
+
     IMGUI_CHECKVERSION();
     HZ_CORE_INFO("Imgui: v{}", IMGUI_VERSION);
 
-    ImGui::CreateContext();
+    auto ctx = ImGui::CreateContext();
+
+    ImGui::SetCurrentContext(ctx);
 
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -53,8 +56,13 @@ void ImGuiLayer::OnAttach()
     }
 
     if (auto *window = dynamic_cast<LinuxWindow *>(&App::Get().GetWindow())) {
-        bool bSuccess = ImGui_ImplGlfw_InitForOpenGL(any_cast<GLFWwindow *>(window->GetNativeWindow()), true);
-        HZ_CORE_ASSERT(bSuccess, "imgui glfw backend initialize failed");
+        if (auto *native_window = any_cast<GLFWwindow *>(window->GetNativeWindow())) {
+            bool bSuccess = ImGui_ImplGlfw_InitForOpenGL(native_window, true);
+            HZ_CORE_ASSERT(bSuccess, "imgui glfw backend initialize failed");
+        }
+    }
+    else {
+        HZ_CORE_ERROR("imgui glfw backend initialize failed");
     }
 
     // TODO: detect the host opengl version, call imgui init automatically
@@ -65,12 +73,6 @@ void ImGuiLayer::OnAttach()
     // HZ_CORE_INFO("Imgui detect the GL version: {}", glversion);
 
     bool bSuccess = ImGui_ImplOpenGL3_Init("#version 420");
-#if _WIN32
-    auto &app    = App::Get();
-    auto *window = std::any_cast<GLFWwindow *>(app.GetWindow().GetNativeWindow());
-    HZ_CORE_ASSERT(window, "Get native OpenGL Windows failed!");
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-#endif
 
     HZ_CORE_ASSERT(bSuccess, "imgui opengl3 backend initialize failed");
 }
