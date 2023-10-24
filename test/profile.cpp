@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <thread>

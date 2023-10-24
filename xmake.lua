@@ -25,6 +25,8 @@ set_symbols("debug")
 includes("./src")
 
 
+
+
 on_config(function () 
     print("-- Loading manual testting...")
     for _,file in ipairs(os.files("./test")) do
