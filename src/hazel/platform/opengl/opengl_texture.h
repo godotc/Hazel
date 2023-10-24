@@ -12,6 +12,12 @@ namespace hazel {
 
 class OpenGLTexture2D : public Texture2D
 {
+    std::string m_Path;
+    uint32_t    m_Width, m_Height;
+    uint32_t    m_TextureID      = {0};
+    GLenum      m_InternalFormat = {GL_RGBA8},
+           m_DataFormat          = {GL_RGBA};
+
   public:
     OpenGLTexture2D(uint32_t w, uint32_t h);
     OpenGLTexture2D(const std::string &path);
@@ -26,13 +32,10 @@ class OpenGLTexture2D : public Texture2D
     uint32_t GetWidth() const override { return m_Width; };
     uint32_t GetHeight() const override { return m_Height; }
 
-  private:
-    std::string m_Path;
-    uint32_t    m_Width, m_Height;
-    uint32_t    m_TextureID = {0};
-    GLenum
-        m_InternalFormat = {GL_RGBA8},
-        m_DataFormat     = {GL_RGBA};
+    virtual bool operator==(const Texture &other) const override
+    {
+        return m_TextureID == static_cast<const OpenGLTexture2D &>(other).m_TextureID;
+    }
 };
 
 } // namespace hazel

@@ -26,11 +26,12 @@ class Shader
     [[nodiscard]] virtual const std::string &GetName() const = 0;
 
   public:
-    virtual void SetInt(const std::string &name, int32_t value)              = 0;
-    virtual void SetFloat(const std::string &name, float value)              = 0;
-    virtual void SetFloat3(const std::string &name, const glm::vec3 &values) = 0;
-    virtual void SetFloat4(const std::string &name, const glm::vec4 &float4) = 0;
-    virtual void SetMat4(const std::string &name, const glm::mat4 &matrix)   = 0;
+    virtual void SetInt(const std::string &name, int32_t value)                       = 0;
+    virtual void SetIntArray(const std::string &name, int32_t *value, uint32_t count) = 0;
+    virtual void SetFloat(const std::string &name, float value)                       = 0;
+    virtual void SetFloat3(const std::string &name, const glm::vec3 &values)          = 0;
+    virtual void SetFloat4(const std::string &name, const glm::vec4 &float4)          = 0;
+    virtual void SetMat4(const std::string &name, const glm::mat4 &matrix)            = 0;
 
 
   private:

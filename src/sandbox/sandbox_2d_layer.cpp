@@ -5,7 +5,6 @@
 #include "hz_pch.h"
 
 #include "glm/gtc/type_ptr.hpp"
-#include "platform/opengl/opengl_shader.h"
 #include "sandbox_2d_layer.h"
 
 
@@ -46,7 +45,7 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{3, 3, 0}, {1, 1}, m_FaceTexture);
         hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(45.f), m_ArchTexture);
 
-        hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 100);
+        hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
         hazel::Render2D::EndScene();
     }
 }
