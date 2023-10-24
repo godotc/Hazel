@@ -1,5 +1,6 @@
 add_requires("spdlog")
 add_requires( "glfw", {configs={debug=true}})
+add_requires( "glad", {configs={debug=true}})
 
 add_packages("spdlog")
 
@@ -14,7 +15,7 @@ target("hazel")
     add_includedirs(".")
     add_includedirs("./hazel")
 
-    add_packages("spdlog","glfw")
+    add_packages("spdlog","glfw", "glad")
 
 
 

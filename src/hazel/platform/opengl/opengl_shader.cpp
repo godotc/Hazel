@@ -96,6 +96,11 @@ void OpenGLShader::UploadUniformInt(const std::string &name, const int32_t value
     glUniform1i(glGetUniformLocation(m_ShaderID, name.c_str()), value) /*)*/;
 }
 
+void OpenGLShader::UploadUniformIntArray(const std::string &name, const int32_t *value, uint32_t count)
+{
+    glUniform1iv(glad_glGetUniformLocation(m_ShaderID, name.c_str()), count, value);
+}
+
 std::string OpenGLShader::ReadFile(const std::string &shader_file_path)
 {
     HZ_PROFILE_FUNCTION();
@@ -150,9 +155,11 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
         size_t next_line_pos = source.find_first_not_of(eol_flag, eol);
         pos                  = source.find(type_token, next_line_pos);
 
-        shader_sources[shader_type] =
-            source.substr(next_line_pos,
-                          pos - (next_line_pos == std::string ::npos ? source.size() - 1 : next_line_pos));
+        auto codes = source.substr(next_line_pos, pos - (next_line_pos == std::string ::npos ? source.size() - 1 : next_line_pos));
+
+        auto [_, Ok] = shader_sources.insert({(unsigned int)shader_type, codes});
+        //        HZ_CORE_INFO("{} \n {}", _->first, _->second);
+        HZ_CORE_ASSERT(Ok, "Failed to insert this shader source");
     }
 
     return shader_sources;
@@ -164,7 +171,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader
 
     GLuint program;
     GL_CALL(program = glCreateProgram());
-    HZ_CORE_ASSERT((shader_sources.size() <= 2), "Only 2 shaders for now");
+    HZ_CORE_ASSERT((shader_sources.size() <= 2 && shader_sources.size() > 0), "Only 2 shaders for now/ 0 Shaders for compiling");
 
     // TODO: use array for fixed numbers of shaders
     std::vector<GLuint> shaders;
@@ -183,7 +190,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader
         GL_CALL(glGetShaderiv(shader_handle, GL_COMPILE_STATUS, &success));
         if (!success) {
             GLint max_len = {0};
-            GL_CALL(glGetShaderiv(shader_type, GL_INFO_LOG_LENGTH, &max_len));
+            glGetShaderiv(shader_type, GL_INFO_LOG_LENGTH, &max_len);
             std::vector<GLchar> log(max_len);
             GL_CALL(glGetShaderInfoLog(shader_handle, max_len, &max_len, log.data()));
 
@@ -235,6 +242,12 @@ void OpenGLShader::SetInt(const std::string &name, const int32_t value)
 {
     UploadUniformInt(name, value);
 }
+
+void OpenGLShader::SetIntArray(const std::string &name, int32_t *value, uint32_t count)
+{
+    UploadUniformIntArray(name, value, count);
+}
+
 void OpenGLShader::SetFloat3(const std::string &name, const glm::vec3 &values)
 {
     UploadUniformFloat3(name, values);

@@ -5,7 +5,7 @@ set_languages("c++20")
 
 set_targetdir("bin/$(plat)/$(mode)/$(arch)/")
 
--- set_symbols("debug")
+set_symbols("debug")
 
 if is_mode("debug") then
     add_defines("__HZ_DEBUG")
@@ -20,11 +20,9 @@ elseif  is_plat("windows") then
 end
 
 
+set_project("hazel")
 set_symbols("debug")
-
 includes("./src")
-
-
 
 
 on_config(function () 
@@ -34,7 +32,7 @@ on_config(function ()
         target_name = "test."..name
         print(target_name)
         target(target_name)
-            set_group("test")
+            set_group("tst")
             set_kind("binary")
             add_files(file)
         target_end()
@@ -61,7 +59,7 @@ task("cpcm")
         local cmds =
         {
             "xmake f -c",
-            "xmake f -m debug",
+            "xmake f -m debug ",--toolchain=llvm",
             "xmake project -k compile_commands",
         }
         for _, c in pairs(cmds) do
@@ -71,5 +69,14 @@ task("cpcm")
 
 
 
-
-
+task("targets")
+    set_menu{}
+        on_run(function()
+            for targetname, target in pairs(project.targets()) do
+                print(target:targetfile())
+            end
+    end)
+--
+--
+--
+--

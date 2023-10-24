@@ -14,7 +14,7 @@ class HAZEL_API WindowResizeEvent : public Event
     using uint = unsigned int;
 
   public:
-    WindowResizeEvent(uint w, uint h) : m_Width(w), m_Height(h) {}
+    WindowResizeEvent(uint w, uint h) : m_Height(h), m_Width(w) {}
 
 
     inline uint GetWidth() const { return m_Width; }

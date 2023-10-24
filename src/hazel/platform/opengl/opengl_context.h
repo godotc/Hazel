@@ -25,4 +25,3 @@ class OpenGLContext : public GraphicsContext
 };
 
 } // namespace hazel
-

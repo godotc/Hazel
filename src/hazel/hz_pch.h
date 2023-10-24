@@ -24,6 +24,7 @@
 #include <stack>
 #include <stdexcept>
 #include <string>
+#include <ranges>
 #include <type_traits>
 
 #include <fmt/format.h>
