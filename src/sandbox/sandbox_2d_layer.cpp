@@ -43,9 +43,22 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         // hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0.1}, {1, 1}, {1.f, 1.1f, 1.1f, 1.f});
 
         // hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{3, 3, 0}, {1, 1}, m_FaceTexture);
-        hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(45.f), m_ArchTexture);
+        // hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(45.f), m_ArchTexture);
+        // hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0.1}, {1, 1}, {1.f, 1.1f, 1.1f, 1.f});
 
-        // hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
+        // hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{3, 3, 0}, {1, 1}, m_FaceTexture);
+        // hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(45.f), m_ArchTexture);
+
+        // hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{2, 2, 0.1}, {1, 1}, {1.f, 1.1f, 1.1f, 1.f});
+
+        // hazel::Render2D::DrawQuad(m_QuadPosition + glm::vec3{3, 3, 0}, {1, 1}, m_FaceTexture);
+
+        hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, 36.f, m_ArchTexture);
+
+        hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{10, 10, 1}, {2, 2}, 18.f, {1, 0, 0, 1});
+        // hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 1}, {2, 2}, 18.f, {1, 0, 0, 1});
+
+        hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
         hazel::Render2D::EndScene();
     }
 }
