@@ -14,7 +14,7 @@ out float v_TilingFactor;
 
 
 uniform mat4 u_ViewProjection;
-uniform mat4 u_Transform;
+// uniform mat4 u_Transform;
 
 void main(){
     v_Color = a_Color;
@@ -90,5 +90,5 @@ void main(){
     }
 
     color =  the_texture * u_Color;
-    // color = vec4(v_TexCoord, 0, 1);
+    color = vec4(v_TexCoord, 0, 1);
 }
