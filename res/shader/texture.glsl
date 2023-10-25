@@ -35,15 +35,12 @@ in vec2 v_TexCoord;
 in float v_TexIndex;
 in float v_TilingFactor;
 
-uniform vec4 u_Color;
 uniform sampler2D u_Textures[32];
 
 out vec4 color;
 
 
-
 #define CASE(x)  case x: the_texture = texture(u_Textures[x] , v_TexCoord * v_TilingFactor); break;
-// #define CASE(x)  case x: color = texture(u_Textures[x] , v_TexCoord * v_TilingFactor) * u_Color; break;
 
 // #define MULTI_MACRO_HELPER(last) CASE(last)
 // #define MULTI_MACRO_HELPER(first,...) CASE(first) EXPAND_ARGS(__VA_ARGS__)
@@ -89,6 +86,6 @@ void main(){
         // CASE(32);
     }
 
-    color =  the_texture * u_Color;
+    color =  the_texture * v_Color;
     // color = vec4(v_TexCoord, 0, 1);
 }

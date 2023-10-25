@@ -308,16 +308,16 @@ void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float
     HZ_PROFILE_FUNCTION();
 
     auto &shader = s_Data.TextureShader;
-    shader->SetFloat4("u_Color", tint); // tint
-    shader->SetFloat("u_Tiling", tiling);
+    // shader->SetFloat4("u_Color", tint); // tint
+    // shader->SetFloat("u_Tiling", tiling);
 
     texture->Bind();
 
-    glm::mat4 transform(1.f);
-    transform = glm::translate(transform, pos);
-    transform = glm::rotate(transform, rotation, {0, 0, 1});
-    transform = glm::scale(transform, {size.x, size.y, 1.f});
-    shader->SetMat4("u_Transform", transform);
+    // glm::mat4 transform(1.f);
+    // transform = glm::translate(transform, pos);
+    // transform = glm::rotate(transform, rotation, {0, 0, 1});
+    // transform = glm::scale(transform, {size.x, size.y, 1.f});
+    // shader->SetMat4("u_Transform", transform);
 
     s_Data.QuadVertexArray->Bind();
     RenderCommand::DrawIndex(s_Data.QuadVertexArray);
