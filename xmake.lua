@@ -4,7 +4,6 @@ add_rules("mode.debug", "mode.release")
 set_languages("c++20")
 
 set_targetdir("bin/$(plat)/$(mode)/$(arch)/")
-set_targetdir("bin")
 
 set_symbols("debug")
 

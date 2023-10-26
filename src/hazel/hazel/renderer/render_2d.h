@@ -9,6 +9,7 @@
 #include "texture.h"
 
 #include "__microshit_api_hazel.h"
+#include <cinttypes>
 
 
 namespace hazel {
@@ -17,6 +18,14 @@ namespace hazel {
 
 class HAZEL_API Render2D
 {
+  public:
+    struct Statistics {
+        uint32_t DrawCalls = 0;
+        uint32_t QuadCount = 0;
+        uint32_t GetTotalVertexCount() { return QuadCount * 4; }
+        uint32_t GetTotalIndexCount() { return QuadCount * 6; }
+    };
+
   public:
     static void Init();
     static void Shutdown();
@@ -38,6 +47,13 @@ class HAZEL_API Render2D
 
     static void DrawRotateQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const Ref<Texture2D> &texture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
     static void DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const Ref<Texture2D> &texture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
+
+    static Statistics &GetStatics();
+    static void        ResetStats();
+
+
+  private:
+    static void FlushAndReset();
 };
 
 } // namespace hazel

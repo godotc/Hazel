@@ -22,6 +22,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "hazel/renderer/texture.h"
+#include <cstdint>
+#include <cstring>
+#include <sys/types.h>
 
 namespace hazel {
 
@@ -37,7 +40,7 @@ struct QuadVertex {
 };
 
 struct Render2DData {
-    static const uint32_t MaxQuads        = 10000;
+    static const uint32_t MaxQuads        = 1000;
     static const uint32_t MaxVertices     = MaxQuads * 4;
     static const uint32_t MaxIndices      = MaxQuads * 6;
     static const uint32_t MaxTextureSlots = 32;
@@ -56,9 +59,11 @@ struct Render2DData {
 
 
     std::array<glm::vec4, 4> QuadVertexPositions;
+
+    Render2D::Statistics Stats;
 };
 
-static Render2DData s_Data;
+Render2DData s_Data;
 
 
 void Render2D::Init()
@@ -161,10 +166,21 @@ void Render2D::BeginScene(const OrthographicsCamera &camera)
     s_Data.TextureSlotIndex = 1;
 }
 
-void Render2D::EndScene()
+void Render2D::FlushAndReset()
 {
     HZ_PROFILE_FUNCTION();
 
+    EndScene();
+
+    s_Data.QuadIndexCount      = 0;
+    s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferHead; // begin
+
+    s_Data.TextureSlotIndex = 1;
+}
+
+void Render2D::EndScene()
+{
+    HZ_PROFILE_FUNCTION();
 
     // binary length
     uint32_t size = (uint8_t *)s_Data.QuadVertexBufferPtr - (uint8_t *)s_Data.QuadVertexBufferHead;
@@ -181,11 +197,18 @@ void Render2D::Flush()
         s_Data.TextureSlots[i]->Bind(i);
     }
     RenderCommand::DrawIndex(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+
+    ++s_Data.Stats.DrawCalls;
 }
+
 
 void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color)
 {
     HZ_PROFILE_FUNCTION();
+
+    if (s_Data.QuadIndexCount >= Render2DData::MaxIndices) {
+        FlushAndReset();
+    }
 
     const float texture_index = 0.f; // white texture
     const float tiling        = 1.f; // white texture
@@ -223,6 +246,8 @@ void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::
     s_Data.QuadVertexBufferPtr++;
 
     s_Data.QuadIndexCount += 6;
+
+    ++s_Data.Stats.QuadCount;
 }
 
 void Render2D::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color)
@@ -233,7 +258,9 @@ void Render2D::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::
 void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<Texture2D> &texture, float tiling, glm::vec4 tint /*= glm::vec4(1.f)*/)
 {
     HZ_PROFILE_FUNCTION();
-
+    if (s_Data.QuadIndexCount >= Render2DData::MaxIndices) {
+        FlushAndReset();
+    }
     float texture_index = 0.f;
     {
 
@@ -288,6 +315,8 @@ void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<T
     s_Data.QuadVertexBufferPtr++;
 
     s_Data.QuadIndexCount += 6;
+
+    ++s_Data.Stats.QuadCount;
 }
 
 void Render2D::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const Ref<Texture2D> &texture, float tiling, glm::vec4 tint /*= glm::vec4(1.f)*/)
@@ -308,7 +337,9 @@ void Render2D::DrawRotateQuad(const glm::vec2 &pos, const glm::vec2 &size, float
 void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const Ref<Texture2D> &texture, float tiling, glm::vec4 tint)
 {
     HZ_PROFILE_FUNCTION();
-
+    if (s_Data.QuadIndexCount >= Render2DData::MaxIndices) {
+        FlushAndReset();
+    }
     const auto &color = tint;
 
     float texture_index = 0.f;
@@ -364,12 +395,29 @@ void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float
     s_Data.QuadVertexBufferPtr++;
 
     s_Data.QuadIndexCount += 6;
+
+    ++s_Data.Stats.QuadCount;
 }
+
+Render2D::Statistics &Render2D::GetStatics()
+{
+    return s_Data.Stats;
+}
+
+
+void Render2D::ResetStats()
+{
+    memset(&s_Data.Stats, 0, sizeof(Statistics));
+}
+
 
 void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color)
 {
-    HZ_PROFILE_FUNCTION();
 
+    HZ_PROFILE_FUNCTION();
+    if (s_Data.QuadIndexCount >= Render2DData::MaxIndices) {
+        FlushAndReset();
+    }
     const float tiling        = 1.f;
     const float texture_index = 0.f;
 
@@ -407,5 +455,7 @@ void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float
     s_Data.QuadVertexBufferPtr++;
 
     s_Data.QuadIndexCount += 6;
+
+    ++s_Data.Stats.QuadCount;
 }
 } // namespace hazel

@@ -35,5 +35,4 @@ class Sandbox2D : public hazel::Layer
         const char *Name;
         float       Time;
     };
-    std::vector<ProfileResult> m_ProfileResults;
 };

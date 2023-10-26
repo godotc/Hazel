@@ -11,7 +11,7 @@ build/
 compile_commands.json
 
 # Vscode
-.vscode
+# .vscode
 
 # Binaries
 bin
