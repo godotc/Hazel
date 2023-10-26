@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hazel/hazel.h"
+#include "hazel.h"
 
 #ifdef HAZEL_LINKAGE_PROGRAM
 

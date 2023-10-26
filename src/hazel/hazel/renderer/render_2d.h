@@ -8,7 +8,7 @@
 #include "orthographic_camera.h"
 #include "texture.h"
 
-#include "hazel/__microshit_api_hazel.h"
+#include "__microshit_api_hazel.h"
 
 
 namespace hazel {

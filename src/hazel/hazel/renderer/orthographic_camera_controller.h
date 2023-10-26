@@ -5,7 +5,7 @@
 #ifndef HAZEL_ORTHOGRAPHIC_CAMERA_CONTROLLER_H
 #define HAZEL_ORTHOGRAPHIC_CAMERA_CONTROLLER_H
 
-#include "hazel/__microshit_api_hazel.h"
+#include "__microshit_api_hazel.h"
 
 #include "hazel/core/timestep.h"
 #include "hazel/renderer/orthographic_camera.h"

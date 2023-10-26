@@ -5,7 +5,7 @@
 
 #include "shader.h"
 
-#include "renderer/render.h"
+#include "hazel/renderer/render.h"
 
 
 #include "platform/opengl/opengl_shader.h"

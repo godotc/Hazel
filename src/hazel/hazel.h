@@ -24,4 +24,4 @@
 #include "hazel/renderer/orthographic_camera_controller.h"
 
 //
-#include "hazel/utils/path.h"
+#include "utils/path.h"

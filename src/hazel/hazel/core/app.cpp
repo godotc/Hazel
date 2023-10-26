@@ -2,18 +2,18 @@
 
 #include "app.h"
 
-#include "event/event.h"
-#include "event/key_event.h"
+#include "hazel/event/event.h"
+#include "hazel/event/key_event.h"
 #include "log.h"
 
 
-#include "imgui/imgui_layer.h"
+#include "hazel/imgui/imgui_layer.h"
 #include "layer.h"
 
 #include "hazel/renderer/render.h"
 #include "key_code.h"
 
-#include "renderer/render_2d.h"
+#include "hazel/renderer/render_2d.h"
 
 // tmp
 #include "GLFW/glfw3.h"

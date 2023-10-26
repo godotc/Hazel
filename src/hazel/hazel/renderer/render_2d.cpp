@@ -1,14 +1,16 @@
 //
 // Created by nono on 10/14/23.
 //
+#include "hz_pch.h"
+
+
 #include "glm/detail/qualifier.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "glm/trigonometric.hpp"
-#include "hz_pch.h"
 
-#include "debug/instrumentor.h"
+#include "hazel/debug/instrumentor.h"
 
 #include "render_2d.h"
 #include "render_command.h"
@@ -18,9 +20,8 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "renderer/texture.h"
-#include <array>
-#include <cstdint>
+
+#include "hazel/renderer/texture.h"
 
 namespace hazel {
 

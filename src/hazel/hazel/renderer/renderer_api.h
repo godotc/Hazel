@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include "hazel/__microshit_api_hazel.h"
+#include "__microshit_api_hazel.h"
 
 #include "vertex_array.h"
 #include <cstdint>

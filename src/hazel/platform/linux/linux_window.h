@@ -1,9 +1,9 @@
 #pragma once
 
 
-#include "hazel/hazel/core/core.h"
+#include "hazel/core/core.h"
 
-#include "hazel/hazel/core/window.h"
+#include "hazel/core/window.h"
 #include <any>
 
 struct GLFWwindow;

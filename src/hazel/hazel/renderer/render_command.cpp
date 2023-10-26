@@ -4,7 +4,7 @@
 
 #include "render_command.h"
 
-#include "hazel/platform/opengl/opengl_render_api.h"
+#include "platform/opengl/opengl_render_api.h"
 
 namespace hazel {
 

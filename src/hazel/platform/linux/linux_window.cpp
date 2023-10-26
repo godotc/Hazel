@@ -2,9 +2,9 @@
 
 #include "linux_window.h"
 
-#include "event/application_event.h"
-#include "event/key_event.h"
-#include "event/mouse_event.h"
+#include "hazel/event/application_event.h"
+#include "hazel/event/key_event.h"
+#include "hazel/event/mouse_event.h"
 
 //
 #include <GLFW/glfw3.h>
@@ -12,7 +12,7 @@
 
 #include "platform/opengl/opengl_context.h"
 
-#include "hazel/hazel/core/log.h"
+#include "hazel/core/log.h"
 
 
 

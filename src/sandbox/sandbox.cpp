@@ -1,6 +1,6 @@
 #include "hz_pch.h"
 
-#include "hazel/hazel/core/entry_point.h"
+#include "hazel/core/entry_point.h"
 #include <hazel.h>
 
 #include <hazel/imgui/imgui_layer.h>

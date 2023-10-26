@@ -1,10 +1,10 @@
 #include "hz_pch.h"
 
-#include "imgui/imgui_layer.h"
+#include "hazel/imgui/imgui_layer.h"
 
 
 #include "GLFW/glfw3.h"
-#include "hazel/hazel/core/core.h"
+#include "hazel/core/core.h"
 
 
 #include "imgui.h"
@@ -12,8 +12,8 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_opengl3_loader.h"
 
-#include "hazel/hazel/core/app.h"
-#include "hazel/hazel/core/log.h"
+#include "hazel/core/app.h"
+#include "hazel/core/log.h"
 #include "platform/linux/linux_window.h"
 
 
@@ -37,7 +37,7 @@ void ImGuiLayer::OnAttach()
 
     auto ctx = ImGui::CreateContext();
 
-    ImGui::SetCurrentContext(ctx);
+    // ImGui::SetCurrentContext(ctx);
 
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
