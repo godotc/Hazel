@@ -22,9 +22,6 @@ class HAZEL_API ImGuiLayer : public Layer
 
     void Begin();
     void End();
-
-  private:
-    float m_Time;
 };
 
 } // namespace hazel

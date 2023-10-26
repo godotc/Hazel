@@ -79,6 +79,7 @@ void Sandbox2D::OnImGuiRender()
     m_ProfileResults.clear();
     ImGui::End();
 }
+
 void Sandbox2D::OnEvent(hazel::Event &event)
 {
     m_CameraController.OnEvent(event);

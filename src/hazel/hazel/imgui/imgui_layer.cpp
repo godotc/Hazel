@@ -10,7 +10,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "imgui_impl_opengl3_loader.h"
+// #include "imgui_impl_opengl3_loader.h"
 
 #include "hazel/core/app.h"
 #include "hazel/core/log.h"
@@ -36,8 +36,7 @@ void ImGuiLayer::OnAttach()
     HZ_CORE_INFO("Imgui: v{}", IMGUI_VERSION);
 
     auto ctx = ImGui::CreateContext();
-
-    // ImGui::SetCurrentContext(ctx);
+    ImGui::SetCurrentContext(ctx);
 
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -46,6 +45,7 @@ void ImGuiLayer::OnAttach()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
 
+    io.DisplaySize = ImVec2(1, 1);
 
     ImGui::StyleColorsDark();
 
@@ -90,8 +90,8 @@ void ImGuiLayer::Begin()
 {
     HZ_PROFILE_FUNCTION();
 
-    ImGui_ImplGlfw_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
@@ -103,9 +103,7 @@ void ImGuiLayer::End()
     App &app       = App::Get();
     io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
-    static auto time = (float)glfwGetTime();
-    io.DeltaTime     = m_Time > 0.f ? (time - m_Time) : (1.f / 60.f);
-    m_Time           = time;
+
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
