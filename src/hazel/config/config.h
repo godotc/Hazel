@@ -5,6 +5,6 @@
 #ifndef HAZEL_CONFIG_H
 #define HAZEL_CONFIG_H
 
-#define ENABLE_PROFILING 1
+#define ENABLE_PROFILING 0
 
 #endif // HAZEL_CONFIG_H
