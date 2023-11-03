@@ -29,8 +29,8 @@ class HAZEL_API OrthographicsCameraController
 {
     float                     m_AspectRatio = 1.6f;
     float                     m_ZoomLevel   = 1.f;
-    OrthographicsCamera       m_Camera;
     OrthographicsCameraBounds m_Bounds;
+    OrthographicsCamera       m_Camera;
 
     bool bRotation;
 

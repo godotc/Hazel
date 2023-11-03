@@ -12,8 +12,8 @@ namespace hazel {
 
 OrthographicsCameraController::OrthographicsCameraController(float aspect_ratio, bool rotation)
     : m_AspectRatio(aspect_ratio),
-      m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
-      m_Bounds(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
+      m_Bounds({-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel}),
+      m_Camera(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top),
       bRotation(rotation)
 {
 }
@@ -70,9 +70,9 @@ void OrthographicsCameraController::OnEvent(Event &ev)
 bool OrthographicsCameraController::OnMouseScrolled(MouseScrolledEvent &ev)
 {
     HZ_PROFILE_FUNCTION();
-    m_ZoomLevel -= ev.GetOffsetY();
+
+    m_ZoomLevel -= ev.GetOffsetY() * 0.25f;
     m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
-    m_Bounds    = {-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel},
 
     ResetCmaeraProjection();
     return false;
@@ -88,6 +88,7 @@ bool OrthographicsCameraController::OnWindowResized(WindowResizeEvent &ev)
 }
 void OrthographicsCameraController::ResetCmaeraProjection()
 {
+    m_Bounds = {-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel},
     m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
 }
 void OrthographicsCameraController::SetZoomLevel(float level)
