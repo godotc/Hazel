@@ -31,7 +31,7 @@ std::pair<float, float> LinuxInput::GetMousePosImpl()
     auto  *Window = any_cast<GLFWwindow *>(App::Get().GetWindow().GetNativeWindow());
     double x, y;
     glfwGetCursorPos(Window, &x, &y);
-    return {(float)x, (float)y};
+    return {x, y};
 }
 
 float LinuxInput::GetMouseXImpl()

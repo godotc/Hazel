@@ -5,9 +5,12 @@
 #ifndef HAZEL_ORTHOGRAPHIC_CAMERA_H
 #define HAZEL_ORTHOGRAPHIC_CAMERA_H
 
+#include "hazel/renderer/buffer.h"
 #include <glm/glm.hpp>
 
 namespace hazel {
+
+
 
 class OrthographicsCamera
 {

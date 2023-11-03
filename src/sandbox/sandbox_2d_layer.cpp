@@ -3,6 +3,10 @@
 //
 
 #include "glm/fwd.hpp"
+#include "hazel/core/app.h"
+#include "hazel/core/input.h"
+#include "hazel/core/log.h"
+#include "hazel/core/mouse_button.h"
 #include "hazel/renderer/render_2d.h"
 #include "hz_pch.h"
 
@@ -10,6 +14,7 @@
 #include "imgui.h"
 #include "sandbox_2d_layer.h"
 #include <cmath>
+#include <cstdlib>
 #include <math.h>
 
 
@@ -21,6 +26,16 @@ void Sandbox2D::OnAttach()
     m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
     m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
+
+
+    m_PracticleProps.ColorBegin        = {254 / 255.f, 212 / 255.f, 123 / 244.f, 1.f};
+    m_PracticleProps.ColorEnd          = {254 / 255.f, 109 / 255.f, 41 / 244.f, 1.f};
+    m_PracticleProps.SizeBegin         = 0.5f,
+    m_PracticleProps.SizeVariation     = 0.3f;
+    m_PracticleProps.SizeEnd           = 0.f;
+    m_PracticleProps.Velocity          = {0.f, 0.f};
+    m_PracticleProps.VelocityVariation = {3.f, 1.f};
+    m_PracticleProps.Position          = {0.f, 0.f};
 }
 
 void Sandbox2D::OnDetach()
@@ -68,6 +83,8 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
         hazel::Render2D::EndScene();
 
+
+
         hazel::Render2D::BeginScene(m_CameraController.GetCamera());
         for (float y = -5.f; y < 5.f; y += 0.5f) {
             for (float x = -5.f; x < 5.f; x += 0.5f) {
@@ -79,6 +96,33 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         }
         hazel::Render2D::EndScene();
     }
+
+
+    if (hazel::Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_LEFT)) {
+        auto  mouse_pos = hazel::Input::GetMousePos();
+        float x         = mouse_pos.first;
+        float y         = mouse_pos.second;
+        // HZ_INFO("{} {}", x, y);
+        auto w = hazel::App::Get().GetWindow().GetWidth();
+        auto h = hazel::App::Get().GetWindow().GetHeight();
+
+        auto bounds = m_CameraController.GetBound();
+        auto pos    = m_CameraController.GetCamera().GetPosition();
+
+        x = (x / w) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;
+        y = bounds.GetHeight() * 0.5f - (y / h) * bounds.GetHeight();
+
+        m_PracticleProps.Position = {x + pos.x, y + pos.y};
+        HZ_INFO("Should be {} {}", x + pos.x, y + pos.y);
+
+        auto i = 5;
+        while (i--) {
+            m_PracticleSystem.Emit(m_PracticleProps);
+        }
+    }
+
+    m_PracticleSystem.OnUpdate(timestep);
+    m_PracticleSystem.OnRender(m_CameraController.GetCamera());
 }
 
 void Sandbox2D::OnImGuiRender()
@@ -96,6 +140,8 @@ void Sandbox2D::OnImGuiRender()
     ImGui::Text("Quad Count  : %d", stat.QuadCount);
     ImGui::Text("Vertex Count: %d", stat.GetTotalVertexCount());
     ImGui::Text("Index Count : %d", stat.GetTotalIndexCount());
+    auto [x, y] = hazel::Input::GetMousePos();
+    ImGui::Text("Mouse Pos : %d,%d", (int)x, (int)y);
     ImGui::End();
 
 

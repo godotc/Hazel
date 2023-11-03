@@ -22,14 +22,13 @@ namespace utils {
 
 void               SetProjectRootSymbol(std::string symbol);
 const std::string &GetProjectRootSymbol();
-
-path get_runtime_exe_path();
+path               get_runtime_exe_path();
 
 // iterate parent and children recursively
 path find_directory_by_file_symbol(path &initial_pos, std::string target_symbol);
 
-const UTILS_API std::filesystem::path &ProjectRoot();
 
+const UTILS_API std::filesystem::path &ProjectRoot();
 namespace impl {
 struct UTILS_API FPathImpl {
     explicit FPathImpl(const char *the_path)

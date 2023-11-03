@@ -13,6 +13,7 @@ namespace hazel {
 OrthographicsCameraController::OrthographicsCameraController(float aspect_ratio, bool rotation)
     : m_AspectRatio(aspect_ratio),
       m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
+      m_Bounds(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
       bRotation(rotation)
 {
 }
@@ -20,27 +21,31 @@ OrthographicsCameraController::OrthographicsCameraController(float aspect_ratio,
 void OrthographicsCameraController::OnUpdate(Timestep dt)
 {
     HZ_PROFILE_FUNCTION();
-        if (hazel::Input::IsKeyPressed(HZ_KEY_A)) m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_D)) m_CameraPosition.x += m_CameraTranslationSpeed * dt;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_W)) m_CameraPosition.y += m_CameraTranslationSpeed * dt;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_S)) m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
+    if (hazel::Input::IsKeyPressed(HZ_KEY_A))
+        m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
+    if (hazel::Input::IsKeyPressed(HZ_KEY_D))
+        m_CameraPosition.x += m_CameraTranslationSpeed * dt;
+    if (hazel::Input::IsKeyPressed(HZ_KEY_W))
+        m_CameraPosition.y += m_CameraTranslationSpeed * dt;
+    if (hazel::Input::IsKeyPressed(HZ_KEY_S))
+        m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
     // for right forward within camera rotation
-//    if (hazel::Input::IsKeyPressed(HZ_KEY_A)) {
-//        m_CameraPosition.x -= std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//    }
-//    if (hazel::Input::IsKeyPressed(HZ_KEY_D)) {
-//        m_CameraPosition.x += std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//    }
-//    if (hazel::Input::IsKeyPressed(HZ_KEY_W)) {
-//        m_CameraPosition.x += -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//    }
-//    if (hazel::Input::IsKeyPressed(HZ_KEY_S)) {
-//        m_CameraPosition.x -= -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
-//    }
+    //    if (hazel::Input::IsKeyPressed(HZ_KEY_A)) {
+    //        m_CameraPosition.x -= std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //    }
+    //    if (hazel::Input::IsKeyPressed(HZ_KEY_D)) {
+    //        m_CameraPosition.x += std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //    }
+    //    if (hazel::Input::IsKeyPressed(HZ_KEY_W)) {
+    //        m_CameraPosition.x += -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //        m_CameraPosition.y += std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //    }
+    //    if (hazel::Input::IsKeyPressed(HZ_KEY_S)) {
+    //        m_CameraPosition.x -= -std::cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //        m_CameraPosition.y -= std::sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+    //    }
     m_Camera.SetPosition(m_CameraPosition);
 
     // clang-format off
@@ -67,6 +72,8 @@ bool OrthographicsCameraController::OnMouseScrolled(MouseScrolledEvent &ev)
     HZ_PROFILE_FUNCTION();
     m_ZoomLevel -= ev.GetOffsetY();
     m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+    m_Bounds    = {-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel},
+
     ResetCmaeraProjection();
     return false;
 }
@@ -81,7 +88,7 @@ bool OrthographicsCameraController::OnWindowResized(WindowResizeEvent &ev)
 }
 void OrthographicsCameraController::ResetCmaeraProjection()
 {
-    m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+    m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
 }
 void OrthographicsCameraController::SetZoomLevel(float level)
 {

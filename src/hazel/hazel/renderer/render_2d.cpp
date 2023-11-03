@@ -362,7 +362,7 @@ void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float
     }
 
     glm::mat4 transform = glm::translate(glm::mat4(1.f), pos) *
-                          glm::rotate(glm::mat4(1.f), glm::radians(rotation), {0.f, 0.f, 1.f}) *
+                          glm::rotate(glm::mat4(1.f), rotation, {0.f, 0.f, 1.f}) *
                           glm::scale(glm::mat4(1.f), {size.x, size.y, 1.f});
 
 
@@ -422,7 +422,7 @@ void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float
     const float texture_index = 0.f;
 
     glm::mat4 transform = glm::translate(glm::mat4(1.f), pos) *
-                          glm::rotate(glm::mat4(1.f), glm::radians(rotation), {0.f, 0.f, 1.f}) *
+                          glm::rotate(glm::mat4(1.f), rotation, {0.f, 0.f, 1.f}) *
                           glm::scale(glm::mat4(1.f), {size.x, size.y, 1.f});
 
 

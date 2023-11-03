@@ -5,6 +5,7 @@
 
 #include <hazel.h>
 
+#include "hazel/renderer/practicle.h"
 
 
 class Sandbox2D : public hazel::Layer
@@ -31,8 +32,6 @@ class Sandbox2D : public hazel::Layer
 
     hazel::Ref<hazel::Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
 
-    struct ProfileResult {
-        const char *Name;
-        float       Time;
-    };
+    PraticleSystem m_PracticleSystem;
+    PraticleProps  m_PracticleProps;
 };

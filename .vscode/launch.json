@@ -15,6 +15,16 @@
             "internalConsoleOptions": "openOnSessionStart",
         },
         {
+            "name": "SandboxRelease(GDB)",
+            "type": "gdb",
+            "request": "launch",
+            "target": "${workspaceFolder}/bin/linux/release/x86_64/sandbox",
+            "cwd": "${workspaceRoot}",
+            "valuesFormatting": "parseText",
+            "preLaunchTask": "build sandbox",
+            "internalConsoleOptions": "openOnSessionStart",
+        },
+        {
             "name": "Sandbox(LLDB)",
             "type": "lldb",
             "request": "launch",
