@@ -27,8 +27,9 @@ class Random
 {
     // it need a seed, but will same when seed are the saem
     static std::mt19937 s_RandomNumberGenerator;
+
     // so use this waste performance to get the random seed
-    static std::random_device s_RandomDevice;
+    // static std::random_device s_RandomDevice;
 
     static std::uniform_int_distribution<int>    s_UnifromDistribution_Int;
     static std::uniform_real_distribution<float> s_UnifromDistribution_Float;
@@ -42,14 +43,14 @@ class Random
     static float Float() { return s_UnifromDistribution_Float(s_RandomNumberGenerator); }
 };
 
-std::mt19937                          Random::s_RandomNumberGenerator{Random::s_RandomDevice()};
-std::random_device                    Random::s_RandomDevice{};
+// std::random_device                    Random::s_RandomDevice{};
+std::mt19937                          Random::s_RandomNumberGenerator{std::random_device()()};
 std::uniform_real_distribution<float> Random::s_UnifromDistribution_Float{0.f, 1.f};
 
 
-PraticleSystem::PraticleSystem()
+PraticleSystem::PraticleSystem(uint32_t max_praticles)
 {
-    m_PraticlePool.resize(1000);
+    m_PraticlePool.resize(max_praticles);
 }
 
 
