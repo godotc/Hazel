@@ -4,7 +4,7 @@
 #include "hz_pch.h"
 
 #include "gl_macros.h"
-#include "hazel/core/core.h"
+#include "hazel/core/base.h"
 
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"

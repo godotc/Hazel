@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "hazel/core/core.h"
+#include "hazel/core/base.h"
 
 #include "hazel/core/window.h"
 #include <any>

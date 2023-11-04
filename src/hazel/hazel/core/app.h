@@ -1,5 +1,5 @@
 #pragma once
-#include "core.h"
+#include "base.h"
 
 #include "hazel/imgui/imgui_layer.h"
 #include "layer_stack.h"

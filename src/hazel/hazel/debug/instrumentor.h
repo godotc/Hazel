@@ -13,7 +13,7 @@
 #include <config/config.h>
 
 #include "__microshit_api_hazel.h"
-#include "hazel/core/core.h"
+#include "hazel/core/base.h"
 
 
 

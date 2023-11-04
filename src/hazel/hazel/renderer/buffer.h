@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "hazel/core/core.h"
+#include "hazel/core/base.h"
 
 namespace hazel {
 

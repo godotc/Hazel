@@ -9,7 +9,7 @@
 #include <string>
 
 #include <glm/fwd.hpp>
-#include <hazel/core/core.h>
+#include <hazel/core/base.h>
 
 namespace hazel {
 

@@ -3,7 +3,7 @@
 
 
 #include "glm/ext/vector_float2.hpp"
-#include "hazel/core/core.h"
+#include "hazel/core/base.h"
 #include "texture.h"
 
 namespace hazel {

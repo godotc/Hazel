@@ -5,7 +5,7 @@
 #include "hz_pch.h"
 
 #include "buffer.h"
-#include "hazel/core/core.h"
+#include "hazel/core/base.h"
 #include "hazel/core/log.h"
 #include "platform/opengl/opengl_buffer.h"
 #include "render.h"

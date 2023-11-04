@@ -9,7 +9,7 @@
 #include "opengl_context.h"
 
 #include "GLFW/glfw3.h"
-#include "hazel/core/core.h"
+#include "hazel/core/base.h"
 #include "hazel/core/log.h"
 
 
