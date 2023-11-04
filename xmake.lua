@@ -2,10 +2,10 @@ add_rules("mode.debug", "mode.release")
 -- add_rules("debug_game")
 
 set_languages("c++20")
-
 set_targetdir("bin/$(plat)/$(mode)/$(arch)/")
-
 set_symbols("debug")
+
+set_project("hazel")
 
 if is_mode("debug") then
     add_defines("__HZ_DEBUG")
@@ -20,9 +20,9 @@ elseif  is_plat("windows") then
 end
 
 
-set_project("hazel")
-set_symbols("debug")
+includes("./pkgs")
 includes("./src")
+
 
 
 on_config(function () 

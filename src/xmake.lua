@@ -8,8 +8,8 @@ add_packages("fmt", "glm", "spdlog","stb")
 -- FIXME:
 -- 1. Why cannot working on windows
 -- 2. Crashing while non debug for imgui
-add_requires("imgui docking", {configs = {shared=false,  debug=true,  opengl3 = true, glfw=true }})
-add_packages("imgui", {debug=false})
+-- add_requires("imgui docking", {configs = {shared=false,  debug=true,  opengl3 = true, glfw=true }})
+-- add_packages("imgui", {debug=false})
 
 
 includes("hazel","sandbox")

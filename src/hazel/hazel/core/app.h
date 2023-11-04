@@ -31,6 +31,7 @@ class HAZEL_API App
 
   public:
     void Run();
+    void Close();
 
   public:
     void PushLayer(Layer *layer);

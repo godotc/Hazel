@@ -7,6 +7,7 @@
 
 #include "glad/glad.h"
 #include "hazel/renderer/texture.h"
+#include <cstdint>
 
 namespace hazel {
 
@@ -23,6 +24,7 @@ class OpenGLTexture2D : public Texture2D
     OpenGLTexture2D(const std::string &path);
     ~OpenGLTexture2D() override;
 
+
   public:
     void Bind(uint32_t slot) const override;
     void Unbind() const override;
@@ -31,6 +33,9 @@ class OpenGLTexture2D : public Texture2D
 
     uint32_t GetWidth() const override { return m_Width; };
     uint32_t GetHeight() const override { return m_Height; }
+
+    uint32_t GetTextureID() const override { return m_TextureID; }
+
 
     virtual bool operator==(const Texture &other) const override
     {

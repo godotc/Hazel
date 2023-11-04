@@ -1,3 +1,4 @@
+#include "hazel/event/application_event.h"
 #include "hz_pch.h"
 
 #include "app.h"
@@ -86,6 +87,11 @@ void App::Run()
     }
 }
 
+void App::Close()
+{
+    bRunning = false;
+}
+
 void App::PushLayer(Layer *layer)
 {
     HZ_PROFILE_FUNCTION();
@@ -144,7 +150,7 @@ bool App::OnKeyPressed(KeyPressedEvent &ev)
 
 bool App::OnWindowClose(WindowCloseEvent &ev)
 {
-    bRunning = false;
+    Close();
     return true;
 }
 bool App::OnWindowResized(WindowResizeEvent &ev)
