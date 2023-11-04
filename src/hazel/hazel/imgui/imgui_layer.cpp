@@ -11,7 +11,7 @@
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-// #include "imgui_impl_opengl3_loader.h"
+// #include "backends/imgui_impl_opengl3_loader.h"
 
 #include "hazel/core/app.h"
 #include "hazel/core/log.h"
@@ -20,9 +20,6 @@
 
 
 namespace hazel {
-
-
-namespace imgui = ImGui;
 
 ImGuiLayer::ImGuiLayer() : Layer("ImGuILayer") {}
 
