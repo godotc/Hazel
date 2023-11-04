@@ -2,6 +2,7 @@
 #include "base.h"
 
 #include "hazel/imgui/imgui_layer.h"
+#include "hazel/renderer/framebuffer.h"
 #include "layer_stack.h"
 #include "window.h"
 
@@ -22,6 +23,17 @@ namespace hazel {
 
 class HAZEL_API App
 {
+    static App *Application;
+
+    Scope<Window> m_Window;
+    ImGuiLayer   *m_ImGuiLayer;
+    LayerStack    m_LayerStack;
+    float         m_LastFrameTime = 0.f;
+
+    bool bRunning   = true;
+    bool bMinimized = false;
+
+
   public:
     App();
     virtual ~App() = default;
@@ -48,19 +60,6 @@ class HAZEL_API App
     bool OnWindowClose(WindowCloseEvent &ev);
     bool OnWindowResized(WindowResizeEvent &ev);
     bool OnKeyPressed(KeyPressedEvent &ev);
-
-
-  private:
-    Scope<Window> m_Window;
-    ImGuiLayer   *m_ImGuiLayer;
-    LayerStack    m_LayerStack;
-    float         m_LastFrameTime = 0.f;
-
-    bool bRunning   = true;
-    bool bMinimized = false;
-
-  private:
-    static App *Application;
 };
 
 App *CreateApplication();

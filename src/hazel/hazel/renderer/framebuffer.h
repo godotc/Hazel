@@ -18,6 +18,12 @@ class Framebuffer
 
   public:
     virtual const FramebufferSpecification &GetSpecification() const = 0;
+    virtual uint32_t                        GetColorAttachmentID()   = 0;
+
+    virtual void Bind()   = 0;
+    virtual void Unbind() = 0;
+
+
 
     static Ref<Framebuffer> Create(const FramebufferSpecification &spec);
 };

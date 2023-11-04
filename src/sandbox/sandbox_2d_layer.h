@@ -2,16 +2,10 @@
 // Created by nono on 10/11/23.
 //
 
+#include "hazel.h"
 
-#include <array>
-#include <cstdint>
-#include <hazel.h>
-#include <sys/types.h>
-#include <unordered_map>
-#include <utility>
 
 #include "hazel/renderer/practicle.h"
-#include "hazel/renderer/subtexture_2d.h"
 
 
 static std::unordered_map<char, std::array<int, 2>> tile_block_map = {
@@ -42,18 +36,7 @@ const std::string game_map   = "fFFFFFFFFFFFFFFFFFFFFFFf"
 
 class Sandbox2D : public hazel::Layer
 {
-  public:
-    Sandbox2D() : hazel::Layer("Sandbox2D") {}
-    ~Sandbox2D() override = default;
-    void OnAttach() override;
-    void OnDetach() override;
 
-    void OnUpdate(hazel::Timestep timestep) override;
-    void OnEvent(hazel::Event &event) override;
-
-    void OnImGuiRender() override;
-
-  private:
     hazel::ShaderLibrary m_ShaderLibrary;
 
     hazel::OrthographicsCameraController m_CameraController{16 / 9.f, true};
@@ -69,6 +52,24 @@ class Sandbox2D : public hazel::Layer
     hazel::Ref<hazel::SubTexture2D> m_WaterBuck;
     hazel::Ref<hazel::SubTexture2D> m_Tree;
 
+
     PraticleSystem m_PracticleSystem;
     PraticleProps  m_PracticleProps;
+
+    hazel::Ref<hazel::Framebuffer> m_Framebuffer;
+
+
+  public:
+    Sandbox2D() : hazel::Layer("Sandbox2D") {}
+    ~Sandbox2D() override = default;
+    void OnAttach() override;
+    void OnDetach() override;
+
+    void OnUpdate(hazel::Timestep timestep) override;
+    void OnEvent(hazel::Event &event) override;
+
+    void OnImGuiRender() override;
+
+  private:
+    void Init();
 };

@@ -16,6 +16,7 @@
 
 #include "hazel/renderer/subtexture_2d.h"
 #include "hazel/renderer/texture.h"
+#include "hazel/renderer/framebuffer.h"
 
 #include "hazel/renderer/render.h"
 #include "hazel/renderer/render_2d.h"

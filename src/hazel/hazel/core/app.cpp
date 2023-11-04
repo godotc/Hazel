@@ -1,8 +1,9 @@
-#include "hazel/event/application_event.h"
 #include "hz_pch.h"
+
 
 #include "app.h"
 
+#include "hazel/event/application_event.h"
 #include "hazel/event/event.h"
 #include "hazel/event/key_event.h"
 #include "log.h"
