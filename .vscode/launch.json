@@ -11,8 +11,8 @@
             "target": "${workspaceFolder}/bin/linux/debug/x86_64/sandbox",
             "cwd": "${workspaceRoot}",
             "valuesFormatting": "parseText",
-            "preLaunchTask": "build sandbox",
             "internalConsoleOptions": "openOnSessionStart",
+            "preLaunchTask": "build sandbox",
         },
         {
             "name": "SandboxRelease(GDB)",
