@@ -5,6 +5,7 @@
 #ifndef HAZEL_ORTHOGRAPHIC_CAMERA_H
 #define HAZEL_ORTHOGRAPHIC_CAMERA_H
 
+#include "__microshit_api_hazel.h"
 #include "hazel/renderer/buffer.h"
 #include <glm/glm.hpp>
 
@@ -12,7 +13,7 @@ namespace hazel {
 
 
 
-class OrthographicsCamera
+class HAZEL_API OrthographicsCamera
 {
   public:
     OrthographicsCamera(float left, float right, float bottom, float top);

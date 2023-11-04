@@ -4,7 +4,6 @@
 #include "glad/glad.h"
 
 #include "opengl_framebuffer.h"
-#include <GL/glext.h>
 #include <cstddef>
 
 #

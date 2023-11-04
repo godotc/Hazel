@@ -1,11 +1,12 @@
 #pragma once
+#include "__microshit_api_hazel.h"
 #include "hazel/core/base.h"
 
 #include <cstdint>
 
 namespace hazel {
 
-struct FramebufferSpecification {
+struct HAZEL_API FramebufferSpecification {
     uint32_t Width, Height;
 
     uint32_t Samples = 1;
@@ -13,7 +14,7 @@ struct FramebufferSpecification {
     bool bSwapChainTarget = false;
 };
 
-class Framebuffer
+class HAZEL_API Framebuffer
 {
 
   public:

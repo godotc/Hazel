@@ -2,13 +2,14 @@
 #pragma once
 
 
+#include "__microshit_api_hazel.h"
 #include "glm/ext/vector_float2.hpp"
 #include "hazel/core/base.h"
 #include "texture.h"
 
 namespace hazel {
 
-class SubTexture2D
+class HAZEL_API SubTexture2D
 {
     Ref<Texture2D> m_Textrue;
     glm::vec2      m_TexCoords[4];
