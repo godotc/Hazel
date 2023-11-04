@@ -6,6 +6,7 @@
 #include "hazel/renderer/orthographic_camera.h"
 
 #include "glm/fwd.hpp"
+#include <cstdint>
 
 
 
@@ -38,7 +39,7 @@ class HAZEL_API PraticleSystem
 
 
   public:
-    PraticleSystem();
+    explicit PraticleSystem(uint32_t max_praticles = 10000);
 
     void OnUpdate(hazel::Timestep ts);
     void OnRender(hazel::OrthographicsCamera &camera);

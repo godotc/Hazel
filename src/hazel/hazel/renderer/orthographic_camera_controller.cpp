@@ -71,7 +71,7 @@ bool OrthographicsCameraController::OnMouseScrolled(MouseScrolledEvent &ev)
 {
     HZ_PROFILE_FUNCTION();
 
-    m_ZoomLevel -= ev.GetOffsetY() * 0.25f;
+    m_ZoomLevel -= ev.GetOffsetY() * 0.5f;
     m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 
     ResetCmaeraProjection();

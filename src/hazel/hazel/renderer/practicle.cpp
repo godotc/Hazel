@@ -43,7 +43,7 @@ class Random
     static float Float() { return s_UnifromDistribution_Float(s_RandomNumberGenerator); }
 };
 
-// std::random_device                    Random::s_RandomDevice{};
+// std::random_device                    Random::editor counts_RandomDevice{};
 std::mt19937                          Random::s_RandomNumberGenerator{std::random_device()()};
 std::uniform_real_distribution<float> Random::s_UnifromDistribution_Float{0.f, 1.f};
 

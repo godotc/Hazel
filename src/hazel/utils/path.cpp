@@ -4,6 +4,7 @@
 
 
 #include "path.h"
+#include <cstdio>
 #include <filesystem>
 #include <mutex>
 #include <stdexcept>
@@ -56,6 +57,7 @@ static bool is_dir_contain_file_symbol(const std::filesystem::path &the_path, st
 
 static bool recursive_iterate_parent(const path &init_pos, std::string &target_symbol, path &out_dir)
 {
+    printf("Recursive parent once\n");
     path directory = init_pos;
     while (directory.has_parent_path()
 #if __linux__
@@ -75,6 +77,7 @@ static bool recursive_iterate_parent(const path &init_pos, std::string &target_s
 
 static bool recursive_iterate_children(const path &init_pos, std::string &target_symbol, path &out_dir)
 {
+    printf("Recursive children once\n");
     if (!std::filesystem::is_directory(init_pos)) {
         return false;
     }
@@ -130,7 +133,7 @@ const std::filesystem::path &ProjectRoot()
 
 
 
-        if (exe_path.empty())
+        if (exe_path.empty()) {
             if (!exe_path.has_parent_path())
 #if _WIN32
                 if (!std::filesystem::is_directory(exe_path))
@@ -139,6 +142,7 @@ const std::filesystem::path &ProjectRoot()
                 {
                     throw std::runtime_error("Failed to get runtime path");
                 }
+        }
 
         path project_root_dir = find_directory_by_file_symbol(exe_path, GetProjectRootSymbol());
         project_root          = std::filesystem::absolute(project_root_dir);
