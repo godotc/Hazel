@@ -51,7 +51,7 @@ Ref<SubTexture2D> SubTexture2D::CreateFromCoords(const Ref<Texture2D> &texture, 
 
 
 /**
- * @brief
+ * @briepaste imagef
  * @param margin some sheet will left a margin with some px as edge of each block,
  *  BUT I think use packed better!
  *  Cause' it's too hard to draw a item with 2 or more block, but within its margin -.-

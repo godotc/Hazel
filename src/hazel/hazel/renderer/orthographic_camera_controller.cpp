@@ -74,7 +74,7 @@ bool OrthographicsCameraController::OnMouseScrolled(MouseScrolledEvent &ev)
     m_ZoomLevel -= ev.GetOffsetY() * 0.5f;
     m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 
-    ResetCmaeraProjection();
+    RecalcualteView();
     return false;
 }
 bool OrthographicsCameraController::OnWindowResized(WindowResizeEvent &ev)
@@ -83,10 +83,11 @@ bool OrthographicsCameraController::OnWindowResized(WindowResizeEvent &ev)
 
     // TODO: Optimizing the zoom operation
     m_AspectRatio = ev.GetWidth() / (float)ev.GetHeight();
-    ResetCmaeraProjection();
+    RecalcualteView();
     return false;
 }
-void OrthographicsCameraController::ResetCmaeraProjection()
+
+void OrthographicsCameraController::RecalcualteView()
 {
     m_Bounds = {-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel},
     m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
@@ -94,7 +95,7 @@ void OrthographicsCameraController::ResetCmaeraProjection()
 void OrthographicsCameraController::SetZoomLevel(float level)
 {
     m_ZoomLevel = level;
-    ResetCmaeraProjection();
+    RecalcualteView();
 }
 
 

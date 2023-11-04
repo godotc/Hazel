@@ -19,6 +19,7 @@
 #include "imgui.h"
 #include "sandbox_2d_layer.h"
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <map>
 #include <math.h>
@@ -95,19 +96,49 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
         // hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(36.f), m_ArchTexture);
         // hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{10, 10, 1}, {2, 2}, glm::radians(18.f), {1, 0, 0, 1});
         // hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
-        hazel::Render2D::DrawQuad({0, 0, -0.1}, {1, 1}, m_TinyTownSheet, 1);
 
-        for (int i = 0; i < 12; ++i) {
-            for (int j = 0; j < 11; ++j) {
-                const float size = 0.1f;
-                glm::vec2   pos  = glm::vec2{1, -0.5} + glm::vec2{i * size, j * size};
-                hazel::Render2D::DrawQuad(pos, {size, size}, m_SubBlock[i][j]);
+        // tilesheet sample
+        {
+            hazel::Render2D::DrawQuad({2, 1, -0.1}, {1, 1}, m_TinyTownSheet, 1);
+
+            for (int i = 0; i < 12; ++i) {
+                for (int j = 0; j < 11; ++j) {
+                    const float size = 0.1f;
+                    glm::vec2   pos  = glm::vec2{2, 2} + glm::vec2{i * size, j * size};
+                    hazel::Render2D::DrawQuad(pos, {size, size}, m_SubBlock[i][j]);
+                }
+            }
+            hazel::Render2D::DrawQuad({3, 3}, {1, 1}, m_WaterBuck);
+            hazel::Render2D::DrawQuad({3, 4}, {1, 2}, m_Tree);
+        }
+
+        // game map
+        {
+            // base paint
+            for (int i = 0; i < game_map.size(); ++i) {
+                int x         = i % map_width;
+                int y         = i / map_width;
+                auto [tx, ty] = tile_block_map['w'];
+
+                hazel::Render2D::DrawQuad(
+                    {-x, -y, -0.3},
+                    {1, 1},
+                    m_SubBlock[tx][ty]);
+            }
+
+            for (int i = 0; i < game_map.size(); ++i) {
+                // printf("%d\n", game_map.size());
+                int x         = i % map_width;
+                int y         = i / map_width;
+                auto [tx, ty] = tile_block_map.find(game_map[i])->second;
+
+                hazel::Render2D::DrawQuad(
+                    {-x, -y},
+                    {1, 1},
+                    m_SubBlock[tx][ty]);
             }
         }
 
-        hazel::Render2D::DrawQuad({-1, -1}, {1, 1}, m_WaterBuck);
-
-        hazel::Render2D::DrawQuad({1, -2}, {1, 2}, m_Tree);
         hazel::Render2D::EndScene();
 
 
@@ -174,7 +205,7 @@ void Sandbox2D::OnImGuiRender()
 
 
     // ImGui::Begin("Profiling");
-    // for (auto &result : m_ProfileResults | std::views::reverse)
+    // for (auto &result : m_ProfileResults | s    {'f', {8, -4}},td::views::reverse)
     // {
     //     ImGui::Text("%-20s: %.3fms", result.Name, result.Time);
     // }

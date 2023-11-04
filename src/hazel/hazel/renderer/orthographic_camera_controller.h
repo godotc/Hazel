@@ -53,13 +53,12 @@ class HAZEL_API OrthographicsCameraController
 
     const OrthographicsCameraBounds &GetBound() { return m_Bounds; }
 
-
   private:
     bool
          OnMouseScrolled(MouseScrolledEvent &ev);
     bool OnWindowResized(WindowResizeEvent &ev);
 
-    void ResetCmaeraProjection();
+    void RecalcualteView();
 };
 
 } // namespace hazel

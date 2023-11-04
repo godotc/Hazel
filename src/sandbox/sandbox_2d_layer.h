@@ -3,10 +3,41 @@
 //
 
 
+#include <array>
+#include <cstdint>
 #include <hazel.h>
+#include <sys/types.h>
+#include <unordered_map>
+#include <utility>
 
 #include "hazel/renderer/practicle.h"
 #include "hazel/renderer/subtexture_2d.h"
+
+
+static std::unordered_map<char, std::array<int, 2>> tile_block_map = {
+    {'w', {0, 10}},
+    {'R',  {1, 8}},
+    {'W', {1, 10}},
+    {'G', {5, 10}},
+    {'F',  {9, 7}},
+    {'f',  {8, 6}},
+    {'B', {11, 0}},
+};
+
+const int         map_width  = 24;
+const int         map_height = 12;
+const std::string game_map   = "fFFFFFFFFFFFFFFFFFFFFFFf"
+                               "fWWWWWWWWWWWWWWWWWWWWWWf"
+                               "fRWGWWWWWWWWWWWWGWWWWWWf"
+                               "fRWWWWWBWWWBWWWWWWWWWWWf"
+                               "fRWWGWWWWWWWWWWWGWWWWWWf"
+                               "fRWWWWWWWWWWWWWWWWWWWWWf"
+                               "fRWWGWWWWWWBWWWWWWWWWWWf"
+                               "fRWWWWWWBWWWWWWWGWWWWWWf"
+                               "fRWWGWWWWWWWWWGGGWWWWWWf"
+                               "fRWWWWWWWWWWWWWWWWWWWWWf"
+                               "fWWRRRRRRRRRRRRRRRRWWWWf"
+                               "fFFFFFFFFFFFFFFFFFFFFFFf";
 
 
 class Sandbox2D : public hazel::Layer
