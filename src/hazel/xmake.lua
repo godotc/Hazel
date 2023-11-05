@@ -19,7 +19,6 @@ target("hazel")
     add_deps("imgui-docking")
 
 
-
     if is_os("windows") then
         if is_mode("debug") then
 --             add_cxxflags("/MDd")

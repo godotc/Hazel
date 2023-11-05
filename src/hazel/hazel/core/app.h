@@ -35,7 +35,7 @@ class HAZEL_API App
 
 
   public:
-    App();
+    App(const std::string &name = "Hazel Engine");
     virtual ~App() = default;
 
   public:

@@ -7,4 +7,6 @@
 
 #define ENABLE_PROFILING 0
 
+#define HAZEL_ENABLE_VIEWPORTS 0
+
 #endif // HAZEL_CONFIG_H

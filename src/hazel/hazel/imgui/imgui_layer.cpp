@@ -4,7 +4,6 @@
 
 
 #include "GLFW/glfw3.h"
-#include "hazel/core/base.h"
 
 
 #include "imgui.h"
@@ -18,7 +17,6 @@
 #include "platform/linux/linux_window.h"
 
 
-#include "imgui_internal.h"
 
 namespace hazel {
 
@@ -45,7 +43,9 @@ void ImGuiLayer::OnAttach()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#if HAZEL_ENABLE_VIEWPORTS
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
 
     io.DisplaySize = ImVec2(1, 1);
@@ -122,11 +122,11 @@ void ImGuiLayer::End()
 
 void ImGuiLayer::OnImGuiRender()
 {
-    auto       &io  = ImGui::GetIO();
-    static bool bOk = true;
-    if (ImGui::MenuItem("Viewport", nullptr, io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
-        io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
-    }
+    // auto       &io  = ImGui::GetIO();
+    // static bool bOk = true;
+    // if (ImGui::MenuItem("Viewport", nullptr, io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
+    //     io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
+    // }
 }
 
 } // namespace hazel

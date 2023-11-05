@@ -12,16 +12,22 @@ namespace hazel {
 
 
 struct WindowProps {
-    using uint = unsigned int;
+    using uint32_t = unsigned int;
 
     std::string Title;
-    uint        Width, Height;
-    explicit WindowProps(const std::string &title = "Hazel Engine", uint w = 1280, uint h = 720) : Title(title), Width(w), Height(h) {}
+    uint32_t    Width, Height;
+    explicit WindowProps(const std::string &title = "Hazel Engine", uint32_t w = 1280, uint32_t h = 720) : Title(title), Width(w), Height(h) {}
 };
 
 
 class HAZEL_API Window
 {
+  protected:
+    GraphicsContext *m_Context;
+
+  public:
+    static Window *Create(const WindowProps &props = WindowProps());
+
   public:
     using EventCallBackFn = std::function<void(Event &)>;
 
@@ -37,11 +43,6 @@ class HAZEL_API Window
     [[nodiscard]] virtual bool IsVSync() const                             = 0;
 
     [[nodiscard]] virtual std::any GetNativeWindow() const = 0;
-
-    static Window *Create(const WindowProps &props = WindowProps());
-
-  protected:
-    GraphicsContext *m_Context;
 };
 
 }; // namespace hazel

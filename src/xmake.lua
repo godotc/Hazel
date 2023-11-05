@@ -12,4 +12,4 @@ add_packages("fmt", "glm", "spdlog","stb")
 -- add_packages("imgui", {debug=false})
 
 
-includes("hazel","sandbox")
+includes("hazel","editor-nut","sandbox")
