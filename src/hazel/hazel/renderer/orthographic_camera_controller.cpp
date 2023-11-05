@@ -82,8 +82,7 @@ bool OrthographicsCameraController::OnWindowResized(WindowResizeEvent &ev)
     HZ_PROFILE_FUNCTION();
 
     // TODO: Optimizing the zoom operation
-    m_AspectRatio = ev.GetWidth() / (float)ev.GetHeight();
-    RecalcualteView();
+    OnResize(ev.GetWidth(), (float)ev.GetHeight());
     return false;
 }
 
@@ -95,6 +94,12 @@ void OrthographicsCameraController::RecalcualteView()
 void OrthographicsCameraController::SetZoomLevel(float level)
 {
     m_ZoomLevel = level;
+    RecalcualteView();
+}
+
+void OrthographicsCameraController::OnResize(float w, float h)
+{
+    m_AspectRatio = w / h;
     RecalcualteView();
 }
 

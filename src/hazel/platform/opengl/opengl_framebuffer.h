@@ -8,9 +8,9 @@ namespace hazel {
 
 class OpenGLFrameBuffer : public Framebuffer
 {
-    uint32_t                 m_FramebufferID;
-    uint32_t                 m_ColorAttachment;
-    uint32_t                 m_DepthAttachment;
+    uint32_t                 m_FramebufferID   = 0;
+    uint32_t                 m_ColorAttachment = 0;
+    uint32_t                 m_DepthAttachment = 0;
     FramebufferSpecification m_Specification;
 
   public:
@@ -18,12 +18,14 @@ class OpenGLFrameBuffer : public Framebuffer
     OpenGLFrameBuffer(const FramebufferSpecification &spec);
     ~OpenGLFrameBuffer();
 
-    void     Bind() override;
-    void     Unbind() override;
+    void Bind() override;
+    void Unbind() override;
+    void Resize(uint32_t w, uint32_t h) override;
+
     uint32_t GetColorAttachmentID() override;
 
 
-    void Init();
+    void UpdateAll();
 
     const FramebufferSpecification &GetSpecification() const override;
 };

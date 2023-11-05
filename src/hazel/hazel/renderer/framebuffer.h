@@ -24,7 +24,7 @@ class HAZEL_API Framebuffer
     virtual void Bind()   = 0;
     virtual void Unbind() = 0;
 
-
+    virtual void Resize(uint32_t w, uint32_t h) = 0;
 
     static Ref<Framebuffer> Create(const FramebufferSpecification &spec);
 };

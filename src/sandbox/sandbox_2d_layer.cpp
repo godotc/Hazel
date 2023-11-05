@@ -132,7 +132,7 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
             auto w = hazel::App::Get().GetWindow().GetWidth();
             auto h = hazel::App::Get().GetWindow().GetHeight();
 
-            auto bounds = m_CameraController.GetBound();
+            auto bounds = m_CameraController.GetBounds();
             auto pos    = m_CameraController.GetCamera().GetPosition();
 
             x = (x / w) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;

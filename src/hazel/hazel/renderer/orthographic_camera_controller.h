@@ -35,9 +35,9 @@ class HAZEL_API OrthographicsCameraController
     bool bRotation;
 
     glm::vec3 m_CameraPosition         = {0.f, 0.f, 0.f};
-    float     m_CameraRotation         = {0.f};
-    float     m_CameraTranslationSpeed = {6.f},
-          m_CameraRotationSpeed        = {90.f};
+    float     m_CameraRotation         = 0.f;
+    float     m_CameraTranslationSpeed = 6.f;
+    float     m_CameraRotationSpeed    = 90.f;
 
   public:
     OrthographicsCameraController(float aspect_ratio, bool rotation);
@@ -51,11 +51,11 @@ class HAZEL_API OrthographicsCameraController
     void  SetZoomLevel(float level);
     float GetZoomLevel() { return m_ZoomLevel; }
 
-    const OrthographicsCameraBounds &GetBound() { return m_Bounds; }
+    const OrthographicsCameraBounds &GetBounds() { return m_Bounds; }
+    void                             OnResize(float w, float h);
 
   private:
-    bool
-         OnMouseScrolled(MouseScrolledEvent &ev);
+    bool OnMouseScrolled(MouseScrolledEvent &ev);
     bool OnWindowResized(WindowResizeEvent &ev);
 
     void RecalcualteView();

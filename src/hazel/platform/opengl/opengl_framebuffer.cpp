@@ -13,17 +13,20 @@ namespace hazel {
 OpenGLFrameBuffer::OpenGLFrameBuffer(const FramebufferSpecification &spec)
 {
     m_Specification = spec;
-    Init();
+    UpdateAll();
 }
 
 OpenGLFrameBuffer::~OpenGLFrameBuffer()
 {
     glDeleteFramebuffers(1, &m_FramebufferID);
+    glDeleteTextures(1, &m_ColorAttachment);
+    glDeleteTextures(1, &m_DepthAttachment);
 }
 
 void OpenGLFrameBuffer::Bind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
+    glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 }
 
 void OpenGLFrameBuffer::Unbind()
@@ -31,13 +34,26 @@ void OpenGLFrameBuffer::Unbind()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void OpenGLFrameBuffer::Resize(uint32_t w, uint32_t h)
+{
+    m_Specification.Width  = w;
+    m_Specification.Height = h;
+    UpdateAll();
+}
+
 uint32_t OpenGLFrameBuffer::GetColorAttachmentID()
 {
     return m_ColorAttachment;
 }
 
-void OpenGLFrameBuffer::Init()
+void OpenGLFrameBuffer::UpdateAll()
 {
+    if (!m_FramebufferID) {
+        glDeleteFramebuffers(1, &m_FramebufferID);
+        glDeleteTextures(1, &m_ColorAttachment);
+        glDeleteTextures(1, &m_DepthAttachment);
+    }
+
     glCreateFramebuffers(1, &m_FramebufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
     {
