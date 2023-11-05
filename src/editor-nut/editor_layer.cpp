@@ -1,4 +1,8 @@
 
+#include "glm/ext/vector_float2.hpp"
+#include "hazel/core/log.h"
+#include "hazel/event/event.h"
+#include "hazel/event/mouse_event.h"
 #include "hz_pch.h"
 
 
@@ -7,7 +11,34 @@
 
 #include "editor_layer.h"
 #include "imgui.h"
+#include <any>
+#include <cstdint>
+#include <memory>
 
+static std::unordered_map<char, std::array<int, 2>> tile_block_map = {
+    {'w', {0, 10}},
+    {'R',  {1, 8}},
+    {'W', {1, 10}},
+    {'G', {5, 10}},
+    {'F',  {9, 7}},
+    {'f',  {8, 6}},
+    {'B', {11, 0}},
+};
+
+const int         map_width  = 24;
+const int         map_height = 12;
+const std::string game_map   = "fFFFFFFFFFFFFFFFFFFFFFFf"
+                               "fWWWWWWWWWWWWWWWWWWWWWWf"
+                               "fRWGWWWWWWWWWWWWGWWWWWWf"
+                               "fRWWWWWBWWWBWWWWWWWWWWWf"
+                               "fRWWGWWWWWWWWWWWGWWWWWWf"
+                               "fRWWWWWWWWWWWWWWWWWWWWWf"
+                               "fRWWGWWWWWWBWWWWWWWWWWWf"
+                               "fRWWWWWWBWWWWWWWGWWWWWWf"
+                               "fRWWGWWWWWWWWWGGGWWWWWWf"
+                               "fRWWWWWWWWWWWWWWWWWWWWWf"
+                               "fWWRRRRRRRRRRRRRRRRWWWWf"
+                               "fFFFFFFFFFFFFFFFFFFFFFFf";
 
 namespace hazel {
 
@@ -113,7 +144,7 @@ void EditorLayer::OnUpdate(Timestep ts)
             auto w = hazel::App::Get().GetWindow().GetWidth();
             auto h = hazel::App::Get().GetWindow().GetHeight();
 
-            auto bounds = m_CameraController.GetBound();
+            auto bounds = m_CameraController.GetBounds();
             auto pos    = m_CameraController.GetCamera().GetPosition();
 
             x = (x / w) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;
@@ -184,7 +215,7 @@ void EditorLayer::OnImGuiRender()
         }
     }
 
-    ImGui::Begin("TheSpace", NULL, window_flags);
+    ImGui::Begin("MainWindow", NULL, window_flags);
     {
         if (!opt_padding) {
             ImGui::PopStyleVar();
@@ -198,7 +229,7 @@ void EditorLayer::OnImGuiRender()
         ImGuiIO &io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
-            ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+            ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
             // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         }
@@ -248,17 +279,6 @@ void EditorLayer::OnImGuiRender()
         }
 
 
-
-        // bool b = true;
-        // ImGui::ShowDemoWindow(&b);
-        // ImGui::Begin("Profiling");
-        // for (auto &result : m_ProfileResults | s    {'f', {8, -4}},td::views::reverse)
-        // {
-        //     ImGui::Text("%-20s: %.3fms", result.Name, result.Time);
-        // }
-        // m_ProfileResults.clear();
-        // ImGui::End();
-
         if (ImGui::Begin("Settings")) {
             ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
             ImGui::DragFloat3("Quad Position", glm::value_ptr(m_QuadPosition));
@@ -281,9 +301,30 @@ void EditorLayer::OnImGuiRender()
             ImGui::End();
         }
 
-        if (ImGui::Begin("ViewPort")) {
-            uint32_t framebuffer_colorattachmetn = m_Framebuffer->GetColorAttachmentID();
-            ImGui::Image((void *)framebuffer_colorattachmetn, ImVec2{1280, 720}, ImVec2{0, 1}, ImVec2{1, 0});
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+        if (ImGui::Begin("ViewPort"))
+        {
+            ImGui::PopStyleVar();
+
+            const ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
+
+            const float x = viewport_panel_size.x,
+                        y = viewport_panel_size.y;
+
+            if (m_ViewportSize != glm::vec2{x, y})
+            {
+                HZ_INFO("Viewpor  resized: {} {}", x, y);
+                m_ViewportSize = {x, y};
+
+                m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+                m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+            }
+
+            uint32_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
+            ImGui::Image((void *)framebuffer_colorattachment,
+                         ImVec2{m_ViewportSize.x, m_ViewportSize.y},
+                         ImVec2{0, 1}, ImVec2{1, 0} // flip the image
+            );
             ImGui::End();
         }
 
@@ -294,6 +335,7 @@ void EditorLayer::OnImGuiRender()
 
 void EditorLayer::OnEvent(hazel::Event &event)
 {
+    m_CameraController.OnEvent(event);
 }
 
 void EditorLayer::Init()

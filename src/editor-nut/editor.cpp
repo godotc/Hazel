@@ -12,6 +12,8 @@
 
 #include "editor_layer.h"
 
+namespace hazel {
+using hazel::App;
 
 
 class HazelEditor : public hazel::App
@@ -19,8 +21,7 @@ class HazelEditor : public hazel::App
   public:
     HazelEditor() : hazel::App("Hazel Editor")
     {
-        HZ_INFO("Sandbox construct");
-        // PushLayer(new hazel::ExampleLayer);
+        HZ_INFO("Editor construct...");
         PushLayer(new hazel::EditorLayer());
         GetWindow().SetVSync(true);
     }
@@ -28,7 +29,9 @@ class HazelEditor : public hazel::App
 };
 
 
-hazel::App *hazel::CreateApplication()
+App *CreateApplication()
 {
     return new HazelEditor;
 }
+
+}; // namespace hazel

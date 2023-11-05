@@ -2,34 +2,10 @@
 // Created by nono on 2023-11-5
 //
 
+#include "glm/ext/vector_float2.hpp"
 #include "hazel.h"
 #include "hazel/renderer/practicle.h"
 
-
-static std::unordered_map<char, std::array<int, 2>> tile_block_map = {
-    {'w', {0, 10}},
-    {'R',  {1, 8}},
-    {'W', {1, 10}},
-    {'G', {5, 10}},
-    {'F',  {9, 7}},
-    {'f',  {8, 6}},
-    {'B', {11, 0}},
-};
-
-const int         map_width  = 24;
-const int         map_height = 12;
-const std::string game_map   = "fFFFFFFFFFFFFFFFFFFFFFFf"
-                               "fWWWWWWWWWWWWWWWWWWWWWWf"
-                               "fRWGWWWWWWWWWWWWGWWWWWWf"
-                               "fRWWWWWBWWWBWWWWWWWWWWWf"
-                               "fRWWGWWWWWWWWWWWGWWWWWWf"
-                               "fRWWWWWWWWWWWWWWWWWWWWWf"
-                               "fRWWGWWWWWWBWWWWWWWWWWWf"
-                               "fRWWWWWWBWWWWWWWGWWWWWWf"
-                               "fRWWGWWWWWWWWWGGGWWWWWWf"
-                               "fRWWWWWWWWWWWWWWWWWWWWWf"
-                               "fWWRRRRRRRRRRRRRRRRWWWWf"
-                               "fFFFFFFFFFFFFFFFFFFFFFFf";
 
 
 namespace hazel {
@@ -37,7 +13,10 @@ namespace hazel {
 class EditorLayer : public hazel::Layer
 {
 
+    Ref<Framebuffer> m_Framebuffer;
+
     OrthographicsCameraController m_CameraController{16 / 9.f, true};
+    glm::vec2                     m_ViewportSize = {0.f, 0.f};
 
     glm::vec4 m_ClearColor{0.0, 0.0, 0.0, 0.0};
     glm::vec3 m_QuadPosition = glm::vec3(1, 1, 0);
@@ -54,7 +33,6 @@ class EditorLayer : public hazel::Layer
     PraticleSystem m_PracticleSystem;
     PraticleProps  m_PracticleProps;
 
-    Ref<Framebuffer> m_Framebuffer;
 
   public:
     EditorLayer();

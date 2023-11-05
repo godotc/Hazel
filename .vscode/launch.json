@@ -10,9 +10,9 @@
             "request": "launch",
             "target": "${workspaceFolder}/bin/linux/debug/x86_64/hazel-editor-nut",
             "cwd": "${workspaceRoot}",
-            "valuesFormatting": "parseText",
+            "valuesFormatting": "prettyPrinters",
             "internalConsoleOptions": "openOnSessionStart",
-            "preLaunchTask": "build sandbox",
+            "preLaunchTask": "build editor",
         },
         {
             "name": "Sandbox(GDB)",

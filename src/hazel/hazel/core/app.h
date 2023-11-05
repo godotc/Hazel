@@ -44,9 +44,7 @@ class HAZEL_API App
   public:
     void Run();
     void Close();
-
-  public:
-    void PushLayer(Layer *layer);
+public: void PushLayer(Layer *layer);
     void PopLayer(Layer *layer);
 
     void PushOverlay(Layer *layer);
