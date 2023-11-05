@@ -7,13 +7,11 @@ add_packages("spdlog")
 target("hazel")
     set_kind("shared")
 
+    add_includedirs("./",{public = true})
+
     add_files("**.cpp")
     add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")
-
-
-
-    add_includedirs("./",{public = true})
 
     add_packages("spdlog","glfw", "glad")
 
@@ -29,9 +27,6 @@ target("hazel")
         end
     end
 
-    on_load(function (target)
-
-    end)
 
     on_config(function (target)
         if target:get("kind")=="shared" then

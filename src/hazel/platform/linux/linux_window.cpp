@@ -2,9 +2,6 @@
 
 #include "linux_window.h"
 
-#include "hazel/event/application_event.h"
-#include "hazel/event/key_event.h"
-#include "hazel/event/mouse_event.h"
 
 //
 #include <GLFW/glfw3.h>
@@ -14,6 +11,9 @@
 
 #include "hazel/core/log.h"
 
+#include "hazel/event/application_event.h"
+#include "hazel/event/key_event.h"
+#include "hazel/event/mouse_event.h"
 
 
 namespace hazel {
@@ -59,6 +59,7 @@ void LinuxWindow::Init(const WindowProps &props)
     {
         HZ_PROFILE_SCOPE("Create/Init GLFW Contex");
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
+        // m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, "helo", nullptr, nullptr);
         glfwMakeContextCurrent(m_Window);
 
         Window::m_Context = new hazel::OpenGLContext(m_Window);
