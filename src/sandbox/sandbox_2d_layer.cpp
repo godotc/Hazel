@@ -1,9 +1,8 @@
 //
 // Created by nono on 10/11/23.
-//
-#include "hazel/renderer/framebuffer.h"
 #include "hz_pch.h"
 
+#include "hazel/renderer/framebuffer.h"
 
 #include "glm/detail/qualifier.hpp"
 #include "glm/ext/vector_float2.hpp"

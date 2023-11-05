@@ -13,7 +13,8 @@ target("hazel")
     add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")
 
-    add_packages("spdlog","glfw", "glad")
+    add_packages("spdlog","glad")
+    add_packages("glfw", {public=true})
 
     add_deps("imgui-docking")
 
