@@ -69,6 +69,7 @@ void ImGuiLayer::OnAttach()
     }
 
 
+
     // TODO: detect the host opengl version, call imgui init automatically
     // GLint major, minor;
     // glGetIntegerv(GL_MAJOR_VERSION, &major);
@@ -120,13 +121,15 @@ void ImGuiLayer::End()
     }
 }
 
-void ImGuiLayer::OnImGuiRender()
+
+
+void ImGuiLayer::OnEvent(Event &event)
 {
-    // auto       &io  = ImGui::GetIO();
-    // static bool bOk = true;
-    // if (ImGui::MenuItem("Viewport", nullptr, io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
-    //     io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
-    // }
+    if (bBlockEvents) {
+        ImGuiIO &io = ImGui::GetIO();
+        event.bHandled |= event.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+        event.bHandled |= event.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+    }
 }
 
 } // namespace hazel

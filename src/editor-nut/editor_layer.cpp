@@ -1,13 +1,10 @@
 
 #include "glm/ext/vector_float2.hpp"
+#include "glm/gtc/type_ptr.hpp" #include "hazel/core/layer.h"
 #include "hazel/core/log.h"
 #include "hazel/event/event.h"
 #include "hazel/event/mouse_event.h"
 #include "hz_pch.h"
-
-
-#include "glm/gtc/type_ptr.hpp"
-#include "hazel/core/layer.h"
 
 #include "editor_layer.h"
 #include "imgui.h"
@@ -57,10 +54,16 @@ void EditorLayer::OnUpdate(Timestep ts)
 {
     HZ_PROFILE_SCOPE("Sandbox2d::OnUpdate");
 
+    // TODO: the camera's event is block by imgui_layer, but keybord event still handled by here
+    if (bViewPortFocusing) {
+        m_CameraController.OnUpdate(ts);
+    }
+
+    hazel::Render2D::ResetStats();
+
     m_Framebuffer->Bind();
     {
 
-        hazel::Render2D::ResetStats();
 
         {
             HZ_PROFILE_SCOPE("Renderer Prep");
@@ -68,7 +71,6 @@ void EditorLayer::OnUpdate(Timestep ts)
             hazel::RenderCommand::Clear();
         }
 
-        m_CameraController.OnUpdate(ts);
 
 
         {
@@ -301,33 +303,8 @@ void EditorLayer::OnImGuiRender()
             ImGui::End();
         }
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-        if (ImGui::Begin("ViewPort"))
-        {
-            ImGui::PopStyleVar();
 
-            const ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
-
-            const float x = viewport_panel_size.x,
-                        y = viewport_panel_size.y;
-
-            if (m_ViewportSize != glm::vec2{x, y})
-            {
-                HZ_INFO("Viewpor  resized: {} {}", x, y);
-                m_ViewportSize = {x, y};
-
-                m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-                m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-            }
-
-            uint32_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
-            ImGui::Image((void *)framebuffer_colorattachment,
-                         ImVec2{m_ViewportSize.x, m_ViewportSize.y},
-                         ImVec2{0, 1}, ImVec2{1, 0} // flip the image
-            );
-            ImGui::End();
-        }
-
+        ViewPort();
 
         ImGui::End();
     }
@@ -384,6 +361,44 @@ void EditorLayer::Init()
     m_PracticleProps.VelocityVariation = {4.f, 1.5f};
 
     m_PracticleProps.Position = {0.f, 0.f};
+}
+
+void EditorLayer::ViewPort()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+
+    if (ImGui::Begin("ViewPort"))
+    {
+        {
+            bViewPortFocusing = ImGui::IsWindowFocused();
+            bViewPortHovering = ImGui::IsWindowHovered();
+            // HZ_CORE_WARN("is foucused {}", bViewPortFocusing);
+            App::Get().GetImGuiLayer()->SetBlockEvents(!bViewPortFocusing || !bViewPortFocusing);
+        }
+
+        ImGui::PopStyleVar();
+
+        const ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
+
+        const float x = viewport_panel_size.x,
+                    y = viewport_panel_size.y;
+
+        if (m_ViewportSize != glm::vec2{x, y})
+        {
+            HZ_INFO("Viewpor  resized: {} {}", x, y);
+            m_ViewportSize = {x, y};
+
+            m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+        }
+
+        uint32_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
+        ImGui::Image((void *)framebuffer_colorattachment,
+                     ImVec2{m_ViewportSize.x, m_ViewportSize.y},
+                     ImVec2{0, 1}, ImVec2{1, 0} // flip the image
+        );
+        ImGui::End();
+    }
 }
 
 } // namespace hazel

@@ -137,8 +137,9 @@ void App::OnEvent(Event &ev)
     auto &Layers = m_LayerStack.GetLayers();
     for (auto it = Layers.end(); it != Layers.begin();) {
         (*--it)->OnEvent(ev);
-        if (ev.bHandled)
+        if (ev.bHandled) {
             break;
+        }
     }
 }
 

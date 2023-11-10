@@ -14,6 +14,8 @@ class EditorLayer : public hazel::Layer
 {
 
     Ref<Framebuffer> m_Framebuffer;
+    bool             bViewPortFocusing = false;
+    bool             bViewPortHovering = false;
 
     OrthographicsCameraController m_CameraController{16 / 9.f, true};
     glm::vec2                     m_ViewportSize = {0.f, 0.f};
@@ -41,13 +43,13 @@ class EditorLayer : public hazel::Layer
     void OnDetach() override;
 
     void OnUpdate(Timestep ts) override;
-
     void OnImGuiRender() override;
-
     void OnEvent(hazel::Event &event) override;
 
   private:
     void Init();
+
+    void ViewPort();
 };
 
 

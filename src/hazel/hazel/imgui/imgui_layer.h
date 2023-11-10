@@ -1,9 +1,7 @@
 #pragma once
 
 #include "hazel/core/layer.h"
-#include "hazel/event/application_event.h"
-#include "hazel/event/key_event.h"
-#include "hazel/event/mouse_event.h"
+
 #include "imgui.h"
 
 
@@ -11,6 +9,9 @@ namespace hazel {
 
 class HAZEL_API ImGuiLayer : public Layer
 {
+    bool bBlockEvents = true;
+
+
   public:
     ImGuiLayer();
 
@@ -18,10 +19,14 @@ class HAZEL_API ImGuiLayer : public Layer
   public:
     virtual void OnAttach() override;
     virtual void OnDetach() override;
-    virtual void OnImGuiRender() override;
+    virtual void OnImGuiRender() override{};
+    void         OnEvent(Event &event) override;
 
     void Begin();
     void End();
+
+
+    void SetBlockEvents(bool bBlock) { bBlockEvents = bBlock; }
 };
 
 } // namespace hazel
