@@ -1,32 +1,29 @@
 //
 // Created by nono on 9/16/23.
 //
-#include "hz_pch.h"
 
-#include "linux_input.h"
+#include "hazel/core/input.h"
 
 #include "GLFW/glfw3.h"
 #include "hazel/core/app.h"
 
 namespace hazel {
 
-Input *Input::m_Instance = new LinuxInput();
-
-bool LinuxInput::IsKeyPressedImpl(int keycode)
+bool Input::IsKeyPressed(int keycode)
 {
     auto *Window = any_cast<GLFWwindow *>(App::Get().GetWindow().GetNativeWindow());
     auto  state  = glfwGetKey(Window, keycode);
     return state == GLFW_PRESS || state == GLFW_REPEAT;
 }
 
-bool LinuxInput::IsMouseButtonPressedImpl(int button)
+bool Input::IsMouseButtonPressed(int button)
 {
     auto *Window = any_cast<GLFWwindow *>(App::Get().GetWindow().GetNativeWindow());
     auto  state  = glfwGetMouseButton(Window, button);
     return state == GLFW_PRESS;
 }
 
-std::pair<float, float> LinuxInput::GetMousePosImpl()
+std::pair<float, float> Input::GetMousePos()
 {
     auto  *Window = any_cast<GLFWwindow *>(App::Get().GetWindow().GetNativeWindow());
     double x, y;
@@ -34,11 +31,11 @@ std::pair<float, float> LinuxInput::GetMousePosImpl()
     return {x, y};
 }
 
-float LinuxInput::GetMouseXImpl()
+float Input::GetMouseX()
 {
     return GetMousePos().first;
 }
-float LinuxInput::GetMouseYImpl()
+float Input::GetMouseY()
 {
     return GetMousePos().second;
 }
