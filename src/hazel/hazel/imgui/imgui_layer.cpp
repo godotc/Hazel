@@ -4,7 +4,6 @@
 
 
 #include "GLFW/glfw3.h"
-#include "hazel/core/base.h"
 
 
 #include "imgui.h"
@@ -29,18 +28,24 @@ void ImGuiLayer::OnAttach()
 
     HZ_CORE_TRACE("{} Attacting...", GetName());
 
-
     IMGUI_CHECKVERSION();
     HZ_CORE_INFO("Imgui: v{}", IMGUI_VERSION);
 
+
+
     auto ctx = ImGui::CreateContext();
     ImGui::SetCurrentContext(ctx);
+
+    // ctx->DebugLogFlags |= ImGuiDebugLogFlags_EventViewport | ImGuiDebugLogFlags_OutputToTTY;
+
 
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#if HAZEL_ENABLE_VIEWPORTS
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
 
     io.DisplaySize = ImVec2(1, 1);
@@ -62,6 +67,7 @@ void ImGuiLayer::OnAttach()
     else {
         HZ_CORE_ERROR("imgui glfw backend initialize failed");
     }
+
 
     // TODO: detect the host opengl version, call imgui init automatically
     // GLint major, minor;
@@ -101,15 +107,12 @@ void ImGuiLayer::End()
     App &app       = App::Get();
     io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
-
-
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
     // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere. //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         GLFWwindow *backup_current_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
@@ -119,6 +122,11 @@ void ImGuiLayer::End()
 
 void ImGuiLayer::OnImGuiRender()
 {
+    // auto       &io  = ImGui::GetIO();
+    // static bool bOk = true;
+    // if (ImGui::MenuItem("Viewport", nullptr, io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)) {
+    //     io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
+    // }
 }
 
 } // namespace hazel

@@ -1,3 +1,4 @@
+#include "hazel/core/window.h"
 #include "hz_pch.h"
 
 
@@ -25,7 +26,7 @@ namespace hazel {
 
 App *App::Application = nullptr;
 
-App::App()
+App::App(const std::string &name)
 {
     HZ_PROFILE_FUNCTION();
 
@@ -33,7 +34,8 @@ App::App()
     HZ_CORE_ASSERT(!Application, "Already a application instance");
     Application = this;
 
-    m_Window = Scope<Window>(Window::Create());
+    m_Window = Scope<Window>(Window::Create(WindowProps(name)));
+
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
     m_Window->SetVSync(true);
 

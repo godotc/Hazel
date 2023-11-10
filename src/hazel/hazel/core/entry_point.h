@@ -2,7 +2,7 @@
 
 #include "hazel.h"
 
-#ifdef HAZEL_LINKAGE_PROGRAM
+#ifdef HAZEL_ENTRY_PROGRAM
 
 extern hazel::App *hazel::CreateApplication();
 

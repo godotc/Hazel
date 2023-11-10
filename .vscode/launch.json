@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Editor(GDB)",
+            "type": "gdb",
+            "request": "launch",
+            "target": "${workspaceFolder}/bin/linux/debug/x86_64/hazel-editor-nut",
+            "cwd": "${workspaceRoot}",
+            "valuesFormatting": "parseText",
+            "internalConsoleOptions": "openOnSessionStart",
+            "preLaunchTask": "build sandbox",
+        },
+        {
             "name": "Sandbox(GDB)",
             "type": "gdb",
             "request": "launch",
@@ -13,16 +23,6 @@
             "valuesFormatting": "parseText",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": "build sandbox",
-        },
-        {
-            "name": "SandboxRelease(GDB)",
-            "type": "gdb",
-            "request": "launch",
-            "target": "${workspaceFolder}/bin/linux/release/x86_64/sandbox",
-            "cwd": "${workspaceRoot}",
-            "valuesFormatting": "parseText",
-            "preLaunchTask": "build sandbox",
-            "internalConsoleOptions": "openOnSessionStart",
         },
         {
             "name": "Sandbox(LLDB)",

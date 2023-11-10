@@ -1,47 +1,28 @@
-//
-// Created by nono on 10/11/23.
+
 #include "hz_pch.h"
 
-#include "hazel/renderer/framebuffer.h"
-
-#include "glm/detail/qualifier.hpp"
-#include "glm/ext/vector_float2.hpp"
-#include "hazel/renderer/subtexture_2d.h"
-#include "hazel/renderer/texture.h"
-
-#include "glm/fwd.hpp"
-#include "hazel/core/app.h"
-#include "hazel/core/input.h"
-#include "hazel/renderer/render_2d.h"
 
 #include "glm/gtc/type_ptr.hpp"
+#include "hazel/core/layer.h"
+
+#include "editor_layer.h"
 #include "imgui.h"
-#include "sandbox_2d_layer.h"
-#include <cmath>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <map>
-#include <math.h>
 
 
-void Sandbox2D::OnAttach()
+namespace hazel {
+
+EditorLayer::EditorLayer() : Layer("Editor Layer") {}
+
+void EditorLayer::OnAttach()
 {
-    hazel::FramebufferSpecification spec;
-    spec.Width    = 1280;
-    spec.Height   = 720;
-    m_Framebuffer = hazel::Framebuffer::Create(spec);
-
-
     Init();
 }
 
-void Sandbox2D::OnDetach()
+void EditorLayer::OnDetach()
 {
-    Layer::OnDetach();
 }
 
-void Sandbox2D::OnUpdate(hazel::Timestep timestep)
+void EditorLayer::OnUpdate(Timestep ts)
 {
     HZ_PROFILE_SCOPE("Sandbox2d::OnUpdate");
 
@@ -56,7 +37,7 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
             hazel::RenderCommand::Clear();
         }
 
-        m_CameraController.OnUpdate(timestep);
+        m_CameraController.OnUpdate(ts);
 
 
         {
@@ -147,31 +128,14 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
             }
         }
 
-        m_PracticleSystem.OnUpdate(timestep);
+        m_PracticleSystem.OnUpdate(ts);
         m_PracticleSystem.OnRender(m_CameraController.GetCamera());
     }
     m_Framebuffer->Unbind();
-}
+};
 
-
-void Sandbox2D::OnImGuiRender()
+void EditorLayer::OnImGuiRender()
 {
-    // READ THIS !!!
-    // TL;DR; this demo is more complicated than what most users you would normally use.
-    // If we remove all options we are showcasing, this demo would become:
-    //     void ShowExampleAppDockSpace()
-    //     {
-
-    // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-    //     }
-    // In most cases you should be able to just call DockSpaceOverViewport() and ignore all the code below!
-    // In this specific demo, we are not using DockSpaceOverViewport() because:
-    // - (1) we allow the host window to be floating/moveable instead of filling the viewport (when opt_fullscreen == false)
-    // - (2) we allow the host window to have padding (when opt_padding == true)
-    // - (3) we expose many flags and need a way to have them visible.
-    // - (4) we have a local menu bar in the host window (vs. you could use BeginMainMenuBar() + DockSpaceOverViewport()
-    //      in your code, but we don't here because we allow the window to be floating)
-
     static bool               opt_fullscreen  = true;
     static bool               opt_padding     = true;
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -319,7 +283,7 @@ void Sandbox2D::OnImGuiRender()
 
         if (ImGui::Begin("ViewPort")) {
             uint32_t framebuffer_colorattachmetn = m_Framebuffer->GetColorAttachmentID();
-            ImGui::Image((void *)framebuffer_colorattachmetn, ImVec2{1280, 720});
+            ImGui::Image((void *)framebuffer_colorattachmetn, ImVec2{1280, 720}, ImVec2{0, 1}, ImVec2{1, 0});
             ImGui::End();
         }
 
@@ -328,8 +292,17 @@ void Sandbox2D::OnImGuiRender()
     }
 }
 
-void Sandbox2D::Init()
+void EditorLayer::OnEvent(hazel::Event &event)
 {
+}
+
+void EditorLayer::Init()
+{
+    hazel::FramebufferSpecification spec;
+    spec.Width    = 1280;
+    spec.Height   = 720;
+    m_Framebuffer = hazel::Framebuffer::Create(spec);
+
     m_CameraController.SetZoomLevel(3);
 
     m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
@@ -371,7 +344,4 @@ void Sandbox2D::Init()
     m_PracticleProps.Position = {0.f, 0.f};
 }
 
-void Sandbox2D::OnEvent(hazel::Event &event)
-{
-    m_CameraController.OnEvent(event);
-}
+} // namespace hazel
