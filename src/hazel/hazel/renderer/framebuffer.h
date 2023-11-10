@@ -16,8 +16,9 @@ struct HAZEL_API FramebufferSpecification {
 
 class HAZEL_API Framebuffer
 {
-
   public:
+    virtual ~Framebuffer() = default;
+
     virtual const FramebufferSpecification &GetSpecification() const = 0;
     virtual uint32_t                        GetColorAttachmentID()   = 0;
 

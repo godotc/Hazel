@@ -61,6 +61,11 @@ class HAZEL_API Event
     friend class EventDispatcher;
 
   public:
+    bool bHandled = false;
+
+  public:
+    ~Event() = default;
+
     [[nodiscard]] virtual EventType   GetEventType() const     = 0;
     [[nodiscard]] virtual const char *GetName() const          = 0;
     [[nodiscard]] virtual int         GetCategoryFlags() const = 0;
@@ -70,9 +75,6 @@ class HAZEL_API Event
     {
         return GetCategoryFlags() & category;
     }
-
-  public:
-    bool bHandled = false;
 };
 
 class EventDispatcher
