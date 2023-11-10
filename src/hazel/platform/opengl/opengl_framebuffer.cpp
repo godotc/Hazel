@@ -10,6 +10,8 @@
 
 namespace hazel {
 
+static const uint32_t s_MaxFrameBUfferSize = 8192;
+
 OpenGLFrameBuffer::OpenGLFrameBuffer(const FramebufferSpecification &spec)
 {
     m_Specification = spec;
@@ -36,6 +38,12 @@ void OpenGLFrameBuffer::Unbind()
 
 void OpenGLFrameBuffer::Resize(uint32_t w, uint32_t h)
 {
+    if (w == 0 || h == 0 || w > s_MaxFrameBUfferSize || h > s_MaxFrameBUfferSize) {
+        HZ_CORE_WARN("Window resized out of range {} {}", w, h);
+        return;
+    }
+
+
     m_Specification.Width  = w;
     m_Specification.Height = h;
     UpdateAll();

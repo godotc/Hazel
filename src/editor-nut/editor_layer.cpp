@@ -383,7 +383,7 @@ void EditorLayer::ViewPort()
         const float x = viewport_panel_size.x,
                     y = viewport_panel_size.y;
 
-        if (m_ViewportSize != glm::vec2{x, y})
+        if (m_ViewportSize != glm::vec2{x, y} && x > 0 && y > 0)
         {
             HZ_INFO("Viewpor  resized: {} {}", x, y);
             m_ViewportSize = {x, y};
