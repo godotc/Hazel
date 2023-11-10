@@ -1,3 +1,4 @@
 [submodule "pkgs/imgui-docking"]
 	path = pkgs/imgui-docking
 	url = git@github.com:godotc/imgui-docking.git
+	branch = docking
