@@ -33,7 +33,7 @@ namespace impl {
 struct UTILS_API FPathImpl {
     explicit FPathImpl(const char *the_path)
     {
-        //        HZ_PROFILE_FUNCTION();
+        // HZ_PROFILE_FUNCTION();
         absolute_path = ProjectRoot() / the_path;
     }
 

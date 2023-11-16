@@ -40,11 +40,14 @@ class HAZEL_API Render2D
     static void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color);
     static void DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color);
 
+    static void DrawQuad(const glm::mat4 &transf, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
+
     static void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const Ref<Texture2D> &texture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
     static void DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<Texture2D> &texture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
 
     static void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const Ref<SubTexture2D> &subtexture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
     static void DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<SubTexture2D> &subtexture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
+
 
     /**
      * @brief
@@ -62,6 +65,7 @@ class HAZEL_API Render2D
 
     static void DrawRotateQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const Ref<SubTexture2D> &subtexture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
     static void DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const Ref<SubTexture2D> &subtexture, float tiling = 1.f, glm::vec4 tint = glm::vec4(1.f));
+
 
     static Statistics &GetStatics();
     static void        ResetStats();

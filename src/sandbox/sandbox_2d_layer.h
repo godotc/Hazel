@@ -5,7 +5,9 @@
 #include "hazel.h"
 
 
+#include "hazel/core/base.h"
 #include "hazel/renderer/practicle.h"
+#include "hazel/scene/scene.h"
 
 
 static std::unordered_map<char, std::array<int, 2>> tile_block_map = {
@@ -57,6 +59,8 @@ class Sandbox2D : public hazel::Layer
     PraticleProps  m_PracticleProps;
 
     hazel::Ref<hazel::Framebuffer> m_Framebuffer;
+
+    hazel::Ref<hazel::Scene> m_ActiveScene;
 
 
   public:

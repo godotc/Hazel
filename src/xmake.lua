@@ -2,6 +2,8 @@
 add_requires("fmt", "glm", "spdlog")
 add_requires("stb", {configs = {shared=true,  debug=true}})
 
+add_requires("entt" ,{configs = {debug=true}})
+add_packages("entt", {public=true})
 
 add_packages("fmt", "glm", "spdlog","stb")
 
