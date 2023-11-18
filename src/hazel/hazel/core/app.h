@@ -3,6 +3,7 @@
 
 #include "hazel/imgui/imgui_layer.h"
 #include "hazel/renderer/framebuffer.h"
+#include "imgui.h"
 #include "layer_stack.h"
 #include "window.h"
 
@@ -33,6 +34,8 @@ class HAZEL_API App
     bool bRunning   = true;
     bool bMinimized = false;
 
+  public:
+    ImGuiContext *m_ImguiContext = nullptr;
 
   public:
     App(const std::string &name = "Hazel Engine");

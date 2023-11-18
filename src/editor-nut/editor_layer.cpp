@@ -1,6 +1,7 @@
 
 #include "glm/ext/vector_float2.hpp"
 #include "glm/gtc/type_ptr.hpp" #include "hazel/core/layer.h"
+#include "hazel/core/app.h"
 #include "hazel/core/log.h"
 #include "hazel/event/event.h"
 #include "hazel/event/mouse_event.h"
@@ -43,6 +44,8 @@ EditorLayer::EditorLayer() : Layer("Editor Layer") {}
 
 void EditorLayer::OnAttach()
 {
+    ImGui::SetCurrentContext(App::Get().m_ImguiContext);
+
     Init();
 }
 

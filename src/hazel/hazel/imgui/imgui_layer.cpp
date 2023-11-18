@@ -32,8 +32,8 @@ void ImGuiLayer::OnAttach()
     HZ_CORE_INFO("Imgui: v{}", IMGUI_VERSION);
 
 
-
-    auto ctx = ImGui::CreateContext();
+    ImGuiContext *ctx         = ImGui::CreateContext();
+    App::Get().m_ImguiContext = ctx;
     ImGui::SetCurrentContext(ctx);
 
     // ctx->DebugLogFlags |= ImGuiDebugLogFlags_EventViewport | ImGuiDebugLogFlags_OutputToTTY;

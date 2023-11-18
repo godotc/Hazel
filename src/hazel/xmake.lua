@@ -16,7 +16,7 @@ target("hazel")
     add_packages("spdlog","glad")
     add_packages("glfw", {public=true})
 
-    add_deps("imgui-docking")
+    add_deps("imgui-docking", {public=true})
 
 
     if is_os("windows") then

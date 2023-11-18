@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Editor LLDB",
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "windows": {
+                "program": "${workspaceFolder}/bin/windows/debug/x64/hazel-editor-nut",
+            },
+            "valuesFormatting": "parseText",
+            "preLaunchTask": "build editor"
+        },
+        {
             "name": "Editor(GDB)",
             "type": "gdb",
             "request": "launch",

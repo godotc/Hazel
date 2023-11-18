@@ -1,9 +1,9 @@
 #include "scene.h"
-#include "entt/entity/fwd.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "hazel/renderer/render_2d.h"
 #include "hazel/scene/component.h"
+
 namespace hazel {
 
 

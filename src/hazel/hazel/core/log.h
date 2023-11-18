@@ -2,8 +2,8 @@
 
 #include "base.h"
 
-#include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+
 
 
 namespace hazel {

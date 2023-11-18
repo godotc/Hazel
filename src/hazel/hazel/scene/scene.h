@@ -1,4 +1,5 @@
 #pragma once
+#include "__microshit_api_hazel.h"
 #include "entt/entity/fwd.hpp"
 #include "hazel/core/timestep.h"
 #include <entt/fwd.hpp>
@@ -9,7 +10,7 @@
 
 namespace hazel {
 
-class Scene
+class HAZEL_API Scene
 {
     entt::registry m_Registry;
 

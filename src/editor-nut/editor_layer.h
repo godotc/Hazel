@@ -25,7 +25,9 @@ class EditorLayer : public hazel::Layer
     glm::vec4 m_FlatColor{1.f, 0.0, 0.0, 1.f};
     float     m_Shiftting[2] = {1, 1};
 
-    Ref<Texture2D>    m_FaceTexture, m_ArchTexture, m_BlockTexture;
+
+    Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
+
     Ref<Texture2D>    m_TinyTownSheet;
     Ref<SubTexture2D> m_SubBlock[12][11];
     Ref<SubTexture2D> m_WaterBuck;

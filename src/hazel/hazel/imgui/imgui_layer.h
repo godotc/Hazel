@@ -11,7 +11,6 @@ class HAZEL_API ImGuiLayer : public Layer
 {
     bool bBlockEvents = true;
 
-
   public:
     ImGuiLayer();
 
