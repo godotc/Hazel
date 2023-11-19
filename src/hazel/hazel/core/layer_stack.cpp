@@ -1,17 +1,33 @@
 
 #include "layer_stack.h"
 #include <algorithm>
+#include <cstddef>
 namespace hazel {
 
 LayerStack ::LayerStack()
 {
 }
 
+
+
 LayerStack::~LayerStack()
 {
-    for (Layer *layer : m_Layers)
-        delete layer;
+    Cleanup();
 }
+
+void LayerStack::Cleanup()
+{
+    if (!bCleand) {
+        for (Layer *layer : m_Layers) {
+            if (layer) {
+                delete layer;
+                layer = nullptr;
+            }
+        }
+        bCleand = true;
+    }
+}
+
 
 void LayerStack ::PushLayer(Layer *layer)
 {

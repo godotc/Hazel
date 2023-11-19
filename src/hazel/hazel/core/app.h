@@ -5,6 +5,7 @@
 #include "hazel/renderer/framebuffer.h"
 #include "imgui.h"
 #include "layer_stack.h"
+#include "utils/delegate.h"
 #include "window.h"
 
 #include "hazel/event/application_event.h"
@@ -22,14 +23,16 @@
 namespace hazel {
 
 
+
 class HAZEL_API App
 {
     static App *Application;
 
-    Scope<Window> m_Window;
-    ImGuiLayer   *m_ImGuiLayer;
-    LayerStack    m_LayerStack;
-    float         m_LastFrameTime = 0.f;
+    LayerStack m_LayerStack;
+    Window    *m_Window;
+
+    ImGuiLayer *m_ImGuiLayer;
+    float       m_LastFrameTime = 0.f;
 
     bool bRunning   = true;
     bool bMinimized = false;
@@ -37,11 +40,15 @@ class HAZEL_API App
   public:
     ImGuiContext *m_ImguiContext = nullptr;
 
-  public:
-    App(const std::string &name = "Hazel Engine");
-    virtual ~App() = default;
+    using OnAppDestrouction = MulticastDelegate<>;
+    OnAppDestrouction OnAppBeginDestrouctionDelegate;
+    OnAppDestrouction OnAppEndDestrouctionDelegate;
+
 
   public:
+    App(const std::string &name = "Hazel Engine");
+    virtual ~App();
+
     static inline App &Get() { return *Application; }
 
   public:
@@ -51,11 +58,10 @@ class HAZEL_API App
   public:
     void PushLayer(Layer *layer);
     void PopLayer(Layer *layer);
-
-    ImGuiLayer *GetImGuiLayer() { return m_ImGuiLayer; }
-
     void PushOverlay(Layer *layer);
     void PopOverlay(Layer *layer);
+
+    ImGuiLayer *GetImGuiLayer() { return m_ImGuiLayer; }
 
     inline Window &GetWindow() { return *m_Window; }
 

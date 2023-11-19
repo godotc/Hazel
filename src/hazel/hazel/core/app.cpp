@@ -1,5 +1,8 @@
-#include "hazel/core/window.h"
+#include "hazel/core/layer_stack.h"
 #include "hz_pch.h"
+
+#include "hazel/core/base.h"
+#include "hazel/core/window.h"
 
 
 #include "app.h"
@@ -20,6 +23,7 @@
 
 // tmp
 #include "GLFW/glfw3.h"
+#include <ranges>
 
 namespace hazel {
 
@@ -34,7 +38,7 @@ App::App(const std::string &name)
     HZ_CORE_ASSERT(!Application, "Already a application instance");
     Application = this;
 
-    m_Window = Scope<Window>(Window::Create(WindowProps(name)));
+    m_Window = Window::Create(WindowProps(name));
 
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
     m_Window->SetVSync(true);
@@ -44,6 +48,18 @@ App::App(const std::string &name)
 
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
+}
+
+App::~App()
+{
+    OnAppBeginDestrouctionDelegate.Brocast();
+
+    m_LayerStack.Cleanup();
+
+    OnAppEndDestrouctionDelegate.Brocast();
+
+    // the opengl context
+    delete m_Window;
 }
 
 void App::Run()
@@ -71,8 +87,9 @@ void App::Run()
                 m_ImGuiLayer->Begin();
                 {
                     HZ_PROFILE_SCOPE("LayerStack: Imgui Render");
-                    for (Layer *layer : m_LayerStack.GetLayers())
+                    for (Layer *layer : m_LayerStack.GetLayers()) {
                         layer->OnImGuiRender();
+                    }
                 }
                 m_ImGuiLayer->End();
             }
@@ -84,7 +101,8 @@ void App::Run()
 
     {
         HZ_PROFILE_SCOPE("LayerStack: all OnDetach");
-        for (auto layer : m_LayerStack.GetLayers()) {
+        for (auto layer : m_LayerStack.GetLayers() | std::views::reverse) {
+            HZ_CORE_INFO("Detaching {}...", layer->GetName());
             layer->OnDetach();
         }
     }
