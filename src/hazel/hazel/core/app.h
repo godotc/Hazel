@@ -38,7 +38,6 @@ class HAZEL_API App
     bool bMinimized = false;
 
   public:
-    ImGuiContext *m_ImguiContext = nullptr;
 
     using OnAppDestrouction = MulticastDelegate<>;
     OnAppDestrouction OnAppBeginDestrouctionDelegate;

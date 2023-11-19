@@ -72,11 +72,11 @@ OpenGLTexture2D::~OpenGLTexture2D()
 
     // GL_CHECK_HEALTH();
     if (m_TextureID != 0) {
-        // HZ_CORE_INFO("Deleted the texture: {}, texture id: {}", m_Path, m_TextureID);
+        HZ_CORE_INFO("Deleted the texture: {}, texture id: {}", m_Path, m_TextureID);
         glDeleteTextures(1, &m_TextureID);
         // HZ_CORE_INFO("Deleted the texture: {}, texture id: {}", m_Path, m_TextureID);
         // glFinish();
-        // m_TextureID = 0;
+        m_TextureID = 0;
     }
 }
 

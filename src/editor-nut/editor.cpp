@@ -24,6 +24,7 @@ class HazelEditor : public hazel::App
         HZ_INFO("Editor construct...");
         PushLayer(new hazel::EditorLayer());
         GetWindow().SetVSync(true);
+        RESET_IMGUI_CONTEXT();
     }
     ~HazelEditor() override = default;
 };

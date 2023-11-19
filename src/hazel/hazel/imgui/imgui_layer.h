@@ -1,5 +1,6 @@
 #pragma once
 
+#include "__microshit_api_hazel.h"
 #include "hazel/core/layer.h"
 
 #include "imgui.h"
@@ -7,7 +8,11 @@
 #include <cstddef>
 
 
+
 namespace hazel {
+
+extern HAZEL_API ImGuiContext *g_ImguiContext;
+#define RESET_IMGUI_CONTEXT() ImGui::SetCurrentContext(g_ImguiContext);
 
 class HAZEL_API ImGuiLayer : public Layer
 {
@@ -24,10 +29,6 @@ class HAZEL_API ImGuiLayer : public Layer
 
     void Begin();
     void End();
-
-    // Reset the ctx when cross dll bound on micro shit
-    void ResetTheImguiContex();
-
 
     void SetBlockEvents(bool bBlock) { bBlockEvents = bBlock; }
 };

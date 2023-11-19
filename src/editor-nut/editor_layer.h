@@ -2,8 +2,9 @@
 // Created by nono on 2023-11-5
 //
 
-#include "glm/ext/vector_float2.hpp"
 #include "hazel.h"
+
+#include "glm/ext/vector_float2.hpp"
 #include "hazel/renderer/practicle.h"
 
 
@@ -40,6 +41,7 @@ class EditorLayer : public hazel::Layer
 
   public:
     EditorLayer();
+    ~EditorLayer();
 
     void OnAttach() override;
     void OnDetach() override;

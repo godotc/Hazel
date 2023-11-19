@@ -42,10 +42,14 @@ namespace hazel {
 
 EditorLayer::EditorLayer() : Layer("Editor Layer") {}
 
+EditorLayer::~EditorLayer()
+{
+    HZ_INFO("count: {} ", m_TinyTownSheet.use_count());
+    m_TinyTownSheet.reset();
+}
+
 void EditorLayer::OnAttach()
 {
-    ImGui::SetCurrentContext(App::Get().m_ImguiContext);
-
     Init();
 }
 
@@ -80,9 +84,9 @@ void EditorLayer::OnUpdate(Timestep ts)
             HZ_PROFILE_SCOPE("Renderer Draw-Calls");
             hazel::Render2D::BeginScene(m_CameraController.GetCamera());
 
-            // hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(36.f), m_ArchTexture);
-            // hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{10, 10, 1}, {2, 2}, glm::radians(18.f), {1, 0, 0, 1});
-            // hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
+            hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(36.f), m_ArchTexture);
+            hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{10, 10, 1}, {2, 2}, glm::radians(18.f), {1, 0, 0, 1});
+            hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
 
             // tilesheet sample
             {
@@ -129,16 +133,16 @@ void EditorLayer::OnUpdate(Timestep ts)
             hazel::Render2D::EndScene();
 
 
-            // hazel::Render2D::BeginScene(m_CameraController.GetCamera());
-            // for (float y = -5.f; y < 5.f; y += 0.5f) {
-            //     for (float x = -5.f; x < 5.f; x += 0.5f) {
-            //         glm::vec2 rb    = {sin(x), cos(y * x)};
-            //         glm::vec4 color = glm::vec4(rb, tan(y), 0.3f);
+            hazel::Render2D::BeginScene(m_CameraController.GetCamera());
+            for (float y = -5.f; y < 5.f; y += 0.5f) {
+                for (float x = -5.f; x < 5.f; x += 0.5f) {
+                    glm::vec2 rb    = {sin(x), cos(y * x)};
+                    glm::vec4 color = glm::vec4(rb, tan(y), 0.3f);
 
-            //         hazel::Render2D::DrawQuad(glm::vec2{x, y}, {1, 1}, color);
-            //     }
-            // }
-            // hazel::Render2D::EndScene();
+                    hazel::Render2D::DrawQuad(glm::vec2{x, y}, {1, 1}, color);
+                }
+            }
+            hazel::Render2D::EndScene();
         }
 
 

@@ -15,10 +15,13 @@
 #include "hazel/core/app.h"
 #include "hazel/core/log.h"
 #include "platform/linux/linux_window.h"
+#include <cstddef>
 
 
 
 namespace hazel {
+
+ImGuiContext *g_ImguiContext = nullptr;
 
 ImGuiLayer::ImGuiLayer() : Layer("ImGuILayer") {}
 
@@ -32,9 +35,8 @@ void ImGuiLayer::OnAttach()
     HZ_CORE_INFO("Imgui: v{}", IMGUI_VERSION);
 
 
-    ImGuiContext *ctx         = ImGui::CreateContext();
-    App::Get().m_ImguiContext = ctx;
-    ImGui::SetCurrentContext(ctx);
+    g_ImguiContext = ImGui::CreateContext();
+    ImGui::SetCurrentContext(g_ImguiContext);
 
     // ctx->DebugLogFlags |= ImGuiDebugLogFlags_EventViewport | ImGuiDebugLogFlags_OutputToTTY;
 
@@ -119,11 +121,6 @@ void ImGuiLayer::End()
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
-}
-
-void ImGuiLayer::ResetTheImguiContex()
-{
-    ImGui::SetCurrentContext(App::Get().m_ImguiContext);
 }
 
 

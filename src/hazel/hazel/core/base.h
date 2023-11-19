@@ -54,6 +54,8 @@ using Ref = std::shared_ptr<T>;
 template <class T, class... Args>
 constexpr Ref<T> CreateRef(Args &&...args) { return std::make_shared<T>(std::forward<Args>(args)...); }
 
+template <class T>
+using Weak = std::weak_ptr<T>;
 
 
 }; // namespace hazel
