@@ -121,6 +121,11 @@ void ImGuiLayer::End()
     }
 }
 
+void ImGuiLayer::ResetTheImguiContex()
+{
+    ImGui::SetCurrentContext(App::Get().m_ImguiContext);
+}
+
 
 
 void ImGuiLayer::OnEvent(Event &event)

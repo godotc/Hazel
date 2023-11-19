@@ -78,15 +78,14 @@ void LinuxWindow::Init(const WindowProps &props)
 void LinuxWindow::ShutDown()
 {
     HZ_PROFILE_FUNCTION();
-    ;
 
+    HZ_CORE_INFO("Deleting window context of opengl");
     glfwDestroyWindow(m_Window);
 }
 
 void LinuxWindow::OnUpdate()
 {
     HZ_PROFILE_FUNCTION();
-    ;
 
     glfwPollEvents();
     m_Context->SwapBuffers();
@@ -95,7 +94,6 @@ void LinuxWindow::OnUpdate()
 void LinuxWindow::SetVSync(bool bEnable)
 {
     HZ_PROFILE_FUNCTION();
-    ;
 
     glfwSwapInterval(bEnable ? 1 : 0);
     m_Data.bVSync = bEnable;

@@ -30,6 +30,8 @@
 
 void Sandbox2D::OnAttach()
 {
+    hazel::App::Get().GetImGuiLayer()->ResetTheImguiContex();
+
     hazel::FramebufferSpecification spec;
     spec.Width    = 1280;
     spec.Height   = 720;
@@ -248,7 +250,7 @@ void Sandbox2D::OnImGuiRender()
     //     // Submit the DockSpace
     //     ImGuiIO &io = ImGui::GetIO();
     //     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-    //     {
+    //
     //         ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
     //         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     //         // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());

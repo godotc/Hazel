@@ -7,6 +7,7 @@
 
 namespace hazel {
 
+// static int ____i = 0;
 SubTexture2D::SubTexture2D(const Ref<Texture2D> &texture, const glm::vec2 &min, const glm::vec2 &max)
 {
     // I make the sequence wrong !
@@ -15,6 +16,16 @@ SubTexture2D::SubTexture2D(const Ref<Texture2D> &texture, const glm::vec2 &min, 
     m_TexCoords[1] = {max.x, min.y};
     m_TexCoords[2] = {max.x, max.y};
     m_TexCoords[3] = {min.x, max.y};
+
+    // ++____i;
+    // HZ_CORE_INFO("Subtexure create, the ref of master texture path: {}, and {}", m_Textrue->GetTextureID(), ____i);
+}
+
+SubTexture2D::~SubTexture2D()
+{
+
+    // --____i;
+    // HZ_CORE_INFO("Subtexure destruction, the ref of master texture path: {}, and {}", m_Textrue->GetTextureID(), ____i);
 }
 
 /**

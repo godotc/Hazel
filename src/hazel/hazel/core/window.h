@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include "hazel/core/log.h"
 #include "hazel/event/event.h"
 #include "hazel/renderer/graphics_context.h"
 #include <any>
@@ -31,7 +32,10 @@ class HAZEL_API Window
   public:
     using EventCallBackFn = std::function<void(Event &)>;
 
-    virtual ~Window() = default;
+    virtual ~Window()
+    {
+        HZ_CORE_INFO("Windows context destructon...");
+    }
 
     virtual void OnUpdate() = 0;
 

@@ -41,6 +41,9 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/linux/debug/x86_64/sandbox",
+            "windows": {
+                "program": "${workspaceFolder}/bin/windows/debug/x64/sandbox",
+            },
             "args": [],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build sandbox"

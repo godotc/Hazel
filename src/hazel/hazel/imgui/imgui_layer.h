@@ -3,6 +3,8 @@
 #include "hazel/core/layer.h"
 
 #include "imgui.h"
+#include "utils/delegate.h"
+#include <cstddef>
 
 
 namespace hazel {
@@ -14,7 +16,6 @@ class HAZEL_API ImGuiLayer : public Layer
   public:
     ImGuiLayer();
 
-
   public:
     virtual void OnAttach() override;
     virtual void OnDetach() override;
@@ -23,6 +24,9 @@ class HAZEL_API ImGuiLayer : public Layer
 
     void Begin();
     void End();
+
+    // Reset the ctx when cross dll bound on micro shit
+    void ResetTheImguiContex();
 
 
     void SetBlockEvents(bool bBlock) { bBlockEvents = bBlock; }
