@@ -1,6 +1,8 @@
 //
 // Created by nono on 10/14/23.
 //
+#include "hazel/core/app.h"
+#include "hazel/core/log.h"
 #include "hz_pch.h"
 
 #include "glm/ext/vector_float2.hpp"
@@ -22,6 +24,7 @@
 #include "hazel/renderer/shader.h"
 
 #include "hazel/renderer/texture.h"
+#include <vector>
 
 
 
@@ -69,9 +72,19 @@ struct Render2DData {
 Render2DData s_Data;
 
 
+void Render2D::ClaeanupRender2D()
+{
+    // Reason: White texture hold by s_Data and s_Data's TextureSlots, so release here will not work
+    s_Data.TextureSlots.at(0) = nullptr;
+    s_Data.WhileTexture.reset();
+}
+
 void Render2D::Init()
 {
     HZ_PROFILE_FUNCTION();
+
+    App::Get().OnAppBeginDestrouctionDelegate.Add(Render2D::ClaeanupRender2D);
+
 
     // VertexArray
     s_Data.QuadVertexArray = VertexArray::Create();
@@ -129,11 +142,13 @@ void Render2D::Init()
     // white texture
     {
         s_Data.WhileTexture = Texture2D::Create(1, 1);
+        // HZ_CORE_INFO("The render_2d's white texutre's id: {}", s_Data.WhileTexture->GetTextureID());
+
         // R G B A 8bit x 4
         // f == 16 == 2^5
         // 5 * 8 or 4 * 8 orz
         //    uint32_t white_texture_data = 0xffffffff;
-        unsigned char white_texture_data[4] = {255, 255, 255, 255};
+        unsigned char white_texture_data[4] = {254, 254, 254, 254};
         s_Data.WhileTexture->SetData(white_texture_data, sizeof(uint32_t));
 
         // init texture slots

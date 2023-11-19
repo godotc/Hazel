@@ -28,6 +28,8 @@ class HAZEL_API Render2D
     };
 
   public:
+    static void ClaeanupRender2D();
+
     static void Init();
     static void Shutdown();
 
