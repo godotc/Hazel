@@ -26,7 +26,11 @@ class HazelEditor : public hazel::App
         GetWindow().SetVSync(true);
         RESET_IMGUI_CONTEXT();
     }
-    ~HazelEditor() override = default;
+
+    ~HazelEditor() override
+    {
+        HZ_INFO(" Editor app destruction...");
+    }
 };
 
 

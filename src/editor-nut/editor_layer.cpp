@@ -44,8 +44,8 @@ EditorLayer::EditorLayer() : Layer("Editor Layer") {}
 
 EditorLayer::~EditorLayer()
 {
-    HZ_INFO("count: {} ", m_TinyTownSheet.use_count());
-    m_TinyTownSheet.reset();
+    // HZ_INFO("count: {} ", m_TinyTownSheet.use_count());
+    // m_TinyTownSheet.reset();
 }
 
 void EditorLayer::OnAttach()

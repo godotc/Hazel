@@ -1,5 +1,6 @@
 
 #include "layer_stack.h"
+#include "hazel/core/log.h"
 #include <algorithm>
 #include <cstddef>
 namespace hazel {
@@ -20,6 +21,7 @@ void LayerStack::Cleanup()
     if (!bCleand) {
         for (Layer *layer : m_Layers) {
             if (layer) {
+                HZ_CORE_TRACE("[layer-cleanup] Deleteing the {}... ", layer->GetName());
                 delete layer;
                 layer = nullptr;
             }

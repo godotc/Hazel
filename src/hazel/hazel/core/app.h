@@ -39,9 +39,9 @@ class HAZEL_API App
 
   public:
 
-    using OnAppDestrouction = MulticastDelegate<>;
-    OnAppDestrouction OnAppBeginDestrouctionDelegate;
-    OnAppDestrouction OnAppEndDestrouctionDelegate;
+    using SimpleEvent = MulticastDelegate<>;
+    SimpleEvent PreDestruction;
+    SimpleEvent PostDestruction;
 
 
   public:
