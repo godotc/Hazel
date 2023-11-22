@@ -3,26 +3,33 @@
 #include "glm/ext/vector_float4.hpp"
 #include "hazel/renderer/render_2d.h"
 #include "hazel/scene/component.h"
+#include "hazel/scene/entity.h"
 
 namespace hazel {
 
 
 
-entt::entity Scene::CreateEntity()
+Entity Scene::CreateEntity(const std::string &name)
 {
-    return m_Registry.create();
+    auto entity = Entity{m_Registry.create(), this};
+    entity.AddComponent<TransformComponent>();
+    auto &tag = entity.AddComponent<TagComponent>();
+    tag.Tag   = name.empty() ? "Entity" : name;
+
+    return entity;
 }
 
 Scene::Scene()
 {
 }
 
+
 void Scene::OnUpdate(Timestep ts)
 {
     auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
     for (auto entity : group) {
         auto [tranf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-        Render2D::DrawQuad(tranf, 1.f, {1, 0, 0, 1});
+        Render2D::DrawQuad(tranf, 1.f, color);
     }
 }
 

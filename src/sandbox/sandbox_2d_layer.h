@@ -4,6 +4,8 @@
 
 #include "hazel.h"
 
+#include "entt/entity/fwd.hpp"
+
 
 #include "hazel/core/base.h"
 #include "hazel/renderer/practicle.h"
@@ -61,6 +63,7 @@ class Sandbox2D : public hazel::Layer
     hazel::Ref<hazel::Framebuffer> m_Framebuffer;
 
     hazel::Ref<hazel::Scene> m_ActiveScene;
+    hazel::Entity            m_SquareEntity;
 
 
   public:

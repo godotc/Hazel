@@ -10,8 +10,12 @@
 
 namespace hazel {
 
+class Entity;
+
 class HAZEL_API Scene
 {
+    friend class Entity;
+
     entt::registry m_Registry;
 
   public:
@@ -21,8 +25,7 @@ class HAZEL_API Scene
     void OnUpdate(Timestep ts);
 
   public:
-    entt::registry &GetRegistry() { return m_Registry; }
-    entt::entity    CreateEntity();
+    Entity CreateEntity(const std::string &name);
 };
 
 

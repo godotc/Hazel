@@ -2,8 +2,16 @@
 
 #include "glm/detail/qualifier.hpp"
 #include "glm/glm.hpp"
+#include <string>
 
 namespace hazel {
+struct TagComponent {
+    std::string Tag;
+
+    TagComponent()                     = default;
+    TagComponent(const TagComponent &) = default;
+    TagComponent(const std::string &tag) : Tag(tag) {}
+};
 
 struct TransformComponent {
     glm::mat4 Tranform{1.f};

@@ -26,7 +26,9 @@
 
 #include "hazel/renderer/orthographic_camera_controller.h"
 
+#include "hazel/scene/entity.h"
 #include "hazel/scene/scene.h"
+
 
 //
 #include "utils/path.h"
