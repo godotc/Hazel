@@ -12,7 +12,7 @@
 namespace hazel {
 
 extern HAZEL_API ImGuiContext *g_ImguiContext;
-#define RESET_IMGUI_CONTEXT() ImGui::SetCurrentContext(g_ImguiContext);
+#define RESET_IMGUI_CONTEXT() ImGui::SetCurrentContext(hazel::g_ImguiContext);
 
 class HAZEL_API ImGuiLayer : public Layer
 {

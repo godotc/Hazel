@@ -30,7 +30,6 @@
 
 void Sandbox2D::OnAttach()
 {
-    hazel::App::Get().GetImGuiLayer()->ResetTheImguiContex();
 
     hazel::FramebufferSpecification spec;
     spec.Width    = 1280;
@@ -51,7 +50,7 @@ void Sandbox2D::OnAttach()
 
 void Sandbox2D::OnDetach()
 {
-    Layer::OnDetach();
+    hazel::Layer::OnDetach();
 }
 
 void Sandbox2D::OnUpdate(hazel::Timestep timestep)

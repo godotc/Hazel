@@ -22,8 +22,11 @@ class Sandbox : public hazel::App
     {
         HZ_INFO("Sandbox construct");
         // PushLayer(new hazel::ExampleLayer);
-        PushLayer(new Sandbox2D());
+        auto sb = new Sandbox2D();
+        PushLayer(sb);
         GetWindow().SetVSync(true);
+
+        RESET_IMGUI_CONTEXT();
     }
     ~Sandbox() override = default;
 };

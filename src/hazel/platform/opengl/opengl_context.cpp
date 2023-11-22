@@ -70,24 +70,47 @@ void OpenGLContext::DebugGLVerbose()
 
 static void MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
-    // #define GL_DEBUG_SEVERITY_HIGH 0x9146
-    // #define GL_DEBUG_SEVERITY_MEDIUM 0x9147
-    // #define GL_DEBUG_SEVERITY_LOW 0x9148
-
-    static int faltal_error = 0;
-
-    if (severity < GL_DEBUG_SEVERITY_HIGH) {
-        faltal_error = 0;
-        HZ_CORE_WARN("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
-                     type, severity, message);
+    using std::cout, std::endl;
+    cout << "---------------------opengl-callback-start------------" << endl;
+    cout << "message: " << message << endl;
+    cout << "type: ";
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:
+            cout << "ERROR";
+            break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            cout << "DEPRECATED_BEHAVIOR";
+            break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            cout << "UNDEFINED_BEHAVIOR";
+            break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            cout << "PORTABILITY";
+            break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            cout << "PERFORMANCE";
+            break;
+        case GL_DEBUG_TYPE_OTHER:
+            cout << "OTHER";
+            break;
     }
-    else {
-        HZ_CORE_ERROR("{} type = 0x{:x} | severity = 0x{:x} | {}", "[GL]",
-                      type, severity, message);
-        if (++faltal_error > 10) {
-            PLATFORM_BREAK();
-        }
+    cout << endl;
+
+    cout << "id: " << id << endl;
+    cout << "severity: ";
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_LOW:
+            cout << "LOW";
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            cout << "MEDIUM";
+            break;
+        case GL_DEBUG_SEVERITY_HIGH:
+            cout << "HIGH";
+            break;
     }
+    cout << endl;
+    cout << "---------------------opengl-callback-end--------------" << endl;
 }
 
 } // namespace hazel
