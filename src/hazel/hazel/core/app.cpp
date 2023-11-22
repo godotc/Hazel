@@ -52,14 +52,9 @@ App::App(const std::string &name)
 
 App::~App()
 {
-    OnAppBeginDestrouctionDelegate.Brocast();
-
-    m_LayerStack.Cleanup();
-
-    OnAppEndDestrouctionDelegate.Brocast();
-
+    PostDestruction.Brocast();
     // the opengl context
-    delete m_Window;
+    // delete m_Window;
 }
 
 void App::Run()
@@ -106,6 +101,9 @@ void App::Run()
             layer->OnDetach();
         }
     }
+
+    m_LayerStack.Cleanup();
+    PreDestruction.Brocast();
 }
 
 void App::Close()
