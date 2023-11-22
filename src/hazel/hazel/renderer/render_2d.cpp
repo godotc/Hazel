@@ -75,11 +75,11 @@ Render2DData s_Data;
 void Render2D::ClaeanupRender2D()
 {
     // Reason: White texture hold by s_Data and s_Data's TextureSlots, so release here will not work
+    s_Data.WhileTexture.reset();
     for (auto &texture : s_Data.TextureSlots) {
         texture.reset();
     }
-    s_Data.TextureSlots.at(0) = nullptr;
-    s_Data.WhileTexture.reset();
+    // s_Data.TextureSlots.at(0) = nullptr;
 }
 
 void Render2D::Init()

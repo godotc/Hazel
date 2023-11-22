@@ -72,7 +72,7 @@ OpenGLTexture2D::~OpenGLTexture2D()
 
     // GL_CHECK_HEALTH();
     if (m_TextureID != 0) {
-        HZ_CORE_INFO("<Deleting the texture: {}, texture id: {}", m_Path, m_TextureID);
+        HZ_CORE_TRACE("<Deleting the texture: {}, texture id: {}", m_Path, m_TextureID);
         // glBegin(GL_POINT);
         // glVertex2f(2, 2);
         // glEnd();
@@ -80,7 +80,7 @@ OpenGLTexture2D::~OpenGLTexture2D()
         // HZ_CORE_INFO("Deleted the texture: {}, texture id: {}", m_Path, m_TextureID);
         // glFinish();
         m_TextureID = 0;
-        HZ_CORE_INFO(">Deleted the texture: {}, texture id: {}", m_Path, m_TextureID);
+        HZ_CORE_TRACE(">Deleted the texture: {}, texture id: {}", m_Path, m_TextureID);
     }
 }
 

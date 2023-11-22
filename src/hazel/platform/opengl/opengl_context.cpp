@@ -70,6 +70,12 @@ void OpenGLContext::DebugGLVerbose()
 
 static void MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
+
+    // FIXME: avoid noise, too many ouput info
+    if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
+        return;
+    }
+
     using std::cout, std::endl;
     cout << "---------------------opengl-callback-start------------" << endl;
     cout << "message: " << message << endl;

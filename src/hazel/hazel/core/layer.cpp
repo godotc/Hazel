@@ -7,6 +7,6 @@ Layer::Layer(const std::string &name) : m_DebugName(name) {}
 
 Layer::~Layer()
 {
-    HZ_CORE_TRACE("[Layer Destruction] {} completed  destruction....", GetName());
+    HZ_CORE_INFO("[Layer Destruction] {} completed  destruction....", GetName());
 }
 } // namespace hazel

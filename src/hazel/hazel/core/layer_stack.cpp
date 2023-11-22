@@ -21,7 +21,7 @@ void LayerStack::Cleanup()
     if (!bCleand) {
         for (Layer *layer : m_Layers) {
             if (layer) {
-                HZ_CORE_TRACE("[layer-cleanup] Deleteing the {}... ", layer->GetName());
+                HZ_CORE_INFO("[layer-cleanup] Deleteing the {}... ", layer->GetName());
                 delete layer;
                 layer = nullptr;
             }
