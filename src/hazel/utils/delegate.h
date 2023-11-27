@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <utility>
 #include <vector>
 
 
@@ -28,13 +29,13 @@ class Delegate<ReturnType(Args...)>
     // Execute the delegate with arguments
     ReturnType operator()(Args... args) const
     {
-        return m_Function(args...);
+        return m_Function(std::forward<Args>(args)...);
     }
 
-    ReturnType ExecuteIfBound(Args... args) const
+    ReturnType ExecuteIfBound(Args &&...args) const
     {
         if (bBound) {
-            return m_Function(args...);
+            return m_Function(std::forward<Args>(args)...);
         }
     }
 
@@ -64,7 +65,7 @@ class MulticastDelegate
     void Brocast(Args... args) const
     {
         for (const auto &func : m_Functions) {
-            func(args...);
+            func(std::forward<Args>(args)...);
         }
     }
 

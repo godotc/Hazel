@@ -41,6 +41,7 @@
 
 #define BIT(x) (1 << x)
 #define HZ_BIND_EVENT(ctx, fn) std::bind(fn, ctx, std::placeholders::_1)
+#define HZ_BIND_EVENT_LAMBDA(fn) [this](auto &&...args) {   return this->fn(std::forward<decltype(args)>(args)...); }
 
 namespace hazel {
 
