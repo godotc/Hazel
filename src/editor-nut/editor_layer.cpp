@@ -1,10 +1,12 @@
 
 #include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_float4.hpp"
 #include "glm/gtc/type_ptr.hpp" #include "hazel/core/layer.h"
 #include "hazel/core/app.h"
 #include "hazel/core/log.h"
 #include "hazel/event/event.h"
 #include "hazel/event/mouse_event.h"
+#include "hazel/scene/component.h"
 #include "hz_pch.h"
 
 #include "editor_layer.h"
@@ -12,6 +14,8 @@
 #include <any>
 #include <cstdint>
 #include <memory>
+#include <objidlbase.h>
+#include <sysinfoapi.h>
 
 static std::unordered_map<char, std::array<int, 2>> tile_block_map = {
     {'w', {0, 10}},
@@ -51,6 +55,15 @@ EditorLayer::~EditorLayer()
 void EditorLayer::OnAttach()
 {
     Init();
+    m_ActiveScene  = hazel::CreateRef<hazel::Scene>();
+    m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity");
+    m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.f, 16.f, -9.f, 9.f, -1.f, 1.f));
+
+    m_SecondCameraEntity = m_ActiveScene->CreateEntity("camera_entity");
+    m_SecondCameraEntity.AddComponent<CameraComponent>(glm::ortho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f));
+
+    m_SquareEntity = m_ActiveScene->CreateEntity("Squire");
+    m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
 }
 
 void EditorLayer::OnDetach()
@@ -70,107 +83,16 @@ void EditorLayer::OnUpdate(Timestep ts)
 
     m_Framebuffer->Bind();
     {
-
-
         {
             HZ_PROFILE_SCOPE("Renderer Prep");
             hazel::RenderCommand::SetClearColor(m_ClearColor);
             hazel::RenderCommand::Clear();
         }
-
-
-
-        {
-            HZ_PROFILE_SCOPE("Renderer Draw-Calls");
-            hazel::Render2D::BeginScene(m_CameraController.GetCamera());
-
-            hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{5, 5, 0}, {1, 1}, glm::radians(36.f), m_ArchTexture);
-            hazel::Render2D::DrawRotateQuad(m_QuadPosition + glm::vec3{10, 10, 1}, {2, 2}, glm::radians(18.f), {1, 0, 0, 1});
-            hazel::Render2D::DrawQuad({0, 0, -0.1}, {10, 10}, m_BlockTexture, 10);
-
-            // tilesheet sample
-            {
-                hazel::Render2D::DrawQuad({2, 1, -0.1}, {1, 1}, m_TinyTownSheet, 1);
-
-                for (int i = 0; i < 12; ++i) {
-                    for (int j = 0; j < 11; ++j) {
-                        const float size = 0.1f;
-                        glm::vec2   pos  = glm::vec2{2, 2} + glm::vec2{i * size, j * size};
-                        hazel::Render2D::DrawQuad(pos, {size, size}, m_SubBlock[i][j]);
-                    }
-                }
-                hazel::Render2D::DrawQuad({3, 3}, {1, 1}, m_WaterBuck);
-                hazel::Render2D::DrawQuad({3, 4}, {1, 2}, m_Tree);
-            }
-
-            // game map
-            {
-                // base paint
-                for (int i = 0; i < game_map.size(); ++i) {
-                    int x         = i % map_width;
-                    int y         = i / map_width;
-                    auto [tx, ty] = tile_block_map['w'];
-
-                    hazel::Render2D::DrawQuad(
-                        {-x, -y, -0.3},
-                        {1, 1},
-                        m_SubBlock[tx][ty]);
-                }
-
-                for (int i = 0; i < game_map.size(); ++i) {
-                    // printf("%d\n", game_map.size());
-                    int x         = i % map_width;
-                    int y         = i / map_width;
-                    auto [tx, ty] = tile_block_map.find(game_map[i])->second;
-
-                    hazel::Render2D::DrawQuad(
-                        {-x, -y},
-                        {1, 1},
-                        m_SubBlock[tx][ty]);
-                }
-            }
-
-            hazel::Render2D::EndScene();
-
-
-            hazel::Render2D::BeginScene(m_CameraController.GetCamera());
-            for (float y = -5.f; y < 5.f; y += 0.5f) {
-                for (float x = -5.f; x < 5.f; x += 0.5f) {
-                    glm::vec2 rb    = {sin(x), cos(y * x)};
-                    glm::vec4 color = glm::vec4(rb, tan(y), 0.3f);
-
-                    hazel::Render2D::DrawQuad(glm::vec2{x, y}, {1, 1}, color);
-                }
-            }
-            hazel::Render2D::EndScene();
-        }
-
-
-        if (hazel::Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_LEFT)) {
-
-            auto [x, y] = hazel::Input::GetMousePos();
-            // HZ_INFO("{} {}", x, y);
-            auto w = hazel::App::Get().GetWindow().GetWidth();
-            auto h = hazel::App::Get().GetWindow().GetHeight();
-
-            auto bounds = m_CameraController.GetBounds();
-            auto pos    = m_CameraController.GetCamera().GetPosition();
-
-            x = (x / w) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;
-            y = bounds.GetHeight() * 0.5f - (y / h) * bounds.GetHeight();
-
-            m_PracticleProps.Position = {x + pos.x, y + pos.y};
-            // HZ_INFO("Should be {} {}", x + pos.x, y + pos.y);
-
-            auto i = 10;
-            while (i--) {
-                m_PracticleSystem.Emit(m_PracticleProps);
-            }
-        }
-
-        m_PracticleSystem.OnUpdate(ts);
-        m_PracticleSystem.OnRender(m_CameraController.GetCamera());
     }
+
+
+    m_ActiveScene->OnUpdate(ts);
+
     m_Framebuffer->Unbind();
 };
 
@@ -289,12 +211,30 @@ void EditorLayer::OnImGuiRender()
 
 
         if (ImGui::Begin("Settings")) {
+
+
             ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
             ImGui::DragFloat3("Quad Position", glm::value_ptr(m_QuadPosition));
             ImGui::ColorEdit4("Flat Color", glm::value_ptr(m_FlatColor));
             ImGui::InputFloat2("Shift of tilemap", m_Shiftting);
             auto id = m_ArchTexture->GetTextureID();
             ImGui::Image((void *)id, ImVec2{64, 64});
+
+
+            if (m_SquareEntity) {
+                ImGui::Separator();
+                auto &squre_color = m_SquareEntity.GetComponent<hazel::SpriteRendererComponent>().Color;
+                ImGui::ColorEdit4("Square color", glm::value_ptr(squre_color));
+            }
+
+            ImGui::DragFloat3("CaemraTransform",
+                              glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Tranform[3]));
+
+            if (ImGui::Checkbox("Cam A", &bPrimaryCamera))
+            {
+                m_CameraEntity.GetComponent<CameraComponent>().bPrimary       = bPrimaryCamera;
+                m_SecondCameraEntity.GetComponent<CameraComponent>().bPrimary = !bPrimaryCamera;
+            }
             ImGui::End();
         }
 
@@ -309,6 +249,7 @@ void EditorLayer::OnImGuiRender()
             ImGui::Text("Mouse Pos : %d,%d", (int)x, (int)y);
             ImGui::End();
         }
+
 
 
         ViewPort();

@@ -18,6 +18,11 @@
                 "panel": "shared",
                 "showReuseMessage": true,
                 "clear": false
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         },
         {

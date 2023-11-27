@@ -5,6 +5,7 @@
 #ifndef HAZEL_RENDER_2_D_H
 #define HAZEL_RENDER_2_D_H
 
+#include "hazel/renderer/camera.h"
 #include "hazel/renderer/subtexture_2d.h"
 #include "orthographic_camera.h"
 #include "texture.h"
@@ -27,6 +28,11 @@ class HAZEL_API Render2D
         uint32_t GetTotalIndexCount() { return QuadCount * 6; }
     };
 
+    // struct RenderCamera {
+    //     glm::mat4 Projection;
+    //     glm::mat4 View;
+    // };
+
   public:
     static void ClaeanupRender2D();
 
@@ -34,7 +40,8 @@ class HAZEL_API Render2D
     static void Shutdown();
 
 
-    static void BeginScene(const OrthographicsCamera &camera);
+    static void BeginScene(const Camera &camera, const glm::mat4 &transform);
+    static void BeginScene(const OrthographicsCamera &camera); // TOD: remove
     static void EndScene();
     static void Flush();
 

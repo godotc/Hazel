@@ -1,7 +1,8 @@
 #pragma once
 
 #include "glm/detail/qualifier.hpp"
-#include "glm/glm.hpp"
+#include "hazel/renderer/camera.h"
+#include "hazel/renderer/orthographic_camera.h"
 #include <string>
 
 namespace hazel {
@@ -35,6 +36,16 @@ struct SpriteRendererComponent {
 
     operator glm::vec4 &() { return Color; }
     operator const glm::vec4 &() const { return Color; }
+};
+
+
+struct CameraComponent {
+    hazel::Camera Camera;
+    bool          bPrimary = true; // TODO: mvoe to scene
+
+    CameraComponent()                        = default;
+    CameraComponent(const CameraComponent &) = default;
+    CameraComponent(const glm::mat4 &projection) : Camera(projection) {}
 };
 
 } // namespace hazel

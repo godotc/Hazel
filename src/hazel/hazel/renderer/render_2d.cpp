@@ -1,6 +1,7 @@
 //
 // Created by nono on 10/14/23.
 //
+#include "glm/ext/quaternion_common.hpp"
 #include "hazel/core/app.h"
 #include "hazel/core/log.h"
 #include "hz_pch.h"
@@ -177,6 +178,21 @@ void Render2D::Shutdown()
     HZ_PROFILE_FUNCTION();
 
     delete[] s_Data.QuadVertexBufferHead;
+}
+
+void Render2D::BeginScene(const Camera &camera, const glm::mat4 &transform)
+{
+    HZ_PROFILE_FUNCTION();
+
+    glm::mat4 view_projection = camera.GetProjection() * glm::inverse(transform);
+
+    s_Data.TextureShader->Bind();
+    s_Data.TextureShader->SetMat4("u_ViewProjection", view_projection);
+
+    s_Data.QuadIndexCount      = 0;
+    s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferHead; // begin
+
+    s_Data.TextureSlotIndex = 1;
 }
 
 
