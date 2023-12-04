@@ -1,6 +1,9 @@
 #pragma once
 
-#include "hazel/scene/scene_camera.h"
+#include "hazel/core/timestep.h"
+#include "scene_camera.h"
+#include "scriptable_entity.h"
+#include <functional>
 #include <string>
 
 namespace hazel {
@@ -44,6 +47,28 @@ struct CameraComponent {
 
     CameraComponent()                        = default;
     CameraComponent(const CameraComponent &) = default;
+};
+
+struct NativeScriptComponent {
+    ScriptableEntity *Instance = nullptr;
+
+    std::function<void()> InstantiateFuncton;
+    std::function<void()> DestoryInstanceFunction;
+
+    std::function<void(ScriptableEntity *)>           OnCreateFunction;
+    std::function<void(ScriptableEntity *)>           OnDestoryFuncton;
+    std::function<void(ScriptableEntity *, Timestep)> OnUpdateFuncton;
+
+    template <class T>
+    void Bind()
+    {
+        InstantiateFuncton      = [&]() { Instance = new T(); };
+        DestoryInstanceFunction = [&]() { delete (T *)Instance; };
+
+        OnCreateFunction = [&](ScriptableEntity *instance) { ((T *)instance)->OnCreate(); };
+        OnDestoryFuncton = [&](ScriptableEntity *instance) { ((T *)instance)->OnDestory(); };
+        OnUpdateFuncton  = [&](ScriptableEntity *instance, Timestep ts) { ((T *)instance)->OnUpdate(ts); };
+    }
 };
 
 } // namespace hazel

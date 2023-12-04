@@ -3,6 +3,7 @@
 #include "hazel/renderer/render_2d.h"
 #include "hazel/scene/component.h"
 #include "hazel/scene/entity.h"
+#include "hazel/scene/scriptable_entity.h"
 
 namespace hazel {
 
@@ -25,6 +26,20 @@ Scene::Scene()
 
 void Scene::OnUpdate(Timestep ts)
 {
+    // Update scripts
+    {
+        m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto &ns_comp) {
+            if (!ns_comp.Instance) {
+                ns_comp.InstantiateFuncton();
+                ns_comp.Instance->m_Entity = Entity{entity, this};
+                ns_comp.OnCreateFunction(ns_comp.Instance);
+            }
+            ns_comp.OnUpdateFuncton(ns_comp.Instance, ts);
+        });
+    }
+
+
+
     // render 2d scene
     Camera    *main_camera = nullptr;
     glm::mat4 *transfrom   = nullptr;
