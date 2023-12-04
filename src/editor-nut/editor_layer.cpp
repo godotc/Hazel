@@ -63,7 +63,8 @@ void EditorLayer::OnAttach()
     m_CameraEntity.AddComponent<CameraComponent>();
 
     m_SecondCameraEntity = m_ActiveScene->CreateEntity("camera_entity");
-    m_SecondCameraEntity.AddComponent<CameraComponent>();
+    auto &cc             = m_SecondCameraEntity.AddComponent<CameraComponent>();
+    cc.bPrimary          = false;
 
 
     m_SquareEntity = m_ActiveScene->CreateEntity("Squire");
@@ -244,7 +245,6 @@ void EditorLayer::OnImGuiRender()
             ImGui::DragFloat3("CaemraTransform",
                               glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Tranform[3]));
 
-            // TODO & FIXME : first time this selection not works, toggle twice, it turns right
             if (ImGui::Checkbox("Cammera A", &bPrimaryCamera))
             {
                 m_CameraEntity.GetComponent<CameraComponent>().bPrimary       = bPrimaryCamera;
