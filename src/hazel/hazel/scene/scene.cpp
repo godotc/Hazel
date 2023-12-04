@@ -29,15 +29,15 @@ void Scene::OnUpdate(Timestep ts)
     // Update scripts
     {
         m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto &ns_comp) {
+            // TODO: Move to Scene:BeginPlay()
             if (!ns_comp.Instance) {
-                ns_comp.InstantiateFuncton();
+                ns_comp.Instance           = ns_comp.InstantiateScriptFunc();
                 ns_comp.Instance->m_Entity = Entity{entity, this};
-                ns_comp.OnCreateFunction(ns_comp.Instance);
+                ns_comp.Instance->OnCreate();
             }
-            ns_comp.OnUpdateFuncton(ns_comp.Instance, ts);
+            ns_comp.Instance->OnUpdate(ts);
         });
     }
-
 
 
     // render 2d scene
@@ -46,7 +46,7 @@ void Scene::OnUpdate(Timestep ts)
     {
         auto view = m_Registry.view<TransformComponent, CameraComponent>();
         for (auto ent : view) {
-            auto &&[tranf, cam] = view.get(ent);
+            auto [tranf, cam] = view.get(ent);
             if (cam.bPrimary) {
                 main_camera = &cam.Camera;
                 transfrom   = &tranf.Tranform;

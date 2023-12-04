@@ -2,6 +2,7 @@
 
 
 #include "entity.h"
+#include "hazel/core/timestep.h"
 
 namespace hazel {
 
@@ -12,6 +13,7 @@ class ScriptableEntity
     Entity m_Entity;
 
   public:
+    virtual ~ScriptableEntity() = default;
 
 
     template <class ComponentType>
@@ -19,6 +21,10 @@ class ScriptableEntity
     {
         return m_Entity.GetComponent<ComponentType>();
     }
+
+    virtual void OnCreate() {}
+    virtual void OnUpdate(Timestep ts) {}
+    virtual void OnDestory(Timestep ts) {}
 };
 
 } // namespace hazel

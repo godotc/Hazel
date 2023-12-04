@@ -52,22 +52,17 @@ struct CameraComponent {
 struct NativeScriptComponent {
     ScriptableEntity *Instance = nullptr;
 
-    std::function<void()> InstantiateFuncton;
-    std::function<void()> DestoryInstanceFunction;
+    using InstantiateScript = ScriptableEntity *();
+    InstantiateScript *InstantiateScriptFunc;
 
-    std::function<void(ScriptableEntity *)>           OnCreateFunction;
-    std::function<void(ScriptableEntity *)>           OnDestoryFuncton;
-    std::function<void(ScriptableEntity *, Timestep)> OnUpdateFuncton;
+    using DestoryScript = void(NativeScriptComponent *);
+    DestoryScript *DestoryScriptFunc;
 
     template <class T>
     void Bind()
     {
-        InstantiateFuncton      = [&]() { Instance = new T(); };
-        DestoryInstanceFunction = [&]() { delete (T *)Instance; };
-
-        OnCreateFunction = [&](ScriptableEntity *instance) { ((T *)instance)->OnCreate(); };
-        OnDestoryFuncton = [&](ScriptableEntity *instance) { ((T *)instance)->OnDestory(); };
-        OnUpdateFuncton  = [&](ScriptableEntity *instance, Timestep ts) { ((T *)instance)->OnUpdate(ts); };
+        InstantiateScriptFunc = []() { return static_cast<ScriptableEntity *>(new T()); };
+        DestoryScriptFunc     = [](NativeScriptComponent *nsc) { delete nsc->Instance; nsc->Instance= nullptr; };
     }
 };
 
