@@ -1,3 +1,5 @@
+#include "hazel/core/timestep.h"
+#include "hazel/scene/scriptable_entity.h"
 #include "hz_pch.h"
 
 #include "glm/ext/vector_float2.hpp"
@@ -17,6 +19,7 @@
 #include <any>
 #include <cstdint>
 #include <memory>
+#include <numeric>
 #include <objidlbase.h>
 #include <sysinfoapi.h>
 
@@ -69,6 +72,31 @@ void EditorLayer::OnAttach()
 
     m_SquareEntity = m_ActiveScene->CreateEntity("Squire");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
+
+
+
+    class CameraController : public ScriptableEntity
+    {
+      public:
+        void OnCreate() { HZ_CORE_INFO("{}", __FUNCSIG__); }
+        void OnDestory() {}
+        void OnUpdate(Timestep ts)
+        {
+            // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
+            auto &tranf = GetComponent<TransformComponent>().Tranform;
+            float speed = 5.f;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_A))
+                tranf[3][0] -= speed * ts;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_D))
+                tranf[3][0] += speed * ts;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_W))
+                tranf[3][1] -= speed * ts;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_S))
+                tranf[3][1] += speed * ts;
+        }
+    };
+
+    m_SecondCameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 }
 
 void EditorLayer::OnDetach()
