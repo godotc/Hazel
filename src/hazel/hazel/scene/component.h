@@ -1,8 +1,6 @@
 #pragma once
 
-#include "glm/detail/qualifier.hpp"
-#include "hazel/renderer/camera.h"
-#include "hazel/renderer/orthographic_camera.h"
+#include "hazel/scene/scene_camera.h"
 #include <string>
 
 namespace hazel {
@@ -40,12 +38,12 @@ struct SpriteRendererComponent {
 
 
 struct CameraComponent {
-    hazel::Camera Camera;
-    bool          bPrimary = true; // TODO: mvoe to scene
+    SceneCamera Camera;
+    bool        bPrimary          = true; // TODO: mvoe to scene
+    bool        bFixedAspectRatio = false;
 
     CameraComponent()                        = default;
     CameraComponent(const CameraComponent &) = default;
-    CameraComponent(const glm::mat4 &projection) : Camera(projection) {}
 };
 
 } // namespace hazel

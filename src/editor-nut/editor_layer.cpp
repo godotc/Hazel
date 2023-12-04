@@ -1,13 +1,16 @@
+#include "hz_pch.h"
 
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_float4.hpp"
-#include "glm/gtc/type_ptr.hpp" #include "hazel/core/layer.h"
+#include "glm/gtc/type_ptr.hpp"
 #include "hazel/core/app.h"
+#include "hazel/core/layer.h"
 #include "hazel/core/log.h"
 #include "hazel/event/event.h"
 #include "hazel/event/mouse_event.h"
+#include "hazel/renderer/framebuffer.h"
 #include "hazel/scene/component.h"
-#include "hz_pch.h"
+
 
 #include "editor_layer.h"
 #include "imgui.h"
@@ -57,10 +60,11 @@ void EditorLayer::OnAttach()
     Init();
     m_ActiveScene  = hazel::CreateRef<hazel::Scene>();
     m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity");
-    m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.f, 16.f, -9.f, 9.f, -1.f, 1.f));
+    m_CameraEntity.AddComponent<CameraComponent>();
 
     m_SecondCameraEntity = m_ActiveScene->CreateEntity("camera_entity");
-    m_SecondCameraEntity.AddComponent<CameraComponent>(glm::ortho(-1.f, 1.f, -1.f, 1.f, -1.f, 1.f));
+    m_SecondCameraEntity.AddComponent<CameraComponent>();
+
 
     m_SquareEntity = m_ActiveScene->CreateEntity("Squire");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
@@ -73,6 +77,16 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnUpdate(Timestep ts)
 {
     HZ_PROFILE_SCOPE("Sandbox2d::OnUpdate");
+
+    if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+        m_ViewportSize.x > 0.f && m_ViewportSize.y > 0.f &&
+        (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+    {
+        m_Framebuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
+        m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+        // here set the ortho every fame of camera
+        m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+    }
 
     // TODO: the camera's event is block by imgui_layer, but keybord event still handled by here
     if (bViewPortFocusing) {
@@ -230,11 +244,20 @@ void EditorLayer::OnImGuiRender()
             ImGui::DragFloat3("CaemraTransform",
                               glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Tranform[3]));
 
-            if (ImGui::Checkbox("Cam A", &bPrimaryCamera))
+            // TODO & FIXME : first time this selection not works, toggle twice, it turns right
+            if (ImGui::Checkbox("Cammera A", &bPrimaryCamera))
             {
                 m_CameraEntity.GetComponent<CameraComponent>().bPrimary       = bPrimaryCamera;
                 m_SecondCameraEntity.GetComponent<CameraComponent>().bPrimary = !bPrimaryCamera;
             }
+            {
+                auto &camera     = m_SecondCameraEntity.GetComponent<CameraComponent>().Camera;
+                float orhto_size = camera.GetOrthographicSize();
+                if (ImGui::DragFloat("Second Camera Ortho Size", &orhto_size)) {
+                    camera.SetOrthographicSize(orhto_size);
+                }
+            }
+
             ImGui::End();
         }
 
@@ -335,9 +358,6 @@ void EditorLayer::ViewPort()
         {
             HZ_INFO("Viewpor  resized: {} {}", x, y);
             m_ViewportSize = {x, y};
-
-            m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
         }
 
         uint32_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
