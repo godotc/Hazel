@@ -7,6 +7,7 @@
 #include "glm/ext/vector_float2.hpp"
 #include "hazel/renderer/practicle.h"
 #include "hazel/scene/scene.h"
+#include "panel/scene_hierachy_panel.h"
 
 
 
@@ -26,6 +27,9 @@ class EditorLayer : public hazel::Layer
 
     bool bPrimaryCamera = true;
 
+    // Pannel
+    SceneHierarchyPanel m_SceneHierachyPanel;
+
 
     OrthographicsCameraController m_CameraController{16 / 9.f, true};
     glm::vec2                     m_ViewportSize = {0.f, 0.f};
@@ -38,10 +42,6 @@ class EditorLayer : public hazel::Layer
 
     Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
 
-    Ref<Texture2D>    m_TinyTownSheet;
-    Ref<SubTexture2D> m_SubBlock[12][11];
-    Ref<SubTexture2D> m_WaterBuck;
-    Ref<SubTexture2D> m_Tree;
 
 
     PraticleSystem m_PracticleSystem;

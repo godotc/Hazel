@@ -1,6 +1,7 @@
+#include "hz_pch.h"
+
 #include "hazel/core/timestep.h"
 #include "hazel/scene/scriptable_entity.h"
-#include "hz_pch.h"
 
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_float4.hpp"
@@ -9,44 +10,16 @@
 #include "hazel/core/layer.h"
 #include "hazel/core/log.h"
 #include "hazel/event/event.h"
-#include "hazel/event/mouse_event.h"
 #include "hazel/renderer/framebuffer.h"
 #include "hazel/scene/component.h"
 
 
 #include "editor_layer.h"
 #include "imgui.h"
-#include <any>
 #include <cstdint>
 #include <memory>
-#include <numeric>
 #include <objidlbase.h>
 #include <sysinfoapi.h>
-
-static std::unordered_map<char, std::array<int, 2>> tile_block_map = {
-    {'w', {0, 10}},
-    {'R',  {1, 8}},
-    {'W', {1, 10}},
-    {'G', {5, 10}},
-    {'F',  {9, 7}},
-    {'f',  {8, 6}},
-    {'B', {11, 0}},
-};
-
-const int         map_width  = 24;
-const int         map_height = 12;
-const std::string game_map   = "fFFFFFFFFFFFFFFFFFFFFFFf"
-                               "fWWWWWWWWWWWWWWWWWWWWWWf"
-                               "fRWGWWWWWWWWWWWWGWWWWWWf"
-                               "fRWWWWWBWWWBWWWWWWWWWWWf"
-                               "fRWWGWWWWWWWWWWWGWWWWWWf"
-                               "fRWWWWWWWWWWWWWWWWWWWWWf"
-                               "fRWWGWWWWWWBWWWWWWWWWWWf"
-                               "fRWWWWWWBWWWWWWWGWWWWWWf"
-                               "fRWWGWWWWWWWWWGGGWWWWWWf"
-                               "fRWWWWWWWWWWWWWWWWWWWWWf"
-                               "fWWRRRRRRRRRRRRRRRRWWWWf"
-                               "fFFFFFFFFFFFFFFFFFFFFFFf";
 
 namespace hazel {
 
@@ -61,7 +34,9 @@ EditorLayer::~EditorLayer()
 void EditorLayer::OnAttach()
 {
     Init();
-    m_ActiveScene  = hazel::CreateRef<hazel::Scene>();
+    m_ActiveScene = hazel::CreateRef<hazel::Scene>();
+    m_SceneHierachyPanel.SetContext(m_ActiveScene);
+
     m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity");
     m_CameraEntity.AddComponent<CameraComponent>();
 
@@ -78,7 +53,10 @@ void EditorLayer::OnAttach()
     class CameraController : public ScriptableEntity
     {
       public:
-        void OnCreate() { HZ_CORE_INFO("{}", __FUNCSIG__); }
+        void OnCreate()
+        {
+            HZ_CORE_INFO("{}", __FUNCSIG__);
+        }
         void OnDestory() {}
         void OnUpdate(Timestep ts)
         {
@@ -141,6 +119,7 @@ void EditorLayer::OnUpdate(Timestep ts)
 
 void EditorLayer::OnImGuiRender()
 {
+
     static bool               opt_fullscreen  = true;
     static bool               opt_padding     = true;
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -290,6 +269,9 @@ void EditorLayer::OnImGuiRender()
         }
 
 
+        m_SceneHierachyPanel.OnImGuiRender();
+
+
         if (ImGui::Begin("Render2D stats")) {
             auto stat = hazel::Render2D::GetStatics();
             ImGui::Text("Draw Calls  : %d", stat.DrawCalls);
@@ -326,40 +308,6 @@ void EditorLayer::Init()
     m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
     m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
-
-    m_TinyTownSheet = hazel::Texture2D::Create(FPath("res/texture/tiny_town/tilemap_packed.png"));
-    for (int i = 0; i < 12; ++i) {
-        for (int j = 0; j < 11; ++j) {
-            m_SubBlock[i][j] = hazel::SubTexture2D::CreateFromCoords(
-                m_TinyTownSheet,
-                {i, j},
-                {16.f, 16.f},
-                {16.f, 16.f});
-        }
-    }
-    m_WaterBuck = hazel::SubTexture2D::CreateFromCoords(m_TinyTownSheet, {11, 0}, {16.f, 16.f}, {16.f, 16.f});
-
-    // TODO: the margin between 2 blocks as it is a unie texture?
-    // solution: use the packed texture....
-    m_Tree = hazel::SubTexture2D::CreateFromCoords(
-        m_TinyTownSheet,
-        {4, -2},
-        {16.f, 16.f},
-        {16.f, 32.f});
-
-
-
-    m_PracticleProps.ColorBegin = {254 / 255.f, 212 / 255.f, 123 / 244.f, 1.f};
-    m_PracticleProps.ColorEnd   = {254 / 255.f, 109 / 255.f, 41 / 244.f, 1.f};
-
-    m_PracticleProps.SizeBegin     = 0.5f,
-    m_PracticleProps.SizeEnd       = 0.f;
-    m_PracticleProps.SizeVariation = 0.3f;
-
-    m_PracticleProps.Velocity          = {0.f, 0.f};
-    m_PracticleProps.VelocityVariation = {4.f, 1.5f};
-
-    m_PracticleProps.Position = {0.f, 0.f};
 }
 
 void EditorLayer::ViewPort()

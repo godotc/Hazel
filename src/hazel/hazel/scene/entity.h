@@ -1,17 +1,17 @@
 #pragma once
 
-
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 
 #include "hazel/core/base.h"
 #include "scene.h"
+#include <cstdint>
 #include <entt/entt.hpp>
 
 namespace hazel {
 
 
-class Entity
+class HAZEL_API Entity
 {
     entt::entity m_EntityHandle = entt::null;
     Scene       *m_Scene        = nullptr;
@@ -23,6 +23,9 @@ class Entity
     Entity(const Entity &other) = default;
 
     operator bool() const { return m_EntityHandle != entt::null; }
+    operator uint32_t() const { return uint32_t(m_EntityHandle); }
+
+    bool operator==(Entity &Other) { return m_EntityHandle == Other.m_EntityHandle; }
 
     template <class ComponentType>
     bool HasComponent()
