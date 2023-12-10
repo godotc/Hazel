@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include "hazel/core/base.h"
 #include "hazel/scene/component.h"
 #include "hazel/scene/scene.h"
 #include "imgui.h"
+
 namespace hazel {
 
 class SceneHierarchyPanel
@@ -24,6 +24,7 @@ class SceneHierarchyPanel
 
   private:
     void DrawEntityNode(Entity entity);
+    void DrawComponents(Entity entity);
 };
 
 

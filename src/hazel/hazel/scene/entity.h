@@ -3,6 +3,7 @@
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 
+#include "entt/entity/handle.hpp"
 #include "hazel/core/base.h"
 #include "scene.h"
 #include <cstdint>
@@ -22,7 +23,10 @@ class HAZEL_API Entity
     Entity(entt::entity handle, Scene *scene);
     Entity(const Entity &other) = default;
 
-    operator bool() const { return m_EntityHandle != entt::null; }
+    operator bool() const
+    {
+        return m_EntityHandle != entt::null && m_Scene->m_Registry.valid(m_EntityHandle);
+    }
     operator uint32_t() const { return uint32_t(m_EntityHandle); }
 
     bool operator==(Entity &Other) { return m_EntityHandle == Other.m_EntityHandle; }
