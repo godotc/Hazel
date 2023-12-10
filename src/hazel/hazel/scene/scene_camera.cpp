@@ -30,16 +30,65 @@ void SceneCamera::SetOrthographicSize(float size)
     RecalculateProjection();
 }
 
+void SceneCamera::SetOrthographicNearClip(float v)
+{
+    m_OrthographicNear = v;
+    RecalculateProjection();
+}
+
+void SceneCamera::SetOrthographicFarClip(float v)
+{
+    m_OrthographicFar = v;
+    RecalculateProjection();
+}
+
+void SceneCamera::SetProjectionType(ProjectionType type)
+{
+    m_ProjectionType = type;
+    RecalculateProjection();
+}
+
+void SceneCamera::SetPerspectiveFOV(float PerspectiveFOV)
+{
+    m_PerspectiveFOV = PerspectiveFOV;
+    RecalculateProjection();
+}
+
+void SceneCamera::SetPerspectiveNear(float PerspectiveNear)
+{
+    m_PerspectiveNear = PerspectiveNear;
+    RecalculateProjection();
+}
+
+void SceneCamera::SetPerspectiveFar(float PerspectiveFar)
+{
+    m_PerspectiveFar = PerspectiveFar;
+    RecalculateProjection();
+}
+
 void SceneCamera::RecalculateProjection() // Fixed function name
 {
-    float ortho_left   = -m_OrthographicSize * m_AspectRatio * 0.5f;
-    float ortho_right  = m_OrthographicSize * m_AspectRatio * 0.5f;
-    float ortho_bottom = -m_OrthographicSize * 0.5f;
-    float ortho_top    = m_OrthographicSize * 0.5f;
+    switch (m_ProjectionType) {
 
-    m_Projection = glm::ortho(ortho_left, ortho_right,
-                              ortho_bottom, ortho_top,
-                              m_OrthographicNear, m_OrthographicFar);
+        case ProjectionType::Perspective:
+        {
+            m_Projection = glm::perspective(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
+            break;
+        }
+        case ProjectionType::Orthographic:
+        {
+            float ortho_left   = -m_OrthographicSize * m_AspectRatio * 0.5f;
+            float ortho_right  = m_OrthographicSize * m_AspectRatio * 0.5f;
+            float ortho_bottom = -m_OrthographicSize * 0.5f;
+            float ortho_top    = m_OrthographicSize * 0.5f;
+
+            m_Projection = glm::ortho(ortho_left, ortho_right,
+                                      ortho_bottom, ortho_top,
+                                      m_OrthographicNear, m_OrthographicFar);
+
+            break;
+        }
+    }
 }
 
 } // namespace hazel

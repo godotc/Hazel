@@ -19,8 +19,8 @@ class SceneHierarchyPanel
     SceneHierarchyPanel(const Ref<Scene> &scene);
 
     void SetContext(const Ref<Scene> &scene);
-    void OnImGuiRender();
 
+    void OnImGuiRender();
 
   private:
     void DrawEntityNode(Entity entity);
