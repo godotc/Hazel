@@ -105,6 +105,9 @@ static void MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severi
     cout << "id: " << id << endl;
     cout << "severity: ";
     switch (severity) {
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            cout << "NOTIFICATION";
+            break;
         case GL_DEBUG_SEVERITY_LOW:
             cout << "LOW";
             break;

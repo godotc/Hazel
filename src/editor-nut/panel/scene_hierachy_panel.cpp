@@ -1,20 +1,16 @@
+#include "hz_pch.h"
+
 #include "glm/trigonometric.hpp"
 #include "hazel/scene/scene.h"
 #include "hazel/scene/scene_camera.h"
-#include "hz_pch.h"
 
+#include "glm/gtc/type_ptr.hpp"
 #include "glm/matrix.hpp"
 
-#include "glm/fwd.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
-#include "hazel/scene//component.h"
+#include "hazel/scene/component.h"
 #include "hazel/scene/entity.h"
 #include "imgui.h"
 #include "scene_hierachy_panel.h"
-#include <array>
-#include <cstdint>
-#include <cstring>
 
 
 

@@ -119,7 +119,6 @@ void EditorLayer::OnUpdate(Timestep ts)
 
 void EditorLayer::OnImGuiRender()
 {
-
     static bool               opt_fullscreen  = true;
     static bool               opt_padding     = true;
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;

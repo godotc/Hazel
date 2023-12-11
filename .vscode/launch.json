@@ -13,11 +13,10 @@
             "windows": {
                 "program": "${workspaceFolder}/bin/windows/debug/x64/hazel-editor-nut",
             },
-            "valuesFormatting": "parseText",
             "preLaunchTask": "build editor"
         },
         {
-            "name": "Editor(GDB)",
+            "name": "Editor GDB",
             "type": "gdb",
             "request": "launch",
             "target": "${workspaceFolder}/bin/linux/debug/x86_64/hazel-editor-nut",
@@ -27,7 +26,7 @@
             "preLaunchTask": "build editor",
         },
         {
-            "name": "Sandbox(GDB)",
+            "name": "Sandbox GDB",
             "type": "gdb",
             "request": "launch",
             "target": "${workspaceFolder}/bin/linux/debug/x86_64/sandbox",
@@ -37,7 +36,7 @@
             "preLaunchTask": "build sandbox",
         },
         {
-            "name": "Sandbox(LLDB)",
+            "name": "Sandbox LLDB ",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/linux/debug/x86_64/sandbox",
