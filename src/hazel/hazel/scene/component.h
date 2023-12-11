@@ -1,5 +1,7 @@
 #pragma once
 
+#include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "hazel/core/timestep.h"
 #include "scene_camera.h"
 #include "scriptable_entity.h"
@@ -16,14 +18,25 @@ struct TagComponent {
 };
 
 struct TransformComponent {
-    glm::mat4 Tranform{1.f};
+    glm ::vec3 Translation = {0.f, 0.f, 0.f};
+    glm ::vec3 Rotation    = {0.f, 0.f, 0.f};
+    glm ::vec3 Scale       = {1.f, 1.f, 1.f};
 
     TransformComponent() {}
     TransformComponent(const TransformComponent &) = default;
-    TransformComponent(const glm::mat4 &transform) : Tranform(transform) {}
+    TransformComponent(const glm::vec3 &translation) : Translation(translation) {}
 
-    operator glm::mat4 &() { return Tranform; }
-    operator const glm::mat4 &() const { return Tranform; }
+    glm::mat4 GetTransform() const
+    {
+        glm::mat4 rotation =
+            glm::rotate(glm::mat4(1.f), Rotation.x, {1, 0, 0}) *
+            glm::rotate(glm::mat4(1.f), Rotation.y, {0, 1, 0}) *
+            glm::rotate(glm::mat4(1.f), Rotation.z, {0, 0, 1});
+
+        return glm::translate(glm::mat4(1.f), Translation) *
+               rotation *
+               glm::scale(glm::mat4(1.f), Scale);
+    }
 };
 
 

@@ -41,10 +41,11 @@ void EditorLayer::OnAttach()
 
     m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
     m_CameraEntity.AddComponent<CameraComponent>();
-    m_CameraEntity.GetComponent<TransformComponent>().Tranform[3] += glm::vec4(0, 0, 1, 0);
+    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
 
     m_SecondCameraEntity                                          = m_ActiveScene->CreateEntity("camera_entity B");
     m_SecondCameraEntity.AddComponent<CameraComponent>().bPrimary = false;
+    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
 
 
     m_SquareEntity = m_ActiveScene->CreateEntity("Red Square");
@@ -52,7 +53,7 @@ void EditorLayer::OnAttach()
 
     m_GreenSquareEntity = m_ActiveScene->CreateEntity("Green Square");
     m_GreenSquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0, 1, 0, 1});
-    m_GreenSquareEntity.GetComponent<TransformComponent>().Tranform[3] += glm::vec4(1, 1, 1, 0);
+    m_GreenSquareEntity.GetComponent<TransformComponent>().Translation += 1;
 
 
 
@@ -67,20 +68,20 @@ void EditorLayer::OnAttach()
         void OnUpdate(Timestep ts)
         {
             // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
-            auto &tranf = GetComponent<TransformComponent>().Tranform;
-            float speed = 5.f;
+            auto &translation = GetComponent<TransformComponent>().Translation;
+            float speed       = 5.f;
             if (hazel::Input::IsKeyPressed(HZ_KEY_A))
-                tranf[3][0] -= speed * ts;
+                translation[0] -= speed * ts;
             if (hazel::Input::IsKeyPressed(HZ_KEY_D))
-                tranf[3][0] += speed * ts;
+                translation[0] += speed * ts;
             if (hazel::Input::IsKeyPressed(HZ_KEY_W))
-                tranf[3][1] -= speed * ts;
+                translation[1] -= speed * ts;
             if (hazel::Input::IsKeyPressed(HZ_KEY_S))
-                tranf[3][1] += speed * ts;
+                translation[1] += speed * ts;
         }
     };
 
-    m_SecondCameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+    m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 }
 
 void EditorLayer::OnDetach()
