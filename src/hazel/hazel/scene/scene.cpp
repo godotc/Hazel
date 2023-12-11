@@ -41,28 +41,28 @@ void Scene::OnUpdate(Timestep ts)
 
 
     // render 2d scene
-    Camera    *main_camera = nullptr;
-    glm::mat4 *transfrom   = nullptr;
+    Camera   *main_camera = nullptr;
+    glm::mat4 transfrom;
     {
         auto view = m_Registry.view<TransformComponent, CameraComponent>();
         for (auto ent : view) {
             auto [tranf, cam] = view.get(ent);
             if (cam.bPrimary) {
                 main_camera = &cam.Camera;
-                transfrom   = &tranf.Tranform;
+                transfrom   = tranf.GetTransform();
                 break;
             }
         }
     }
 
-    if (main_camera && transfrom)
+    if (main_camera)
     {
-        Render2D::BeginScene(*main_camera, *transfrom);
+        Render2D::BeginScene(*main_camera, transfrom);
 
         auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto entity : group) {
             auto [tranf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Render2D::DrawQuad(tranf, 1.f, color);
+            Render2D::DrawQuad(tranf.GetTransform(), 1.f, color);
         }
 
         Render2D::EndScene();

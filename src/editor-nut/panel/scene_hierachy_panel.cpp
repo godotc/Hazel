@@ -1,5 +1,9 @@
 #include "hz_pch.h"
 
+#include "glm/ext/vector_float3.hpp"
+#include "imgui_internal.h"
+
+
 #include "glm/trigonometric.hpp"
 #include "hazel/scene/scene.h"
 #include "hazel/scene/scene_camera.h"
@@ -11,6 +15,9 @@
 #include "hazel/scene/entity.h"
 #include "imgui.h"
 #include "scene_hierachy_panel.h"
+#include <cmath>
+#include <string>
+#include <winsock.h>
 
 
 
@@ -74,6 +81,69 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     }
 }
 
+// NOTICE!!: make sure each Vec3Control has different label
+static void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value = 0.f, float column_width = 100.f)
+{
+    imgui::PushID(label.c_str());
+
+
+    imgui::Columns(2);
+    imgui::SetColumnWidth(0, column_width);
+    imgui::Text(label.c_str());
+    imgui::NextColumn();
+
+    imgui::PushMultiItemsWidths(3, imgui::CalcItemWidth());
+    imgui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
+    {
+
+        float  line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.f;
+        ImVec2 button_size = {line_height + 3.f, line_height};
+
+        {
+            imgui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8, 0.1, 0.1, 1});
+            imgui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.9, 0.2, 0.2, 1});
+            imgui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.8, 0.1, 0.15, 1});
+            if (imgui::Button("X", button_size)) {
+                values.x = reset_value;
+            }
+            imgui::PopStyleColor(3);
+            imgui::SameLine();
+            imgui::DragFloat("##X", &values.x, 0.1f, 0.f, 0.f, "%.2f");
+            imgui::PopItemWidth();
+        }
+        imgui::SameLine();
+        {
+            imgui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1, 0.7, 0.1, 1});
+            imgui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2, 0.9, 0.2, 1});
+            imgui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.15, 0.8, 0.11, 1});
+            if (imgui::Button("Y", button_size)) {
+                values.y = reset_value;
+            }
+            imgui::PopStyleColor(3);
+            imgui::SameLine();
+            imgui::DragFloat("##Y", &values.y, 0.1f, 0.f, 0.f, "%.2f");
+            imgui::PopItemWidth();
+        }
+        imgui::SameLine();
+        {
+            imgui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1, 0.1, 0.8, 1});
+            imgui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2, 0.2, 0.8, 1});
+            imgui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.15, 0.1, 0.8, 1});
+            if (imgui::Button("Z", button_size)) {
+                values.z = reset_value;
+            }
+            imgui::PopStyleColor(3);
+            imgui::SameLine();
+            imgui::DragFloat("##Z", &values.z, 0.1f, 0.f, 0.f, "%.2f");
+            imgui::PopItemWidth();
+        }
+    }
+    imgui::PopStyleVar();
+
+    imgui::Columns(1);
+    imgui::PopID(); // make each vec3 are different drag flaot here
+}
+
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
     if (entity.HasComponent<TagComponent>()) {
@@ -91,16 +161,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                               "Transform"))
         {
 
-            auto     &transform     = entity.GetComponent<TransformComponent>().Tranform;
-            glm::mat4 buf_transform = transform;
-            glm::vec3 position      = transform[3];
-            glm::vec3 rotation      = transform[2];
-            glm::vec3 scale         = glm::transpose(transform)[3];
+            auto &tc = entity.GetComponent<TransformComponent>();
 
-
-            ImGui::DragFloat3("Position", glm::value_ptr(transform[3]));
-            ImGui::DragFloat3("Rotation", glm::value_ptr(rotation));
-            ImGui::DragFloat3("Scale", glm::value_ptr(scale));
+            DrawVec3Control("Translation", tc.Translation);
+            glm::vec3 rotation = glm::degrees(tc.Rotation);
+            DrawVec3Control(" Rotation", rotation);
+            tc.Rotation = glm::radians(rotation);
+            DrawVec3Control(" Scale", tc.Scale);
             ImGui::TreePop();
         }
     }
@@ -115,8 +182,9 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             auto &cc     = entity.GetComponent<CameraComponent>();
             auto &camera = cc.Camera;
 
-            // TODO & FIXME: move the update primary for all cameras here
+            // TODO & FIXME: change to true will clean all other camera's bPrimeary value
             imgui::Checkbox("Primary", &cc.bPrimary);
+            imgui::Checkbox("FixedAspecRatio", &cc.bFixedAspectRatio);
 
 
             auto old_projection_type = camera.GetProjectionType();
