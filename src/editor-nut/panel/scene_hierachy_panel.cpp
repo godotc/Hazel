@@ -9,16 +9,9 @@
 #include "hazel/scene/scene_camera.h"
 
 #include "glm/gtc/type_ptr.hpp"
-#include "glm/matrix.hpp"
-
-#include "hazel/scene/component.h"
-#include "hazel/scene/entity.h"
 #include "imgui.h"
 #include "scene_hierachy_panel.h"
-#include <cmath>
-#include <cstddef>
 #include <string>
-#include <winsock.h>
 
 
 
@@ -183,6 +176,7 @@ static void DrawVec3Control(const std::string &label, glm::vec3 &values, float r
     imgui::PopID(); // make each vec3 are different drag flaot here
 }
 
+
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
 
@@ -207,7 +201,6 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         if (bOpen)
         {
             auto &tc = entity.GetComponent<TransformComponent>();
-
             DrawVec3Control("Translation", tc.Translation);
             glm::vec3 rotation = glm::degrees(tc.Rotation);
             DrawVec3Control(" Rotation", rotation);
