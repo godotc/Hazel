@@ -1,3 +1,4 @@
+#include "glm/ext/vector_float3.hpp"
 #include "hz_pch.h"
 
 #include "hazel/core/timestep.h"
@@ -16,6 +17,7 @@
 
 #include "editor_layer.h"
 #include "imgui.h"
+#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <objidlbase.h>
@@ -37,16 +39,20 @@ void EditorLayer::OnAttach()
     m_ActiveScene = hazel::CreateRef<hazel::Scene>();
     m_SceneHierachyPanel.SetContext(m_ActiveScene);
 
-    m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity");
+    m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
     m_CameraEntity.AddComponent<CameraComponent>();
+    m_CameraEntity.GetComponent<TransformComponent>().Tranform[3] += glm::vec4(0, 0, 1, 0);
 
-    m_SecondCameraEntity = m_ActiveScene->CreateEntity("camera_entity");
-    auto &cc             = m_SecondCameraEntity.AddComponent<CameraComponent>();
-    cc.bPrimary          = false;
+    m_SecondCameraEntity                                          = m_ActiveScene->CreateEntity("camera_entity B");
+    m_SecondCameraEntity.AddComponent<CameraComponent>().bPrimary = false;
 
 
-    m_SquareEntity = m_ActiveScene->CreateEntity("Squire");
+    m_SquareEntity = m_ActiveScene->CreateEntity("Red Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
+
+    m_GreenSquareEntity = m_ActiveScene->CreateEntity("Green Square");
+    m_GreenSquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0, 1, 0, 1});
+    m_GreenSquareEntity.GetComponent<TransformComponent>().Tranform[3] += glm::vec4(1, 1, 1, 0);
 
 
 
@@ -232,24 +238,9 @@ void EditorLayer::OnImGuiRender()
 
 
         if (ImGui::Begin("Settings")) {
-
-
             ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
-            ImGui::DragFloat3("Quad Position", glm::value_ptr(m_QuadPosition));
-            ImGui::ColorEdit4("Flat Color", glm::value_ptr(m_FlatColor));
-            ImGui::InputFloat2("Shift of tilemap", m_Shiftting);
             auto id = m_ArchTexture->GetTextureID();
             ImGui::Image((void *)id, ImVec2{64, 64});
-
-
-            if (m_SquareEntity) {
-                ImGui::Separator();
-                auto &squre_color = m_SquareEntity.GetComponent<hazel::SpriteRendererComponent>().Color;
-                ImGui::ColorEdit4("Square color", glm::value_ptr(squre_color));
-            }
-
-            ImGui::DragFloat3("CaemraTransform",
-                              glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Tranform[3]));
 
             if (ImGui::Checkbox("Cammera A", &bPrimaryCamera))
             {

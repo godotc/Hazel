@@ -15,37 +15,32 @@ namespace hazel {
 
 class EditorLayer : public hazel::Layer
 {
+    glm::vec2 m_ViewportSize = {0.f, 0.f};
+    glm::vec4 m_ClearColor{0.0, 0.0, 0.0, 1.0};
 
     Ref<Framebuffer> m_Framebuffer;
     bool             bViewPortFocusing = false;
     bool             bViewPortHovering = false;
 
     Ref<Scene> m_ActiveScene;
-    Entity     m_CameraEntity;
-    Entity     m_SecondCameraEntity;
-    Entity     m_SquareEntity;
+    // Entities
+    Entity m_CameraEntity;
+    Entity m_SecondCameraEntity;
+    Entity m_SquareEntity;
+    Entity m_GreenSquareEntity;
 
     bool bPrimaryCamera = true;
 
     // Pannel
     SceneHierarchyPanel m_SceneHierachyPanel;
 
-
-    OrthographicsCameraController m_CameraController{16 / 9.f, true};
-    glm::vec2                     m_ViewportSize = {0.f, 0.f};
-
-    glm::vec4 m_ClearColor{0.0, 0.0, 0.0, 1.0};
-    glm::vec3 m_QuadPosition = glm::vec3(1, 1, 0);
-    glm::vec4 m_FlatColor{1.f, 0.0, 0.0, 1.f};
-    float     m_Shiftting[2] = {1, 1};
-
-
     Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
 
+    OrthographicsCameraController m_CameraController{16 / 9.f, true};
 
 
-    PraticleSystem m_PracticleSystem;
-    PraticleProps  m_PracticleProps;
+    // PraticleSystem m_PracticleSystem;
+    // PraticleProps  m_PracticleProps;
 
 
   public:

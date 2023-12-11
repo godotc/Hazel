@@ -35,8 +35,6 @@ void SceneHierarchyPanel::OnImGuiRender()
         m_Context->m_Registry.each([this](auto entt) {
             auto entity = Entity{entt, m_Context.get()};
             DrawEntityNode(entity);
-            auto &tc = entity.GetComponent<TagComponent>();
-            ImGui::Text("%s", tc.Tag);
         });
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
@@ -61,7 +59,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     auto &tag = entity.GetComponent<TagComponent>().Tag;
 
     auto flags =
-        ImGuiTreeNodeFlags_OpenOnArrow |
+        // entity.HasChildren? ImGuiTreeNodeFlags_OpenOnArrow :0 |
         (entity == m_Selection ? ImGuiTreeNodeFlags_Selected : 0);
 
     bool bOpened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.c_str());
@@ -179,6 +177,17 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                     }
                 };
             }
+            imgui::TreePop();
+        }
+    }
+    if (entity.HasComponent<SpriteRendererComponent>())
+    {
+        if (ImGui::TreeNodeEx((void *)typeid(SpriteRendererComponent).hash_code(),
+                              ImGuiTreeNodeFlags_DefaultOpen,
+                              "Sprite Renderer"))
+        {
+            auto &src = entity.GetComponent<SpriteRendererComponent>();
+            imgui::ColorEdit4("Color", glm::value_ptr(src.Color));
             imgui::TreePop();
         }
     }
