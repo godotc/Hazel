@@ -1,16 +1,16 @@
 #pragma once
 #include "__microshit_api_hazel.h"
+
 #include "entt/entity/fwd.hpp"
 #include "hazel/core/timestep.h"
-#include <cstdint>
-#include <entt/fwd.hpp>
-
 #include <entt/entt.hpp>
+
 
 
 namespace hazel {
 
 class Entity;
+
 
 class HAZEL_API Scene
 {
@@ -30,7 +30,13 @@ class HAZEL_API Scene
 
   public:
     Entity CreateEntity(const std::string &name);
+    void   DestoryEntity(Entity entity);
+
+  private:
+    template <class T>
+    void OnComponentAdd(Entity entity, T &component);
 };
+
 
 
 } // namespace hazel

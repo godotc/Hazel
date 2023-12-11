@@ -16,6 +16,7 @@
 #include "imgui.h"
 #include "scene_hierachy_panel.h"
 #include <cmath>
+#include <cstddef>
 #include <string>
 #include <winsock.h>
 
@@ -48,6 +49,15 @@ void SceneHierarchyPanel::OnImGuiRender()
             m_Selection = {};
         }
 
+
+        // right click on black space
+        if (imgui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+            if (imgui::MenuItem("Create Empty Entity")) {
+                m_Context->CreateEntity("Empty Entity");
+            }
+            ImGui::EndPopup();
+        }
+
         ImGui::End();
     }
 
@@ -56,6 +66,19 @@ void SceneHierarchyPanel::OnImGuiRender()
     if (ImGui::Begin("Properties")) {
         if (m_Selection) {
             DrawComponents(m_Selection);
+
+            if (imgui::Button("Add Component")) {
+                imgui::OpenPopup("AddComponent");
+            }
+            if (imgui::BeginPopup("AddComponent")) {
+                if (imgui::MenuItem("Camera")) {
+                    m_Selection.AddComponent<CameraComponent>();
+                }
+                if (imgui::MenuItem("Sprite Renderer")) {
+                    m_Selection.AddComponent<SpriteRendererComponent>();
+                }
+                imgui::EndPopup();
+            }
         }
         ImGui::End();
     }
@@ -63,21 +86,37 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 {
+    bool bEntityDeleted = false;
+
     auto &tag = entity.GetComponent<TagComponent>().Tag;
 
     auto flags =
         // entity.HasChildren? ImGuiTreeNodeFlags_OpenOnArrow :0 |
         (entity == m_Selection ? ImGuiTreeNodeFlags_Selected : 0);
 
-    bool bOpened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.c_str());
+    if (ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.c_str())) {
 
-    if (ImGui::IsItemClicked()) {
-        m_Selection = entity;
-    }
-    if (bOpened) {
+        if (ImGui::IsItemClicked()) {
+            m_Selection = entity;
+        }
+
+        // right click this entity
+        if (imgui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonRight)) {
+            if (imgui::MenuItem("Delete Entity")) {
+                bEntityDeleted = true;
+            }
+            ImGui::EndPopup();
+        }
+
         // treenode's children here
         // ...
         ImGui::TreePop();
+    }
+
+    // delete this at last avoid issues
+    if (bEntityDeleted) {
+        m_Context->DestoryEntity(entity);
+        m_Selection = {};
     }
 }
 
@@ -146,6 +185,10 @@ static void DrawVec3Control(const std::string &label, glm::vec3 &values, float r
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
+
+
+    const auto tree_node_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
     if (entity.HasComponent<TagComponent>()) {
         auto &tag = entity.GetComponent<TagComponent>().Tag;
         char  buf[256];
@@ -156,11 +199,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         }
     }
     if (entity.HasComponent<TransformComponent>()) {
-        if (ImGui::TreeNodeEx((void *)typeid(TransformComponent).hash_code(),
-                              ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen,
-                              "Transform"))
-        {
+        bool bOpen = ImGui::TreeNodeEx((void *)typeid(TransformComponent).hash_code(),
+                                       tree_node_flags,
+                                       "Transform");
 
+
+        if (bOpen)
+        {
             auto &tc = entity.GetComponent<TransformComponent>();
 
             DrawVec3Control("Translation", tc.Translation);
@@ -175,7 +220,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     {
         if (ImGui::TreeNodeEx(
                 (void *)typeid(CameraComponent).hash_code(),
-                ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen,
+                tree_node_flags,
                 "Camera"))
         {
 
@@ -250,13 +295,29 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     }
     if (entity.HasComponent<SpriteRendererComponent>())
     {
-        if (ImGui::TreeNodeEx((void *)typeid(SpriteRendererComponent).hash_code(),
-                              ImGuiTreeNodeFlags_DefaultOpen,
-                              "Sprite Renderer"))
+        bool bOpen = ImGui::TreeNodeEx((void *)typeid(SpriteRendererComponent).hash_code(),
+                                       ImGuiTreeNodeFlags_DefaultOpen,
+                                       "Sprite Renderer");
+        imgui::SameLine(imgui::GetWindowWidth() - 20.f);
+        if (imgui::Button("+", ImVec2{20.f, 20.f})) {
+            imgui::OpenPopup("ComponentSettings");
+        }
+        bool bRemoveComponent = false;
+        if (imgui::BeginPopup("ComponentSettings")) {
+            if (imgui::MenuItem("Remove Component")) {
+                bRemoveComponent = true;
+            }
+            imgui::EndPopup();
+        }
+
+        if (bOpen)
         {
             auto &src = entity.GetComponent<SpriteRendererComponent>();
             imgui::ColorEdit4("Color", glm::value_ptr(src.Color));
             imgui::TreePop();
+        }
+        if (bRemoveComponent) {
+            entity.RemoveComponent<SpriteRendererComponent>();
         }
     }
 }

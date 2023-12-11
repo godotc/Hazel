@@ -29,8 +29,6 @@ class EditorLayer : public hazel::Layer
     Entity m_SquareEntity;
     Entity m_GreenSquareEntity;
 
-    bool bPrimaryCamera = true;
-
     // Pannel
     SceneHierarchyPanel m_SceneHierachyPanel;
 

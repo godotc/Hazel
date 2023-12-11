@@ -243,19 +243,6 @@ void EditorLayer::OnImGuiRender()
             auto id = m_ArchTexture->GetTextureID();
             ImGui::Image((void *)id, ImVec2{64, 64});
 
-            if (ImGui::Checkbox("Cammera A", &bPrimaryCamera))
-            {
-                m_CameraEntity.GetComponent<CameraComponent>().bPrimary       = bPrimaryCamera;
-                m_SecondCameraEntity.GetComponent<CameraComponent>().bPrimary = !bPrimaryCamera;
-            }
-            {
-                auto &camera     = m_SecondCameraEntity.GetComponent<CameraComponent>().Camera;
-                float orhto_size = camera.GetOrthographicSize();
-                if (ImGui::DragFloat("Second Camera Ortho Size", &orhto_size)) {
-                    camera.SetOrthographicSize(orhto_size);
-                }
-            }
-
             ImGui::End();
         }
 

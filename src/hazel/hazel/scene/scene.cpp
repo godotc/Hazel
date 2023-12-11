@@ -1,9 +1,9 @@
 #include "glm/ext/vector_float4.hpp"
+#include "hazel/core/base.h"
 #include "hazel/renderer/camera.h"
 #include "hazel/renderer/render_2d.h"
 #include "hazel/scene/component.h"
 #include "hazel/scene/entity.h"
-#include "hazel/scene/scriptable_entity.h"
 
 namespace hazel {
 
@@ -17,6 +17,11 @@ Entity Scene::CreateEntity(const std::string &name)
     tag.Tag   = name.empty() ? "Entity" : name;
 
     return entity;
+}
+
+void Scene::DestoryEntity(Entity entity)
+{
+    m_Registry.destroy(entity);
 }
 
 Scene::Scene()
@@ -84,5 +89,31 @@ void Scene::OnViewportResize(uint32_t w, uint32_t h)
         }
     }
 }
+
+
+template <class T>
+void Scene::OnComponentAdd(Entity entity, T &component) { HZ_CORE_ASSERT(false, "failed"); }
+
+template <>
+void Scene::OnComponentAdd<TransformComponent>(Entity entity, TransformComponent &component)
+{
+}
+
+template <>
+void Scene::OnComponentAdd<CameraComponent>(Entity entity, CameraComponent &component)
+{
+    component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+}
+
+template <>
+void Scene::OnComponentAdd<TagComponent>(Entity entity, TagComponent &component)
+{
+}
+
+template <>
+void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendererComponent &component)
+{
+}
+
 
 } // namespace hazel
