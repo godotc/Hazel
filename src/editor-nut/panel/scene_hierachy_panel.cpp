@@ -251,9 +251,9 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 {
                     case SceneCamera::ProjectionType::Perspective:
                     {
-                        float perspective_fov = glm::degrees(camera.GetPerspectiveFOV());
+                        float perspective_fov = glm::degrees(camera.GetPerspectiveFovy());
                         if (imgui::DragFloat("VerticalFov", &perspective_fov)) {
-                            camera.SetPerspectiveFOV(glm::radians(perspective_fov));
+                            camera.SetPerspectiveFovy(glm::radians(perspective_fov));
                         }
                         float perspective_near = camera.GetPerspectiveNear();
                         if (imgui::DragFloat("Near", &perspective_near)) {

@@ -48,7 +48,7 @@ void SceneCamera::SetProjectionType(ProjectionType type)
     RecalculateProjection();
 }
 
-void SceneCamera::SetPerspectiveFOV(float PerspectiveFOV)
+void SceneCamera::SetPerspectiveFovy(float PerspectiveFOV)
 {
     m_PerspectiveFOV = PerspectiveFOV;
     RecalculateProjection();

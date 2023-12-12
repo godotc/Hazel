@@ -59,8 +59,8 @@ class HAZEL_API SceneCamera
 
 
     // ~ Perspective
-    float GetPerspectiveFOV() const { return m_PerspectiveFOV; }
-    void  SetPerspectiveFOV(float PerspectiveFOV);
+    float GetPerspectiveFovy() const { return m_PerspectiveFOV; }
+    void  SetPerspectiveFovy(float PerspectiveFovy);
 
     float GetPerspectiveNear() const { return m_PerspectiveNear; }
     void  SetPerspectiveNear(float PerspectiveNear);
