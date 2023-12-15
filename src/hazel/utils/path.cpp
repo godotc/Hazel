@@ -151,4 +151,19 @@ const std::filesystem::path &ProjectRoot()
     return project_root;
 }
 
+
+
+std::string Files::GetFileNameWithoutExtension(const std::string &path)
+{
+    size_t slash_pos = path.find_last_of("/\\");
+    size_t dot_pos   = path.find_last_of(".");
+
+    // DEBUG("{}, {}, {}", path, slash_pos, dot_pos);
+    auto filename = path.substr(slash_pos + 1, dot_pos - slash_pos - 1);
+    // LOG("{}", filename);
+    return filename;
+};
+
+
+
 } // namespace utils

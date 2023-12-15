@@ -27,6 +27,7 @@
 #include "hazel/renderer/texture.h"
 #include <vector>
 
+#include "utils/path.h"
 
 
 namespace hazel {

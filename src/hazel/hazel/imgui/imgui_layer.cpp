@@ -15,7 +15,12 @@
 #include "hazel/core/app.h"
 #include "hazel/core/log.h"
 #include "platform/linux/linux_window.h"
+#include "utils/path.h"
 #include <cstddef>
+#include <filesystem>
+#include <map>
+#include <nb30.h>
+#include <unordered_map>
 
 
 
@@ -51,6 +56,21 @@ void ImGuiLayer::OnAttach()
     io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
 
     io.DisplaySize = ImVec2(1, 1);
+
+
+
+    utils::Files::ForeachFileInFolder(
+        FPath("res/font/").absolute_path,
+        [](auto &path) -> bool {
+            return path.ends_with(".ttf");
+        },
+        [&io, &m_Fonts = (this->m_Fonts)](auto &path) -> void {
+            ImFont     *font = io.Fonts->AddFontFromFileTTF(path.c_str(), 18.f);
+            std::string name = utils::Files::GetFileNameWithoutExtension(path);
+            m_Fonts.insert({name, font});
+        });
+
+    io.FontDefault = m_Fonts.find("FiraCode-Regular")->second;
 
     ImGui::StyleColorsDark();
 

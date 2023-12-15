@@ -13,6 +13,8 @@
 #include "scene_hierachy_panel.h"
 #include <string>
 
+#include "hazel/scene/component.h"
+
 
 
 namespace hazel {
@@ -66,9 +68,11 @@ void SceneHierarchyPanel::OnImGuiRender()
             if (imgui::BeginPopup("AddComponent")) {
                 if (imgui::MenuItem("Camera")) {
                     m_Selection.AddComponent<CameraComponent>();
+                    imgui::CloseCurrentPopup();
                 }
                 if (imgui::MenuItem("Sprite Renderer")) {
                     m_Selection.AddComponent<SpriteRendererComponent>();
+                    imgui::CloseCurrentPopup();
                 }
                 imgui::EndPopup();
             }
@@ -85,16 +89,17 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
     auto flags =
         // entity.HasChildren? ImGuiTreeNodeFlags_OpenOnArrow :0 |
-        (entity == m_Selection ? ImGuiTreeNodeFlags_Selected : 0);
+        (entity == m_Selection ? ImGuiTreeNodeFlags_Selected : 0) |
+        ImGuiTreeNodeFlags_SpanAvailWidth;
 
-    if (ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.c_str())) {
-
+    if (ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.c_str()))
+    {
         if (ImGui::IsItemClicked()) {
             m_Selection = entity;
         }
 
         // right click this entity
-        if (imgui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonRight)) {
+        if (imgui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverExistingPopup)) {
             if (imgui::MenuItem("Delete Entity")) {
                 bEntityDeleted = true;
             }

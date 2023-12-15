@@ -31,5 +31,3 @@
 #include "hazel/scene/scriptable_entity.h"
 
 
-//
-#include "utils/path.h"

@@ -56,6 +56,7 @@ class EditorLayer : public hazel::Layer
     void Init();
 
     void ViewPort();
+    void FontSwitcher();
 };
 
 

@@ -1,4 +1,5 @@
 #include "glm/ext/vector_float3.hpp"
+#include "hazel/imgui/imgui_layer.h"
 #include "hz_pch.h"
 
 #include "hazel/core/timestep.h"
@@ -21,7 +22,11 @@
 #include <cstdint>
 #include <memory>
 #include <objidlbase.h>
+#include <string>
 #include <sysinfoapi.h>
+#include <vector>
+
+#include "utils/path.h"
 
 namespace hazel {
 
@@ -243,6 +248,8 @@ void EditorLayer::OnImGuiRender()
             auto id = m_ArchTexture->GetTextureID();
             ImGui::Image((void *)id, ImVec2{64, 64});
 
+            FontSwitcher();
+
             ImGui::End();
         }
 
@@ -320,6 +327,46 @@ void EditorLayer::ViewPort()
                      ImVec2{0, 1}, ImVec2{1, 0} // flip the image
         );
         ImGui::End();
+    }
+}
+
+void EditorLayer::FontSwitcher()
+{
+    auto &io    = ImGui::GetIO();
+    auto  fonts = App::Get().GetImGuiLayer()->GetFonts();
+
+    static int                      current_font_index = 0;
+    static std::vector<std::string> keys;
+    static std::vector<ImFont *>    values;
+
+    if (keys.size() != fonts.size()) {
+        int i = 0;
+        keys.clear();
+        values.clear();
+        for (const auto &[name, font_ptr] : fonts) {
+            if (io.FontDefault == font_ptr) {
+                current_font_index = i;
+            }
+            keys.push_back(name);
+            values.push_back(font_ptr);
+            ++i;
+        }
+    }
+
+    if (ImGui::BeginCombo("Font", keys[current_font_index].c_str()))
+    {
+        for (int i = 0; i < keys.size(); ++i) {
+            bool bSelected = current_font_index == i;
+
+            if (ImGui::Selectable(keys[i].c_str(), bSelected)) {
+                current_font_index = i;
+                io.FontDefault     = values[i];
+            }
+            if (bSelected) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
     }
 }
 

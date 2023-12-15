@@ -47,6 +47,26 @@ struct UTILS_API FPathImpl {
 }; // namespace impl
 
 
+
+struct UTILS_API Files {
+    static std::string GetFileNameWithoutExtension(const std::string &path);
+
+
+    using file_filter = bool(const std::string &);
+    static void ForeachFileInFolder(std::filesystem::path path, file_filter file_filter, auto &&predicate)
+    {
+        for (const auto texture : std::filesystem::directory_iterator(path))
+        {
+            const auto &file_path = texture.path().string();
+
+            if (file_filter(file_path))
+            {
+                predicate(file_path);
+            }
+        }
+    }
+};
+
 } // namespace utils
 
 using FPath = utils::impl::FPathImpl;

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "hazel/core/base.h"
-#include "hazel/scene/component.h"
 #include "hazel/scene/scene.h"
-#include "imgui.h"
+#include "hazel/scene/entity.h"
+
 
 namespace hazel {
 
