@@ -17,7 +17,7 @@ struct WindowProps {
 
     std::string Title;
     uint32_t    Width, Height;
-    explicit WindowProps(const std::string &title = "Hazel Engine", uint32_t w = 1280, uint32_t h = 720) : Title(title), Width(w), Height(h) {}
+    explicit WindowProps(const std::string &title = "Hazel Engine", uint32_t w = 1699, uint32_t h = 900) : Title(title), Width(w), Height(h) {}
 };
 
 

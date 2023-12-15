@@ -16,7 +16,7 @@ extern HAZEL_API ImGuiContext *g_ImguiContext;
 
 class HAZEL_API ImGuiLayer : public Layer
 {
-    bool                                      bBlockEvents = true;
+    bool                            bBlockEvents = true;
     std::map<std::string, ImFont *> m_Fonts;
 
   public:
@@ -32,6 +32,7 @@ class HAZEL_API ImGuiLayer : public Layer
     void End();
 
     void SetBlockEvents(bool bBlock) { bBlockEvents = bBlock; }
+    void SetDarkThemeColors();
 
 
     const std::map<std::string, ImFont *> &GetFonts() const { return m_Fonts; };
