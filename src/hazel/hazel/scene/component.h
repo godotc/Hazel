@@ -3,8 +3,8 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "hazel/core/timestep.h"
+#include "hazel/scene/scriptable_entity.h"
 #include "scene_camera.h"
-#include "scriptable_entity.h"
 #include <string>
 
 namespace hazel {

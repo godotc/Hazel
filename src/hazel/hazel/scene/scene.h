@@ -10,6 +10,11 @@
 namespace hazel {
 
 class Entity;
+class TransformComponent;
+class CameraComponent;
+class TagComponent;
+class SpriteRendererComponent;
+class NativeScriptComponent;
 
 
 class HAZEL_API Scene
@@ -35,6 +40,16 @@ class HAZEL_API Scene
   private:
     template <class T>
     void OnComponentAdd(Entity entity, T &component);
+    template <>
+    void OnComponentAdd<TransformComponent>(Entity entity, TransformComponent &component);
+    template <>
+    void OnComponentAdd<CameraComponent>(Entity entity, CameraComponent &component);
+    template <>
+    void OnComponentAdd<TagComponent>(Entity entity, TagComponent &component);
+    template <>
+    void OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendererComponent &component);
+    template <>
+    void OnComponentAdd<NativeScriptComponent>(Entity entity, NativeScriptComponent &component);
 };
 
 

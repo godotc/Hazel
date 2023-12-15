@@ -102,7 +102,9 @@ void Scene::OnComponentAdd<TransformComponent>(Entity entity, TransformComponent
 template <>
 void Scene::OnComponentAdd<CameraComponent>(Entity entity, CameraComponent &component)
 {
-    component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+    if (m_ViewportWidth > 0 && m_ViewportHeight > 0) {
+        component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+    }
 }
 
 template <>
@@ -115,5 +117,7 @@ void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendere
 {
 }
 
+template <>
+void Scene::OnComponentAdd<NativeScriptComponent>(Entity entity, NativeScriptComponent &component) {}
 
 } // namespace hazel
