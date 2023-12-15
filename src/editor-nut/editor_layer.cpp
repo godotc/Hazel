@@ -191,11 +191,21 @@ void EditorLayer::OnImGuiRender()
 
         // Submit the DockSpace
         ImGuiIO &io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+
+        ImGuiStyle &style = ImGui::GetStyle();
         {
-            ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-            // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+            float min_windows_width = style.WindowMinSize.x;
+            style.WindowMinSize.x   = 320.f;
+
+
+            if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+            {
+                ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
+                ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+                // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+            }
+
+            style.WindowMinSize.x = min_windows_width;
         }
 
         if (ImGui::BeginMenuBar())
