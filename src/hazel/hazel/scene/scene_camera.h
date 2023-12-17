@@ -25,7 +25,7 @@ class HAZEL_API SceneCamera
     float m_OrthographicNear = -1.f;
     float m_OrthographicFar  = 1.f;
 
-    float m_PerspectiveFOV  = glm::radians(45.f);
+    float m_PerspectiveFovy  = glm::radians(45.f);
     float m_PerspectiveNear = 0.01f;
     float m_PerspectiveFar  = 1000.f;
 
@@ -51,15 +51,15 @@ class HAZEL_API SceneCamera
     float GetOrthographicSize() const { return m_OrthographicSize; }
     void  SetOrthographicSize(float size);
 
-    float GetOrthographicNearClip() const { return m_OrthographicNear; }
-    void  SetOrthographicNearClip(float v);
+    float GetOrthographicNear() const { return m_OrthographicNear; }
+    void  SetOrthographicNear(float v);
 
-    float GetOrthographicFarClip() const { return m_OrthographicFar; }
-    void  SetOrthographicFarClip(float v);
+    float GetOrthographicFar() const { return m_OrthographicFar; }
+    void  SetOrthographicFar(float v);
 
 
     // ~ Perspective
-    float GetPerspectiveFovy() const { return m_PerspectiveFOV; }
+    float GetPerspectiveFovy() const { return m_PerspectiveFovy; }
     void  SetPerspectiveFovy(float PerspectiveFovy);
 
     float GetPerspectiveNear() const { return m_PerspectiveNear; }

@@ -53,6 +53,12 @@ class HAZEL_API Entity
     }
 
     template <class ComponentType>
+    ComponentType &GetOrAddComponent()
+    {
+        return m_Scene->m_Registry.get_or_emplace<ComponentType>(m_EntityHandle);
+    }
+
+    template <class ComponentType>
     uint32_t RemoveComponent()
     {
         HZ_CORE_ASSERT(HasComponent<ComponentType>(), "Entity did not has that component!");

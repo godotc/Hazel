@@ -45,52 +45,53 @@ void EditorLayer::OnAttach()
     m_ActiveScene = hazel::CreateRef<hazel::Scene>();
     m_SceneHierachyPanel.SetContext(m_ActiveScene);
 
-    m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
-    m_CameraEntity.AddComponent<CameraComponent>();
-    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
+    // m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
+    // m_CameraEntity.AddComponent<CameraComponent>();
+    // m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
 
-    m_SecondCameraEntity                                          = m_ActiveScene->CreateEntity("camera_entity B");
-    m_SecondCameraEntity.AddComponent<CameraComponent>().bPrimary = false;
-    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
-
-
-    m_SquareEntity = m_ActiveScene->CreateEntity("Red Square");
-    m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
-
-    m_GreenSquareEntity = m_ActiveScene->CreateEntity("Green Square");
-    m_GreenSquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0, 1, 0, 1});
-    m_GreenSquareEntity.GetComponent<TransformComponent>().Translation += 1;
+    // m_SecondCameraEntity                                          = m_ActiveScene->CreateEntity("camera_entity B");
+    // m_SecondCameraEntity.AddComponent<CameraComponent>().bPrimary = false;
+    // m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
 
 
+    // m_SquareEntity = m_ActiveScene->CreateEntity("Red Square");
+    // m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
 
-    class CameraController : public ScriptableEntity
-    {
-      public:
-        void OnCreate()
-        {
-            HZ_CORE_INFO("{}", __FUNCSIG__);
-        }
-        void OnDestory() {}
-        void OnUpdate(Timestep ts)
-        {
-            // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
-            auto &translation = GetComponent<TransformComponent>().Translation;
-            float speed       = 5.f;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_A))
-                translation[0] -= speed * ts;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_D))
-                translation[0] += speed * ts;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_W))
-                translation[1] -= speed * ts;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_S))
-                translation[1] += speed * ts;
-        }
-    };
+    // m_GreenSquareEntity = m_ActiveScene->CreateEntity("Green Square");
+    // m_GreenSquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0, 1, 0, 1});
+    // m_GreenSquareEntity.GetComponent<TransformComponent>().Translation += 1;
 
-    m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+
+    // class CameraController : public ScriptableEntity
+    // {
+    //   public:
+    //     void OnCreate()
+    //     {
+    //         HZ_CORE_INFO("{}", __FUNCSIG__);
+    //     }
+    //     void OnDestory() {}
+    //     void OnUpdate(Timestep ts)
+    //     {
+    //         // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
+    //         auto &translation = GetComponent<TransformComponent>().Translation;
+    //         float speed       = 5.f;
+    //         if (hazel::Input::IsKeyPressed(HZ_KEY_A))
+    //             translation[0] -= speed * ts;
+    //         if (hazel::Input::IsKeyPressed(HZ_KEY_D))
+    //             translation[0] += speed * ts;
+    //         if (hazel::Input::IsKeyPressed(HZ_KEY_W))
+    //             translation[1] -= speed * ts;
+    //         if (hazel::Input::IsKeyPressed(HZ_KEY_S))
+    //             translation[1] += speed * ts;
+    //     }
+    // };
+
+    // m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
     SceneSerializer Serialize(m_ActiveScene);
-    Serialize.Serialize(FPath("tmp/a.yaml"));
+    // Serialize.Serialize(FPath("tmp/a.yaml"));
+    Serialize.Deserialize(FPath("tmp/a.yaml"));
 }
 
 void EditorLayer::OnDetach()

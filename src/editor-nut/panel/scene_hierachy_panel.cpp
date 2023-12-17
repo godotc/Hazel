@@ -319,13 +319,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                     if (imgui::DragFloat("Size", &ortho_size)) {
                         camera.SetOrthographicSize(ortho_size);
                     }
-                    float ortho_near_size = camera.GetOrthographicNearClip();
+                    float ortho_near_size = camera.GetOrthographicNear();
                     if (imgui::DragFloat("Near", &ortho_near_size)) {
-                        camera.SetOrthographicNearClip(ortho_near_size);
+                        camera.SetOrthographicNear(ortho_near_size);
                     }
-                    float ortho_far_size = camera.GetOrthographicFarClip();
+                    float ortho_far_size = camera.GetOrthographicFar();
                     if (imgui::DragFloat("Far", &ortho_far_size)) {
-                        camera.SetOrthographicFarClip(ortho_far_size);
+                        camera.SetOrthographicFar(ortho_far_size);
                     }
                     break;
                 }

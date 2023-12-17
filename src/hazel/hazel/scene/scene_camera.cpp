@@ -30,13 +30,13 @@ void SceneCamera::SetOrthographicSize(float size)
     RecalculateProjection();
 }
 
-void SceneCamera::SetOrthographicNearClip(float v)
+void SceneCamera::SetOrthographicNear(float v)
 {
     m_OrthographicNear = v;
     RecalculateProjection();
 }
 
-void SceneCamera::SetOrthographicFarClip(float v)
+void SceneCamera::SetOrthographicFar(float v)
 {
     m_OrthographicFar = v;
     RecalculateProjection();
@@ -50,7 +50,7 @@ void SceneCamera::SetProjectionType(ProjectionType type)
 
 void SceneCamera::SetPerspectiveFovy(float PerspectiveFOV)
 {
-    m_PerspectiveFOV = PerspectiveFOV;
+    m_PerspectiveFovy = PerspectiveFOV;
     RecalculateProjection();
 }
 
@@ -72,7 +72,7 @@ void SceneCamera::RecalculateProjection() // Fixed function name
 
         case ProjectionType::Perspective:
         {
-            m_Projection = glm::perspective(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
+            m_Projection = glm::perspective(m_PerspectiveFovy, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
             break;
         }
         case ProjectionType::Orthographic:
