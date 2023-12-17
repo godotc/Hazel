@@ -115,7 +115,7 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
     }
     if (entity.HasComponent<TransformComponent>()) {
         auto &comp = entity.GetComponent<TransformComponent>();
-        out << YAML::Key << "TranformComponent";
+        out << YAML::Key << "TransformComponent";
         out << YAML::BeginMap;
         {
             out << YAML::Key << "Translation" << YAML::Value << comp.Translation;
@@ -249,12 +249,12 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 tc.Scale       = transform_component["Scale"].as<glm::vec3>();
             }
 
-            const auto &camera_component = entites["CameraComponent"];
+            const auto &camera_component = entity["CameraComponent"];
             if (camera_component) {
                 auto &cc = deserilized_entity.AddComponent<CameraComponent>();
 
                 cc.bPrimary          = camera_component["bPrimary"].as<bool>();
-                cc.bFixedAspectRatio = camera_component["bFixAspectRatio"].as<bool>();
+                cc.bFixedAspectRatio = camera_component["bFixedAspectRatio"].as<bool>();
 
                 const auto camera_props = camera_component["Camera"];
 
@@ -269,7 +269,7 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 cc.Camera.SetPerspectiveFovy(camera_props["PerspectiveFovy"].as<float>());
             }
 
-            const auto &spriterenderer_component = entites["SpriteRendererComponent"];
+            const auto &spriterenderer_component = entity["SpriteRendererComponent"];
             if (spriterenderer_component) {
                 auto &tc = deserilized_entity.AddComponent<SpriteRendererComponent>();
                 tc.Color = spriterenderer_component["Color"].as<glm::vec4>();

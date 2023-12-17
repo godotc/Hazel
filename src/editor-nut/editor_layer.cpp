@@ -1,13 +1,12 @@
+#include "hz_pch.h"
+
 #include "glm/ext/vector_float3.hpp"
 #include "hazel/imgui/imgui_layer.h"
 #include "hazel/scene/scene_serializer.h"
-#include "hz_pch.h"
 
 #include "hazel/core/timestep.h"
-#include "hazel/scene/scriptable_entity.h"
 
 #include "glm/ext/vector_float2.hpp"
-#include "glm/ext/vector_float4.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "hazel/core/app.h"
 #include "hazel/core/layer.h"
@@ -19,7 +18,6 @@
 
 #include "editor_layer.h"
 #include "imgui.h"
-#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <objidlbase.h>
@@ -45,53 +43,49 @@ void EditorLayer::OnAttach()
     m_ActiveScene = hazel::CreateRef<hazel::Scene>();
     m_SceneHierachyPanel.SetContext(m_ActiveScene);
 
-    // m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
-    // m_CameraEntity.AddComponent<CameraComponent>();
-    // m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
+    m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
+    m_CameraEntity.AddComponent<CameraComponent>();
+    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
 
-    // m_SecondCameraEntity                                          = m_ActiveScene->CreateEntity("camera_entity B");
-    // m_SecondCameraEntity.AddComponent<CameraComponent>().bPrimary = false;
-    // m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
-
-
-    // m_SquareEntity = m_ActiveScene->CreateEntity("Red Square");
-    // m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
-
-    // m_GreenSquareEntity = m_ActiveScene->CreateEntity("Green Square");
-    // m_GreenSquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0, 1, 0, 1});
-    // m_GreenSquareEntity.GetComponent<TransformComponent>().Translation += 1;
+    m_SecondCameraEntity                                          = m_ActiveScene->CreateEntity("camera_entity B");
+    m_SecondCameraEntity.AddComponent<CameraComponent>().bPrimary = false;
+    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
 
 
+    m_SquareEntity = m_ActiveScene->CreateEntity("Red Square");
+    m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
 
-    // class CameraController : public ScriptableEntity
-    // {
-    //   public:
-    //     void OnCreate()
-    //     {
-    //         HZ_CORE_INFO("{}", __FUNCSIG__);
-    //     }
-    //     void OnDestory() {}
-    //     void OnUpdate(Timestep ts)
-    //     {
-    //         // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
-    //         auto &translation = GetComponent<TransformComponent>().Translation;
-    //         float speed       = 5.f;
-    //         if (hazel::Input::IsKeyPressed(HZ_KEY_A))
-    //             translation[0] -= speed * ts;
-    //         if (hazel::Input::IsKeyPressed(HZ_KEY_D))
-    //             translation[0] += speed * ts;
-    //         if (hazel::Input::IsKeyPressed(HZ_KEY_W))
-    //             translation[1] -= speed * ts;
-    //         if (hazel::Input::IsKeyPressed(HZ_KEY_S))
-    //             translation[1] += speed * ts;
-    //     }
-    // };
+    m_GreenSquareEntity = m_ActiveScene->CreateEntity("Green Square");
+    m_GreenSquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0, 1, 0, 1});
+    m_GreenSquareEntity.GetComponent<TransformComponent>().Translation += 1;
 
-    // m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-    SceneSerializer Serialize(m_ActiveScene);
-    // Serialize.Serialize(FPath("tmp/a.yaml"));
-    Serialize.Deserialize(FPath("tmp/a.yaml"));
+
+    class CameraController : public ScriptableEntity
+    {
+      public:
+        void OnCreate()
+        {
+            HZ_CORE_INFO("{}", __FUNCSIG__);
+        }
+        void OnDestory() {}
+        void OnUpdate(Timestep ts)
+        {
+            // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
+            auto &translation = GetComponent<TransformComponent>().Translation;
+            float speed       = 5.f;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_A))
+                translation[0] -= speed * ts;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_D))
+                translation[0] += speed * ts;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_W))
+                translation[1] -= speed * ts;
+            if (hazel::Input::IsKeyPressed(HZ_KEY_S))
+                translation[1] += speed * ts;
+        }
+    };
+
+    m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 }
 
 void EditorLayer::OnDetach()
@@ -134,55 +128,29 @@ void EditorLayer::OnUpdate(Timestep ts)
     m_Framebuffer->Unbind();
 };
 
+
+void EditorLayer::OnEvent(hazel::Event &event)
+{
+    m_CameraController.OnEvent(event);
+}
+
+void EditorLayer::Init()
+{
+    hazel::FramebufferSpecification spec;
+    spec.Width    = 1280;
+    spec.Height   = 720;
+    m_Framebuffer = hazel::Framebuffer::Create(spec);
+
+    m_CameraController.SetZoomLevel(3);
+
+    m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
+    m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
+    m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
+}
+
 void EditorLayer::OnImGuiRender()
 {
-    static bool               opt_fullscreen  = true;
-    static bool               opt_padding     = true;
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-    // because it would be confusing to have two docking targets within each others.
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    {
-        if (opt_fullscreen)
-        {
-            const ImGuiViewport *viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::SetNextWindowSize(viewport->WorkSize);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 1.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-
-            // for main docspace as root
-            window_flags |= ImGuiWindowFlags_NoTitleBar |
-                            ImGuiWindowFlags_NoCollapse |
-                            ImGuiWindowFlags_NoResize |
-                            ImGuiWindowFlags_NoMove;
-
-            window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus |
-                            ImGuiWindowFlags_NoNavFocus;
-        }
-        else
-        {
-            dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
-        }
-
-        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-        // and handle the pass-thru hole, so we ask Begin() to not render a background.
-        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) {
-            window_flags |= ImGuiWindowFlags_NoBackground;
-        }
-
-        // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-        // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-        // all active windows docked into it will lose their parent and become undocked.
-        // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-        // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-        if (!opt_padding)
-        {
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        }
-    }
+    UpdateWindowFlags();
 
     ImGui::Begin("MainWindow", NULL, window_flags);
     {
@@ -202,7 +170,6 @@ void EditorLayer::OnImGuiRender()
             float min_windows_width = style.WindowMinSize.x;
             style.WindowMinSize.x   = 320.f;
 
-
             if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
             {
                 ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
@@ -213,60 +180,7 @@ void EditorLayer::OnImGuiRender()
             style.WindowMinSize.x = min_windows_width;
         }
 
-        if (ImGui::BeginMenuBar())
-        {
-
-            if (ImGui::BeginMenu("file"))
-            {
-                if (ImGui::MenuItem("Exit")) {
-                    hazel::App::Get().Close();
-                }
-                ImGui::EndMenu();
-            }
-
-            if (ImGui::BeginMenu("Options")) {
-                // Disabling fullscreen would allow the window to be moved to the front of other windows,
-                // which we can't undo at the moment without finer window depth/z control.
-                ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
-                ImGui::MenuItem("Padding", NULL, &opt_padding);
-                ImGui::Separator();
-
-                if (ImGui::MenuItem("Flag: NoDockingOverCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingOverCentralNode) != 0)) {
-                    dockspace_flags ^= ImGuiDockNodeFlags_NoDockingOverCentralNode;
-                }
-                if (ImGui::MenuItem("Flag: NoDockingSplit", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingSplit) != 0)) {
-                    dockspace_flags ^= ImGuiDockNodeFlags_NoDockingSplit;
-                }
-                if (ImGui::MenuItem("Flag: NoUndocking", "", (dockspace_flags & ImGuiDockNodeFlags_NoUndocking) != 0)) {
-                    dockspace_flags ^= ImGuiDockNodeFlags_NoUndocking;
-                }
-                if (ImGui::MenuItem("Flag: NoResize", "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0)) {
-                    dockspace_flags ^= ImGuiDockNodeFlags_NoResize;
-                }
-                if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) {
-                    dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar;
-                }
-                if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) {
-                    dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode;
-                }
-                ImGui::Separator();
-
-                ImGui::EndMenu();
-            }
-
-            ImGui::EndMenuBar();
-        }
-
-
-        if (ImGui::Begin("Settings")) {
-            ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
-            auto id = m_ArchTexture->GetTextureID();
-            ImGui::Image((void *)id, ImVec2{64, 64});
-
-            FontSwitcher();
-
-            ImGui::End();
-        }
+        MenuBar();
 
 
         m_SceneHierachyPanel.OnImGuiRender();
@@ -282,6 +196,15 @@ void EditorLayer::OnImGuiRender()
             ImGui::Text("Mouse Pos : %d,%d", (int)x, (int)y);
             ImGui::End();
         }
+        if (ImGui::Begin("Settings")) {
+            ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
+            auto id = m_ArchTexture->GetTextureID();
+            ImGui::Image((void *)id, ImVec2{64, 64});
+
+            FontSwitcher();
+
+            ImGui::End();
+        }
 
 
 
@@ -289,25 +212,108 @@ void EditorLayer::OnImGuiRender()
 
         ImGui::End();
     }
+} // namespace hazel
+
+
+void EditorLayer::UpdateWindowFlags()
+{
+    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+    // because it would be confusing to have two docking targets within each others.
+    // ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    if (opt_fullscreen)
+    {
+        const ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 1.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+        // for main docspace as root
+        window_flags |= ImGuiWindowFlags_NoTitleBar |
+                        ImGuiWindowFlags_NoCollapse |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_NoMove;
+
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus |
+                        ImGuiWindowFlags_NoNavFocus;
+    }
+    else
+    {
+        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+    }
+
+    // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
+    // and handle the pass-thru hole, so we ask Begin() to not render a background.
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) {
+        window_flags |= ImGuiWindowFlags_NoBackground;
+    }
+
+    // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
+    // all active windows docked into it will lose their parent and become undocked.
+    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
+    // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+    if (!opt_padding)
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    }
 }
 
-void EditorLayer::OnEvent(hazel::Event &event)
+void EditorLayer::MenuBar()
 {
-    m_CameraController.OnEvent(event);
-}
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("file"))
+        {
 
-void EditorLayer::Init()
-{
-    hazel::FramebufferSpecification spec;
-    spec.Width    = 1280;
-    spec.Height   = 720;
-    m_Framebuffer = hazel::Framebuffer::Create(spec);
+            if (ImGui::MenuItem("Serilize")) {
+                SceneSerializer Serialize(m_ActiveScene);
+                Serialize.Serialize(FPath("tmp/a.yaml"));
+            }
+            if (ImGui::MenuItem("Deserilize")) {
+                SceneSerializer Serialize(m_ActiveScene);
+                Serialize.Deserialize(FPath("tmp/a.yaml"));
+            }
 
-    m_CameraController.SetZoomLevel(3);
+            if (ImGui::MenuItem("Exit")) {
+                hazel::App::Get().Close();
+            }
+            ImGui::EndMenu();
+        }
 
-    m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
-    m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
-    m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
+        if (ImGui::BeginMenu("Options")) {
+            // Disabling fullscreen would allow the window to be moved to the front of other windows,
+            // which we can't undo at the moment without finer window depth/z control.
+            ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
+            ImGui::MenuItem("Padding", NULL, &opt_padding);
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Flag: NoDockingOverCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingOverCentralNode) != 0)) {
+                dockspace_flags ^= ImGuiDockNodeFlags_NoDockingOverCentralNode;
+            }
+            if (ImGui::MenuItem("Flag: NoDockingSplit", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingSplit) != 0)) {
+                dockspace_flags ^= ImGuiDockNodeFlags_NoDockingSplit;
+            }
+            if (ImGui::MenuItem("Flag: NoUndocking", "", (dockspace_flags & ImGuiDockNodeFlags_NoUndocking) != 0)) {
+                dockspace_flags ^= ImGuiDockNodeFlags_NoUndocking;
+            }
+            if (ImGui::MenuItem("Flag: NoResize", "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0)) {
+                dockspace_flags ^= ImGuiDockNodeFlags_NoResize;
+            }
+            if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) {
+                dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar;
+            }
+            if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) {
+                dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode;
+            }
+            ImGui::Separator();
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
+    }
 }
 
 void EditorLayer::ViewPort()

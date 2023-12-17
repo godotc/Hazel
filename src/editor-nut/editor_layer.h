@@ -40,6 +40,12 @@ class EditorLayer : public hazel::Layer
     // PraticleSystem m_PracticleSystem;
     // PraticleProps  m_PracticleProps;
 
+    bool               opt_fullscreen  = true;
+    bool               opt_padding     = true;
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+
 
   public:
     EditorLayer();
@@ -50,11 +56,14 @@ class EditorLayer : public hazel::Layer
 
     void OnUpdate(Timestep ts) override;
     void OnImGuiRender() override;
+
     void OnEvent(hazel::Event &event) override;
 
   private:
     void Init();
 
+    void UpdateWindowFlags();
+    void MenuBar();
     void ViewPort();
     void FontSwitcher();
 };
