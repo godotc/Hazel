@@ -40,10 +40,10 @@ class EditorLayer : public hazel::Layer
     // PraticleSystem m_PracticleSystem;
     // PraticleProps  m_PracticleProps;
 
-    bool               opt_fullscreen  = true;
-    bool               opt_padding     = true;
-    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    bool               bFullscreen      = true;
+    bool               bPadding         = true;
+    ImGuiDockNodeFlags m_DockspaceFlags = ImGuiDockNodeFlags_None;
+    ImGuiWindowFlags   m_WindowFlags    = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
 
 
