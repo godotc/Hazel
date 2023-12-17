@@ -1,5 +1,6 @@
 #include "glm/ext/vector_float3.hpp"
 #include "hazel/imgui/imgui_layer.h"
+#include "hazel/scene/scene_serializer.h"
 #include "hz_pch.h"
 
 #include "hazel/core/timestep.h"
@@ -87,6 +88,9 @@ void EditorLayer::OnAttach()
     };
 
     m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+    SceneSerializer Serialize(m_ActiveScene);
+    Serialize.Serialize(FPath("tmp/a.yaml"));
 }
 
 void EditorLayer::OnDetach()

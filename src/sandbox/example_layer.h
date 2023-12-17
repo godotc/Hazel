@@ -2,10 +2,13 @@
 // Created by nono on 10/11/23.
 //
 
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
 #include "hazel.h"
 
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
+#include "platform/opengl/opengl_shader.h"
+#include "utils/path.h"
 namespace hazel {
 class ExampleLayer : public hazel::Layer
 {
@@ -104,16 +107,16 @@ class ExampleLayer : public hazel::Layer
 
             auto TexShader = m_ShaderLibrary->Get("Texture");
 
-            m_Texture->Bind();
-            dynamic_pointer_cast<OpenGLShader>(TexShader)->UploadUniformInt("u_Texture", 0);
-            Render::Submit(TexShader, m_VertexArray, glm::scale(glm::mat4(1), glm::vec3(1.5)));
+            // m_Texture->Bind();
+            // dynamic_pointer_cast<OpenGLShader>(TexShader)->UploadUniformInt("u_Texture", 0);
+            // Render::Submit(TexShader, m_VertexArray, glm::scale(glm::mat4(1), glm::vec3(1.5)));
 
-            m_ArchTexture->Bind(0);
-            dynamic_pointer_cast<OpenGLShader>(TexShader)->UploadUniformInt("u_Texture", 0);
-            Render::Submit(TexShader, m_VertexArray,
-                           glm::translate(
-                               glm::scale(glm::mat4(1), glm::vec3(1.5)),
-                               {-0.5, -0.2, 0}));
+            // m_ArchTexture->Bind(0);
+            // dynamic_pointer_cast<OpenGLShader>(TexShader)->UploadUniformInt("u_Texture", 0);
+            // Render::Submit(TexShader, m_VertexArray,
+            //                glm::translate(
+            //                    glm::scale(glm::mat4(1), glm::vec3(1.5)),
+            //                    {-0.5, -0.2, 0}));
         }
         Render::EndScene();
     };

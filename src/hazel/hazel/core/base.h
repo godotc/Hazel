@@ -20,19 +20,19 @@
 
 
 #ifdef __HZ_ENABLE_ASSERTS
-    #define HZ_ASSERT(x, ...)                                  \
-        {                                                      \
-            if (!!!(x)) {                                      \
-                HZ_ERROR("Assertion Failed: {}", __VA_ARGS__); \
-                PLATFORM_BREAK();                              \
-            }                                                  \
+    #define HZ_ASSERT(x, ...)                                            \
+        {                                                                \
+            if (!!!(x)) {                                                \
+                HZ_ERROR("Assertion Failed: {}" __VA_OPT__(, ) __VA_ARGS__); \
+                PLATFORM_BREAK();                                        \
+            }                                                            \
         }
-    #define HZ_CORE_ASSERT(x, ...)                                  \
-        {                                                           \
-            if (!!!(x)) {                                           \
-                HZ_CORE_ERROR("Assertion Failed: {}", __VA_ARGS__); \
-                PLATFORM_BREAK();                                   \
-            }                                                       \
+    #define HZ_CORE_ASSERT(x, ...)                                            \
+        {                                                                     \
+            if (!!!(x)) {                                                     \
+                HZ_CORE_ERROR("Assertion Failed: {}" __VA_OPT__(, ) __VA_ARGS__); \
+                PLATFORM_BREAK();                                             \
+            }                                                                 \
         }
 #else
     #define HZ_ASSERT(x, ...)
@@ -41,7 +41,7 @@
 
 #define BIT(x) (1 << x)
 #define HZ_BIND_EVENT(ctx, fn) std::bind(fn, ctx, std::placeholders::_1)
-#define HZ_BIND_EVENT_LAMBDA(fn) [this](auto &&...args) {   return this->fn(std::forward<decltype(args)>(args)...); }
+#define HZ_BIND_EVENT_LAMBDA(fn) [this](auto &&...args) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 namespace hazel {
 

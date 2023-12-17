@@ -20,7 +20,7 @@ git clone git@github.com:godotc/Hazel.git
 cd Hazel
 xmake f -m debug 
 xmake build
-xmake run sb
+xmake run nut
 ```
 
 if you want to debug it, could look the configureations under .vscode as refernces. Also could use other IDE to attach to process or execute the binary.

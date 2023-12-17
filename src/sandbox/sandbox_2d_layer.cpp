@@ -1,7 +1,8 @@
 //
 // Created by nono on 10/11/23.
-#include "hazel/scene/entity.h"
 #include "hz_pch.h"
+
+#include "hazel/scene/entity.h"
 
 #include "hazel/core/base.h"
 #include "hazel/scene/component.h"
@@ -21,6 +22,8 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
 #include "sandbox_2d_layer.h"
+
+#include "utils/path.h"
 
 
 void Sandbox2D::OnAttach()
