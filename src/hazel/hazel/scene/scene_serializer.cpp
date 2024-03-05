@@ -1,6 +1,7 @@
+#include "hz_pch.h"
+
 #include "glm/ext/vector_float3.hpp"
 #include "hazel/scene/scene_camera.h"
-#include "hz_pch.h"
 
 #include "component.h"
 #include "hazel/core/log.h"
@@ -14,11 +15,9 @@
 #include "yaml-cpp/emittermanip.h"
 #include "yaml-cpp/node/node.h"
 #include "yaml-cpp/node/parse.h"
-#include "yaml-cpp/traits.h"
 
 
 
-#include <cstdint>
 #include <fstream>
 #include <sstream>
 #include <string>

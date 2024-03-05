@@ -60,6 +60,8 @@ void Scene::OnUpdate(Timestep ts)
         }
     }
 
+    // FIXME: the scale of camera should not affects the scene scale
+
     if (main_camera)
     {
         Render2D::BeginScene(*main_camera, transfrom);

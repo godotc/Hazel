@@ -1,0 +1,20 @@
+{
+    "Lua.diagnostics.globals": [
+        "add_requires",
+        "target",
+        "set_kind",
+        "add_includedirs",
+        "add_headerfiles",
+        "add_files",
+        "add_cxxflags",
+        "add_defines",
+        "add_packages",
+        "add_rules",
+        "target_name",
+        "set_basename",
+        "add_deps"
+    ],
+    "Lua.diagnostics.disable": [
+        "undefined-field"
+    ]
+}

@@ -20,19 +20,19 @@
 
 
 #ifdef __HZ_ENABLE_ASSERTS
-    #define HZ_ASSERT(x, ...)                                            \
-        {                                                                \
-            if (!!!(x)) {                                                \
+    #define HZ_ASSERT(x, ...)                                                \
+        {                                                                    \
+            if (!!!(x)) {                                                    \
                 HZ_ERROR("Assertion Failed: {}" __VA_OPT__(, ) __VA_ARGS__); \
-                PLATFORM_BREAK();                                        \
-            }                                                            \
+                PLATFORM_BREAK();                                            \
+            }                                                                \
         }
-    #define HZ_CORE_ASSERT(x, ...)                                            \
-        {                                                                     \
-            if (!!!(x)) {                                                     \
+    #define HZ_CORE_ASSERT(x, ...)                                                \
+        {                                                                         \
+            if (!!!(x)) {                                                         \
                 HZ_CORE_ERROR("Assertion Failed: {}" __VA_OPT__(, ) __VA_ARGS__); \
-                PLATFORM_BREAK();                                             \
-            }                                                                 \
+                PLATFORM_BREAK();                                                 \
+            }                                                                     \
         }
 #else
     #define HZ_ASSERT(x, ...)
@@ -48,7 +48,7 @@ namespace hazel {
 template <class T>
 using Scope = std::unique_ptr<T>;
 template <class T, class... Args>
-constexpr Scope<T> CreateScore(Args &&...args) { return std::make_unique<T>(std::forward<Args>(args)...); }
+constexpr Scope<T> CreateScope(Args &&...args) { return std::make_unique<T>(std::forward<Args>(args)...); }
 
 template <class T>
 using Ref = std::shared_ptr<T>;

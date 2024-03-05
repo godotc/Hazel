@@ -1,27 +1,22 @@
 #include "hz_pch.h"
 
 #include "glm/ext/vector_float3.hpp"
-#include "hazel/core/log.h"
 
 
 
 #include "glm/common.hpp"
 #include "glm/ext/scalar_constants.hpp"
-#include <cstdio>
-#include <glm/gtx/common.hpp>
 #include <glm/vec4.hpp>
 
 #include "practicle.h"
 
 #include "hazel/renderer/render_2d.h"
-#include <cmath>
 #include <fmt/format.h>
 #include <glm/common.hpp>
 
 
 
 #include <cstdint>
-#include <limits>
 #include <random>
 class Random
 {

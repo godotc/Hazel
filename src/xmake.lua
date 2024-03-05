@@ -1,26 +1,22 @@
+---@diagnostic disable: undefined-global
 
-add_requires("glm","fmt")
-add_requires("spdlog", {configs= {fmt_eternal=true}})
-add_requires("stb", {configs = {shared=true,  debug=true}})
+add_requires("glm", "fmt")
+add_requires("spdlog", { configs = { fmt_eternal = true } })
+add_requires("stb", { configs = { shared = true, debug = true } })
 
-add_requires("entt" ,{configs = {debug=true}})
-add_packages("entt", {public=true})
+add_requires("entt 3.12", { configs = { debug = true } })
+add_packages("entt", { public = true })
 
 add_requires("yaml-cpp")
-add_packages("yaml-cpp", {public=true})
+add_packages("yaml-cpp", { public = true })
 
-add_packages("glm","fmt", "spdlog","stb")
-
--- FIXME:
--- 1. Why cannot working on windows
--- 2. Crashing while non debug for imgui
--- add_requires("imgui docking", {configs = {shared=false,  debug=true,  opengl3 = true, glfw=true }})
--- add_packages("imgui", {debug=false})
+add_packages("glm", "fmt", "spdlog", "stb")
 
 
-includes("hazel","editor-nut","sandbox")
+includes("hazel", "editor-nut", "sandbox")
 
 if is_plat("windows") then
     add_defines("NOMINMAX")
     add_cxflags("/Zc:preprocessor")
+    add_cxflags("/EHs")
 end

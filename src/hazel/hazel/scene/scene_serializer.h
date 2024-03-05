@@ -9,7 +9,6 @@
 namespace hazel {
 class HAZEL_API SceneSerializer
 {
-
     Ref<Scene> m_Scene;
 
   public:
