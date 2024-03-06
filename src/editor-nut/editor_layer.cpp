@@ -1,5 +1,13 @@
 #include "hz_pch.h"
 
+#include "hazel/core/base.h"
+#include "hazel/core/input.h"
+#include "hazel/core/key_code.h"
+#include "hazel/event/key_event.h"
+#include "hazel/scene/scene.h"
+#include "hazel/utils/platform_utils.h"
+
+
 #include "glm/ext/vector_float3.hpp"
 #include "hazel/imgui/imgui_layer.h"
 #include "hazel/scene/scene_serializer.h"
@@ -74,13 +82,13 @@ void EditorLayer::OnAttach()
             // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
             auto &translation = GetComponent<TransformComponent>().Translation;
             float speed       = 5.f;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_A))
+            if (hazel::Input::IsKeyPressed(Key::A))
                 translation[0] -= speed * ts;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_D))
+            if (hazel::Input::IsKeyPressed(Key::D))
                 translation[0] += speed * ts;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_W))
+            if (hazel::Input::IsKeyPressed(Key::W))
                 translation[1] -= speed * ts;
-            if (hazel::Input::IsKeyPressed(HZ_KEY_S))
+            if (hazel::Input::IsKeyPressed(Key::S))
                 translation[1] += speed * ts;
         }
     };
@@ -132,6 +140,9 @@ void EditorLayer::OnUpdate(Timestep ts)
 void EditorLayer::OnEvent(hazel::Event &event)
 {
     m_CameraController.OnEvent(event);
+
+    EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT(this, &EditorLayer::OnKeyPressed));
 }
 
 void EditorLayer::Init()
@@ -266,16 +277,16 @@ void EditorLayer::MenuBar()
     {
         if (ImGui::BeginMenu("file"))
         {
-
-            if (ImGui::MenuItem("Serilize")) {
-                SceneSerializer Serialize(m_ActiveScene);
-                Serialize.Serialize(FPath("tmp/a.yaml"));
+            // TODO: MOVE short cuts info configuration file
+            if (ImGui::MenuItem("New")) {
+                NewScene();
             }
-            if (ImGui::MenuItem("Deserilize")) {
-                SceneSerializer Serialize(m_ActiveScene);
-                Serialize.Deserialize(FPath("tmp/a.yaml"));
+            if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+                OpenScene();
             }
-
+            if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S")) {
+                SaveAs();
+            }
             if (ImGui::MenuItem("Exit")) {
                 hazel::App::Get().Close();
             }
@@ -388,6 +399,70 @@ void EditorLayer::FontSwitcher()
             }
         }
         ImGui::EndCombo();
+    }
+}
+
+bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
+{
+    if (Ev.GetRepeatCount() > 0) {
+        return false;
+    }
+    bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+    bool shift   = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+    switch (Ev.GetKeyCode()) {
+        case Key::N:
+        {
+            if (control) {
+                NewScene();
+            }
+            break;
+        }
+        case Key::O:
+        {
+            if (control) {
+                OpenScene();
+            }
+            break;
+        }
+        case Key::S:
+        {
+            if (control && shift) {
+                SaveAs();
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void EditorLayer::NewScene()
+{
+    m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
+    m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+    m_SceneHierachyPanel.SetContext(m_ActiveScene);
+}
+
+void EditorLayer::OpenScene()
+{
+    auto path = FileDialogs::OpenFile("Hazel Scene (*.hazel)\0*.hazel\0"
+                                      "Hazel Scene (*.yaml)\0*.yaml\0");
+    if (!path.empty()) {
+        m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
+        m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+        m_SceneHierachyPanel.SetContext(m_ActiveScene);
+        SceneSerializer Serialize(m_ActiveScene);
+        Serialize.Deserialize(path);
+    }
+}
+
+void EditorLayer::SaveAs()
+{
+    auto path = FileDialogs::SaveFile("Hazel Scene (*.hazel)\0*.hazel\0"
+                                      "Hazel Scene (*.yaml)\0*.yaml\0");
+    if (!path.empty()) {
+        SceneSerializer Serialize(m_ActiveScene);
+        Serialize.Serialize(path);
     }
 }
 

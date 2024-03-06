@@ -21,13 +21,13 @@ OrthographicsCameraController::OrthographicsCameraController(float aspect_ratio,
 void OrthographicsCameraController::OnUpdate(Timestep dt)
 {
     HZ_PROFILE_FUNCTION();
-    if (hazel::Input::IsKeyPressed(HZ_KEY_A))
+    if (hazel::Input::IsKeyPressed(Key::A))
         m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
-    if (hazel::Input::IsKeyPressed(HZ_KEY_D))
+    if (hazel::Input::IsKeyPressed(Key::D))
         m_CameraPosition.x += m_CameraTranslationSpeed * dt;
-    if (hazel::Input::IsKeyPressed(HZ_KEY_W))
+    if (hazel::Input::IsKeyPressed(Key::W))
         m_CameraPosition.y += m_CameraTranslationSpeed * dt;
-    if (hazel::Input::IsKeyPressed(HZ_KEY_S))
+    if (hazel::Input::IsKeyPressed(Key::S))
         m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
     // for right forward within camera rotation
     //    if (hazel::Input::IsKeyPressed(HZ_KEY_A)) {
@@ -50,8 +50,8 @@ void OrthographicsCameraController::OnUpdate(Timestep dt)
 
     // clang-format off
     if(bRotation){
-        if (hazel::Input::IsKeyPressed(HZ_KEY_Q)) m_CameraRotation -= m_CameraRotationSpeed * dt;
-        if (hazel::Input::IsKeyPressed(HZ_KEY_E)) m_CameraRotation += m_CameraRotationSpeed * dt;
+        if (hazel::Input::IsKeyPressed(Key::Q)) m_CameraRotation -= m_CameraRotationSpeed * dt;
+        if (hazel::Input::IsKeyPressed(Key::E)) m_CameraRotation += m_CameraRotationSpeed * dt;
         m_Camera.SetRotation(m_CameraRotation);
     }
     // clang-format on

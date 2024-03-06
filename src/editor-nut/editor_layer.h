@@ -5,6 +5,7 @@
 #include "hazel.h"
 
 #include "glm/ext/vector_float2.hpp"
+#include "hazel/event/key_event.h"
 #include "hazel/renderer/practicle.h"
 #include "hazel/scene/scene.h"
 #include "panel/scene_hierachy_panel.h"
@@ -15,27 +16,12 @@ namespace hazel {
 
 class EditorLayer : public hazel::Layer
 {
-    glm::vec2 m_ViewportSize = {0.f, 0.f};
-    glm::vec4 m_ClearColor{0.0, 0.0, 0.0, 1.0};
-
-    Ref<Framebuffer> m_Framebuffer;
-    bool             bViewPortFocusing = false;
-    bool             bViewPortHovering = false;
-
     Ref<Scene> m_ActiveScene;
-    // Entities
-    Entity m_CameraEntity;
-    Entity m_SecondCameraEntity;
-    Entity m_SquareEntity;
-    Entity m_GreenSquareEntity;
 
     // Pannel
     SceneHierarchyPanel m_SceneHierachyPanel;
 
-    Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
-
     OrthographicsCameraController m_CameraController{16 / 9.f, true};
-
 
     // PraticleSystem m_PracticleSystem;
     // PraticleProps  m_PracticleProps;
@@ -45,6 +31,22 @@ class EditorLayer : public hazel::Layer
     ImGuiDockNodeFlags m_DockspaceFlags = ImGuiDockNodeFlags_None;
     ImGuiWindowFlags   m_WindowFlags    = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
+    // ----------------------
+
+    glm::vec2 m_ViewportSize = {0.f, 0.f};
+    glm::vec4 m_ClearColor{0.0, 0.0, 0.0, 1.0};
+
+    Ref<Framebuffer> m_Framebuffer;
+    bool             bViewPortFocusing = false;
+    bool             bViewPortHovering = false;
+
+    // Entities
+    Entity m_CameraEntity;
+    Entity m_SecondCameraEntity;
+    Entity m_SquareEntity;
+    Entity m_GreenSquareEntity;
+
+    Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
 
 
   public:
@@ -62,10 +64,19 @@ class EditorLayer : public hazel::Layer
   private:
     void Init();
 
+    // --- GUI renderer
     void UpdateWindowFlags();
     void MenuBar();
     void ViewPort();
     void FontSwitcher();
+
+    // --- Events
+    bool OnKeyPressed(const KeyPressedEvent &Ev);
+
+    // ---
+    void NewScene();
+    void OpenScene();
+    void SaveAs();
 };
 
 

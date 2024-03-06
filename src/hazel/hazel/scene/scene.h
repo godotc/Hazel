@@ -17,6 +17,8 @@ class SpriteRendererComponent;
 class NativeScriptComponent;
 
 
+using Entity_t = entt::entity;
+
 class HAZEL_API Scene
 {
     friend class Entity;

@@ -161,7 +161,7 @@ void App::OnEvent(Event &ev)
 
 bool App::OnKeyPressed(KeyPressedEvent &ev)
 {
-    if (ev.GetKeyCode() == HZ_KEY_ESCAPE) {
+    if (ev.GetKeyCode() == Key::Escape) {
         HZ_CORE_WARN("Pressing esc to exit");
         bRunning = false;
     }

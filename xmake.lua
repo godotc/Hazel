@@ -17,6 +17,9 @@ if is_plat("linux") then
 elseif is_plat("windows") then
     add_requires("opengl")
     add_packages("opengl")
+    add_defines("NOMINMAX")
+    add_cxflags("/Zc:preprocessor")
+    add_cxflags("/EHs")
     -- add_defines("_MSVC_LANG=202002L")
 end
 

@@ -30,6 +30,7 @@ class HAZEL_API KeyPressedEvent : public KeyEvent
     KeyPressedEvent(int keycode, int repeat_count) : KeyEvent(keycode), m_RepeatCount(repeat_count) {}
 
     [[nodiscard]] std::string to_string() const override { return fmt::format("KeyPressedEvent: {} ({} repeats)", m_KeyCode, m_RepeatCount); }
+    int                       GetRepeatCount() const { return m_RepeatCount; }
 
     EVENT_CLASS_TYPE(KeyPressed)
 

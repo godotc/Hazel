@@ -1,3 +1,4 @@
+#include "entt/core/iterator.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "hazel/core/base.h"
 #include "hazel/renderer/camera.h"
@@ -23,6 +24,7 @@ void Scene::DestoryEntity(Entity entity)
 {
     m_Registry.destroy(entity);
 }
+
 
 Scene::Scene()
 {

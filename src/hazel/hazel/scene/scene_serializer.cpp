@@ -1,5 +1,7 @@
 #include "hz_pch.h"
 
+#include "entt/entity/fwd.hpp"
+
 #include "glm/ext/vector_float3.hpp"
 #include "hazel/scene/scene_camera.h"
 
@@ -22,6 +24,7 @@
 #include <sstream>
 #include <string>
 #include <yaml-cpp/yaml.h>
+
 namespace YAML {
 template <>
 struct convert<glm::vec3> {
@@ -187,14 +190,15 @@ void SceneSerializer::Serialize(const std::string &filepath)
         out << YAML::Key << "Entities";
         out << YAML::BeginSeq;
         {
-            m_Scene->m_Registry.each([&](auto entity_id) {
+            for (auto entity_id : m_Scene->m_Registry.storage<Entity_t>())
+            {
                 Entity entity{entity_id, m_Scene.get()};
                 if (!entity) {
                     HZ_WARN("An entity is invalid!");
                     return;
                 }
                 SerializeEntity(out, entity);
-            });
+            };
         }
         out << YAML::EndSeq;
     }

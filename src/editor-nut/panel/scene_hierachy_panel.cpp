@@ -1,3 +1,4 @@
+#include "entt/entity/fwd.hpp"
 #include "hz_pch.h"
 
 #include "glm/ext/vector_float3.hpp"
@@ -22,6 +23,10 @@ namespace hazel {
 
 namespace imgui = ImGui;
 
+
+// NOTICE!!: make sure each Vec3Control has different label
+static void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value, float column_width);
+
 SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &scene)
 {
     m_Context = scene;
@@ -29,17 +34,18 @@ SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &scene)
 
 void SceneHierarchyPanel::SetContext(const Ref<Scene> &scene)
 {
-    m_Context = scene;
+    m_Context   = scene;
+    m_Selection = {};
 }
 
 void SceneHierarchyPanel::OnImGuiRender()
 {
     if (ImGui::Begin("Scene Hierachy"))
     {
-        m_Context->m_Registry.each([this](auto entt) {
+        for (auto &entt : m_Context->m_Registry.storage<entt::entity>()) {
             auto entity = Entity{entt, m_Context.get()};
             DrawEntityNode(entity);
-        });
+        };
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
             m_Selection = {};
@@ -109,7 +115,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 }
 
 // NOTICE!!: make sure each Vec3Control has different label
-static void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value = 0.f, float column_width = 100.f)
+void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value = 0.f, float column_width = 100.f)
 {
     imgui::PushID(label.c_str());
 
@@ -226,8 +232,6 @@ void DrawComponent(const std::string &name, Entity entity, UIFunction ui_func)
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
-
-
     if (entity.HasComponent<TagComponent>()) {
         auto &tag = entity.GetComponent<TagComponent>().Tag;
         char  buf[256];
