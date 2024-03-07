@@ -25,7 +25,7 @@ class EditorLayer : public hazel::Layer
 
     // PraticleSystem m_PracticleSystem;
     // PraticleProps  m_PracticleProps;
-    int m_GizmoType = 0;
+    int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
     bool               bFullscreen      = true;
     bool               bPadding         = true;
@@ -35,6 +35,7 @@ class EditorLayer : public hazel::Layer
     // ----------------------
 
     glm::vec2 m_ViewportSize = {0.f, 0.f};
+    glm::vec2 m_ViewportBounds[2];
     glm::vec4 m_ClearColor{0.0, 0.0, 0.0, 1.0};
 
     Ref<Framebuffer> m_Framebuffer;
@@ -70,6 +71,7 @@ class EditorLayer : public hazel::Layer
     void MenuBar();
     void ViewPort();
     void FontSwitcher();
+    // Must call in viewprot draw process(in the same window)
     void Gizmos();
 
     // --- Events

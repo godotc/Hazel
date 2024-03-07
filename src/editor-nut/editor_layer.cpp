@@ -42,7 +42,9 @@
 
 namespace hazel {
 
-EditorLayer::EditorLayer() : Layer("Editor Layer") {}
+EditorLayer::EditorLayer() : Layer("Editor Layer")
+{
+}
 
 EditorLayer::~EditorLayer()
 {
@@ -128,11 +130,9 @@ void EditorLayer::OnUpdate(Timestep ts)
 
     m_Framebuffer->Bind();
     {
-        {
-            HZ_PROFILE_SCOPE("Renderer Prep");
-            hazel::RenderCommand::SetClearColor(m_ClearColor);
-            hazel::RenderCommand::Clear();
-        }
+        HZ_PROFILE_SCOPE("Renderer Prep");
+        hazel::RenderCommand::SetClearColor(m_ClearColor);
+        hazel::RenderCommand::Clear();
     }
 
 
@@ -224,7 +224,6 @@ void EditorLayer::OnImGuiRender()
 
 
         ViewPort();
-        Gizmos();
 
         ImGui::End();
     }
@@ -338,6 +337,12 @@ void EditorLayer::ViewPort()
 
     if (ImGui::Begin("ViewPort"))
     {
+        auto viewport_min_region = ImGui::GetWindowContentRegionMin();
+        auto viewport_max_region = ImGui::GetWindowContentRegionMax();
+        auto viewport_offset     = ImGui::GetWindowPos();
+        m_ViewportBounds[0]      = {viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y};
+        m_ViewportBounds[1]      = {viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y};
+
         {
             bViewPortFocusing = ImGui::IsWindowFocused();
             bViewPortHovering = ImGui::IsWindowHovered();
@@ -358,11 +363,14 @@ void EditorLayer::ViewPort()
             m_ViewportSize = {x, y};
         }
 
-        uint32_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
-        ImGui::Image((void *)framebuffer_colorattachment,
+        uint64_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
+        ImGui::Image(reinterpret_cast<void *>(framebuffer_colorattachment),
                      ImVec2{m_ViewportSize.x, m_ViewportSize.y},
                      ImVec2{0, 1}, ImVec2{1, 0} // flip the image
         );
+
+        Gizmos();
+
         ImGui::End();
     }
 }
@@ -415,14 +423,19 @@ void EditorLayer::Gizmos()
         return;
     }
 
-    ImGuizmo::Enable(true);
+    // ImGuizmo::Enable(true);
 
     ImGuizmo::SetDrawlist();
+
     ImGuizmo::SetOrthographic(false);
 
-    float w = ImGui::GetWindowWidth();
-    float h = ImGui::GetWindowHeight();
-    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, w, h);
+    // float w = ImGui::GetWindowWidth();
+    // float h = ImGui::GetWindowHeight();
+    // ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, w, h);
+    // ImGuiIO &io = ImGui::GetIO();
+    ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y,
+                      m_ViewportBounds[1].x - m_ViewportBounds[0].x,
+                      m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
     // camera entity
     auto ce = m_ActiveScene->GetPrimaryCameraEntity();
@@ -455,8 +468,11 @@ void EditorLayer::Gizmos()
 
     if (ImGuizmo::IsUsing())
     {
+        // TODO: Fix not work
         glm::vec3 translation, rotation, scale;
         math::DecomposeTansform(transfrom, translation, rotation, scale);
+        // ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transfrom), glm::value_ptr(translation),
+        //                                       glm::value_ptr(rotation), glm::value_ptr(scale));
 
         tc.Translation = translation;
         tc.Scale       = scale;
