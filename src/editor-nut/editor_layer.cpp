@@ -1,5 +1,9 @@
 #include "hz_pch.h"
 
+#include "glm/fwd.hpp"
+
+#include "hazel/scene/scene_camera.h"
+
 #include "hazel/core/base.h"
 #include "hazel/core/input.h"
 #include "hazel/core/key_code.h"
@@ -8,7 +12,6 @@
 #include "hazel/utils/platform_utils.h"
 
 
-#include "glm/ext/vector_float3.hpp"
 #include "hazel/imgui/imgui_layer.h"
 #include "hazel/scene/scene_serializer.h"
 
@@ -23,16 +26,18 @@
 #include "hazel/renderer/framebuffer.h"
 #include "hazel/scene/component.h"
 
+#include <imgui.h>
 
+#include "ImGuizmo.h"
 #include "editor_layer.h"
-#include "imgui.h"
 #include <cstdint>
-#include <memory>
 #include <objidlbase.h>
 #include <string>
 #include <sysinfoapi.h>
-#include <vector>
 
+
+
+#include "math/math.h"
 #include "utils/path.h"
 
 namespace hazel {
@@ -218,8 +223,8 @@ void EditorLayer::OnImGuiRender()
         }
 
 
-
         ViewPort();
+        Gizmos();
 
         ImGui::End();
     }
@@ -337,7 +342,7 @@ void EditorLayer::ViewPort()
             bViewPortFocusing = ImGui::IsWindowFocused();
             bViewPortHovering = ImGui::IsWindowHovered();
             // HZ_CORE_WARN("is foucused {}", bViewPortFocusing);
-            App::Get().GetImGuiLayer()->SetBlockEvents(!bViewPortFocusing || !bViewPortFocusing);
+            App::Get().GetImGuiLayer()->SetBlockEvents(!bViewPortFocusing && !bViewPortFocusing);
         }
 
         ImGui::PopStyleVar();
@@ -402,6 +407,65 @@ void EditorLayer::FontSwitcher()
     }
 }
 
+
+void EditorLayer::Gizmos()
+{
+    Entity selected_entity = m_SceneHierachyPanel.GetSelectedEntity();
+    if (!selected_entity || m_GizmoType == -1) {
+        return;
+    }
+
+    ImGuizmo::Enable(true);
+
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetOrthographic(false);
+
+    float w = ImGui::GetWindowWidth();
+    float h = ImGui::GetWindowHeight();
+    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, w, h);
+
+    // camera entity
+    auto ce = m_ActiveScene->GetPrimaryCameraEntity();
+    HZ_ASSERT(ce, "Should be valid");
+    const SceneCamera &camera            = ce.GetComponent<CameraComponent>().Camera;
+    const glm::mat4   &camera_projection = camera.GetProjection();
+    const glm::mat4    cmaera_view       = glm::inverse(ce.GetComponent<TransformComponent>().GetTransform());
+
+    // selected entity transform
+    auto      tc        = selected_entity.GetComponent<TransformComponent>();
+    glm::mat4 transfrom = tc.GetTransform();
+
+
+    // do transform a section by a section
+    bool  snap       = Input::IsKeyPressed(Key::LeftControl);
+    float snap_value = 0.5f;
+    if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
+        snap_value = 45.f;
+    }
+    float snap_values[3] = {
+        snap_value,
+        snap_value,
+        snap_value,
+    };
+
+    ImGuizmo::Manipulate(glm::value_ptr(cmaera_view), glm::value_ptr(camera_projection),
+                         ImGuizmo::OPERATION(m_GizmoType), ImGuizmo::MODE::LOCAL,
+                         glm::value_ptr(transfrom),
+                         nullptr, snap ? snap_values : nullptr);
+
+    if (ImGuizmo::IsUsing())
+    {
+        glm::vec3 translation, rotation, scale;
+        math::DecomposeTansform(transfrom, translation, rotation, scale);
+
+        tc.Translation = translation;
+        tc.Scale       = scale;
+
+        glm::vec3 rotation_delta = rotation - tc.Rotation;
+        tc.Rotation += rotation_delta;
+    }
+}
+
 bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
 {
     if (Ev.GetRepeatCount() > 0) {
@@ -431,9 +495,32 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
             }
             break;
         }
+        // Gizmos
+        case Key::Q:
+        {
+            m_GizmoType = -1;
+            break;
+        }
+        case Key::W:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            break;
+        }
+        case Key::E:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            break;
+        }
+        case Key::R:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            break;
+        }
         default:
             break;
     }
+
+    return false;
 }
 
 void EditorLayer::NewScene()
@@ -461,6 +548,9 @@ void EditorLayer::SaveAs()
     auto path = FileDialogs::SaveFile("Hazel Scene (*.hazel)\0*.hazel\0"
                                       "Hazel Scene (*.yaml)\0*.yaml\0");
     if (!path.empty()) {
+        if (!FPath(path.c_str()).absolute_path.has_extension()) {
+            path.append(".hazel");
+        }
         SceneSerializer Serialize(m_ActiveScene);
         Serialize.Serialize(path);
     }

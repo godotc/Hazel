@@ -3,9 +3,12 @@
 #include "__microshit_api_hazel.h"
 #include "hazel/core/layer.h"
 
-#include "imgui.h"
 #include "utils/delegate.h"
 #include <cstddef>
+
+#include <imgui.h>
+//
+#include <ImGuizmo.h>
 
 
 
@@ -13,6 +16,7 @@ namespace hazel {
 
 extern HAZEL_API ImGuiContext *g_ImguiContext;
 #define RESET_IMGUI_CONTEXT() ImGui::SetCurrentContext(hazel::g_ImguiContext);
+#define RESET_IMGUIZMO_CONTEXT() ImGuizmo::SetImGuiContext(hazel::g_ImguiContext);
 
 class HAZEL_API ImGuiLayer : public Layer
 {

@@ -14,4 +14,5 @@ add_packages("yaml-cpp", { public = true })
 add_packages("glm", "fmt", "spdlog", "stb")
 
 
+includes("pkgs")
 includes("hazel", "editor-nut", "sandbox")

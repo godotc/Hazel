@@ -22,6 +22,8 @@
 #include <nb30.h>
 #include <unordered_map>
 
+#include <ImGuizmo.h>
+
 
 
 namespace hazel {
@@ -122,6 +124,8 @@ void ImGuiLayer::Begin()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    ImGuizmo::BeginFrame();
 }
 
 void ImGuiLayer::End()

@@ -1,5 +1,4 @@
 ---@diagnostic disable: undefined-global
-add_requires("spdlog")
 add_requires("glfw", {
     configs = {
         debug = true,
@@ -7,8 +6,19 @@ add_requires("glfw", {
 })
 add_requires("glad", { configs = { debug = true } })
 
+add_requires("spdlog")
 add_packages("spdlog")
-add_requires("imgui docking", { configs = { debug = true, opengl3 = true, glfw = true } })
+
+
+add_requires("imgui docking", {
+    configs = {
+        debug = true,
+        opengl3 = true,
+        glfw = true,
+    },
+})
+
+add_deps("imguizmo")
 
 ---@format disable
 target("hazel")
@@ -17,10 +27,12 @@ target("hazel")
     add_includedirs("./", { public = true })
     add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")
+    add_files("hz_pch.cpp")
 
     add_files("config/**.cpp")
     add_files("hazel/**.cpp")
     add_files("utils/**.cpp")
+    add_files("math/**.cpp")
     add_files("platform/opengl/**.cpp")
 
     -- TODO: Sperator the windows and linux platfrom files
@@ -33,8 +45,8 @@ target("hazel")
     add_packages("spdlog", "glad")
     add_packages("glfw", { public = true })
 
-    -- add_deps("imgui-docking", { public = true })
     add_packages("imgui", {public=true})
+    add_packages("imguizmo", {public=true})
 
 
     if is_os("windows") then

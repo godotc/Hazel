@@ -43,39 +43,36 @@ on_config(function()
 end)
 
 
+---@format disable
 task("test")
-set_menu {}
-on_run(function()
-    -- print(os.exec("xmake f -m debug --test=y")
-    os.exec("xmake f -m debug")
-    print(os.exec("xmake build -g test"))
-    print(os.exec("xmake run -g test"))
-end)
-
-
+    set_menu {}
+    on_run(function()
+        -- print(os.exec("xmake f -m debug --test=y")
+        os.exec("xmake f -m debug")
+        print(os.exec("xmake build -g test"))
+        print(os.exec("xmake run -g test"))
+    end)
 
 task("cpcm")
-set_menu {
-    usage = "xmake cpcm"
-}
-on_run(function()
-    local cmds =
-    {
-        "xmake f -c",
-        "xmake f -m debug ", --toolchain=llvm",
-        "xmake project -k compile_commands",
+    set_menu {
+        usage = "xmake cpcm"
     }
-    for _, c in pairs(cmds) do
-        print(os.exec(c))
-    end
-end)
-
-
+    on_run(function()
+        local cmds =
+        {
+            "xmake f -c",
+            "xmake f -m debug ", --toolchain=llvm",
+            "xmake project -k compile_commands",
+        }
+        for _, c in pairs(cmds) do
+            print(os.exec(c))
+        end
+    end)
 
 task("targets")
-set_menu {}
-on_run(function()
-    for targetname, target in pairs(project.targets()) do
-        print(target:targetfile())
-    end
-end)
+    set_menu {}
+    on_run(function()
+        for targetname, target in pairs(project.targets()) do
+            print(target:targetfile())
+        end
+    end)

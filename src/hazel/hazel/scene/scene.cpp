@@ -94,6 +94,19 @@ void Scene::OnViewportResize(uint32_t w, uint32_t h)
     }
 }
 
+Entity Scene::GetPrimaryCameraEntity()
+{
+    auto view = m_Registry.view<CameraComponent>();
+    for (auto entity : view) {
+        const auto &camera = view.get<CameraComponent>(entity);
+        if (camera.bPrimary) {
+            return Entity(entity, this);
+        }
+    }
+
+    return {};
+}
+
 
 template <class T>
 void Scene::OnComponentAdd(Entity entity, T &component) { HZ_CORE_ASSERT(false, "failed"); }

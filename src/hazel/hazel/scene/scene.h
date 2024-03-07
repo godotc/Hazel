@@ -33,8 +33,9 @@ class HAZEL_API Scene
     Scene();
     virtual ~Scene() = default;
 
-    void OnUpdate(Timestep ts);
-    void OnViewportResize(uint32_t w, uint32_t h);
+    void   OnUpdate(Timestep ts);
+    void   OnViewportResize(uint32_t w, uint32_t h);
+    Entity GetPrimaryCameraEntity();
 
   public:
     Entity CreateEntity(const std::string &name);

@@ -12,7 +12,8 @@
         "add_rules",
         "target_name",
         "set_basename",
-        "add_deps"
+        "add_deps",
+        "target_end"
     ],
     "Lua.diagnostics.disable": [
         "undefined-field"

@@ -25,6 +25,7 @@ class EditorLayer : public hazel::Layer
 
     // PraticleSystem m_PracticleSystem;
     // PraticleProps  m_PracticleProps;
+    int m_GizmoType = 0;
 
     bool               bFullscreen      = true;
     bool               bPadding         = true;
@@ -69,6 +70,7 @@ class EditorLayer : public hazel::Layer
     void MenuBar();
     void ViewPort();
     void FontSwitcher();
+    void Gizmos();
 
     // --- Events
     bool OnKeyPressed(const KeyPressedEvent &Ev);
