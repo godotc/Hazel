@@ -79,7 +79,7 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
 
             m_CameraController.OnUpdate(timestep);
 
-            m_ActiveScene->OnUpdate(timestep);
+            m_ActiveScene->OnUpdateRumtime(timestep);
 
             // tilesheet sample
             {

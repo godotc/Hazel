@@ -7,6 +7,7 @@
 #include "glm/ext/vector_float2.hpp"
 #include "hazel/event/key_event.h"
 #include "hazel/renderer/practicle.h"
+#include "hazel/scene/editor_camera.h"
 #include "hazel/scene/scene.h"
 #include "panel/scene_hierachy_panel.h"
 
@@ -20,6 +21,7 @@ class EditorLayer : public hazel::Layer
 
     // Pannel
     SceneHierarchyPanel m_SceneHierachyPanel;
+    EditorCamera        m_EditorCamera;
 
     OrthographicsCameraController m_CameraController{16 / 9.f, true};
 
@@ -64,7 +66,6 @@ class EditorLayer : public hazel::Layer
     void OnEvent(hazel::Event &event) override;
 
   private:
-    void Init();
 
     // --- GUI renderer
     void UpdateWindowFlags();

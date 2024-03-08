@@ -3,6 +3,7 @@
 
 #include "entt/entity/fwd.hpp"
 #include "hazel/core/timestep.h"
+#include "hazel/scene/editor_camera.h"
 #include <entt/entt.hpp>
 
 
@@ -33,7 +34,8 @@ class HAZEL_API Scene
     Scene();
     virtual ~Scene() = default;
 
-    void   OnUpdate(Timestep ts);
+    void   OnUpdateEditor(Timestep ts, EditorCamera &camera);
+    void   OnUpdateRumtime(Timestep ts);
     void   OnViewportResize(uint32_t w, uint32_t h);
     Entity GetPrimaryCameraEntity();
 

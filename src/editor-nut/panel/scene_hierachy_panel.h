@@ -8,6 +8,7 @@
 
 namespace hazel {
 
+void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value, float column_width);
 class SceneHierarchyPanel
 {
     friend class Scene;

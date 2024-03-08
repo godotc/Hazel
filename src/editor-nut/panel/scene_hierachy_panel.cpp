@@ -25,96 +25,7 @@ namespace hazel {
 namespace imgui = ImGui;
 
 
-// NOTICE!!: make sure each Vec3Control has different label
-static void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value, float column_width);
-
-SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &scene)
-{
-    m_Context = scene;
-}
-
-void SceneHierarchyPanel::SetContext(const Ref<Scene> &scene)
-{
-    m_Context   = scene;
-    m_Selection = {};
-}
-
-void SceneHierarchyPanel::OnImGuiRender()
-{
-    if (ImGui::Begin("Scene Hierachy"))
-    {
-        for (auto &entt : m_Context->m_Registry.storage<entt::entity>()) {
-            auto entity = Entity{entt, m_Context.get()};
-            DrawEntityNode(entity);
-        };
-
-        if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
-            m_Selection = {};
-        }
-
-
-        // right click on black space
-        if (imgui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-            if (imgui::MenuItem("Create Empty Entity")) {
-                m_Context->CreateEntity("Empty Entity");
-            }
-            ImGui::EndPopup();
-        }
-
-        ImGui::End();
-    }
-
-
-
-    if (ImGui::Begin("Properties")) {
-        if (m_Selection) {
-            DrawComponents(m_Selection);
-        }
-        ImGui::End();
-    }
-}
-
-void SceneHierarchyPanel::DrawEntityNode(Entity entity)
-{
-    bool bEntityDeleted = false;
-
-    auto &tag = entity.GetComponent<TagComponent>().Tag;
-
-    auto flags =
-        // entity.HasChildren? ImGuiTreeNodeFlags_OpenOnArrow :0 |
-        (entity == m_Selection ? ImGuiTreeNodeFlags_Selected : 0) |
-        ImGuiTreeNodeFlags_SpanAvailWidth;
-
-    bool bOpened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, tag.c_str());
-
-
-    // left click
-    if (ImGui::IsItemClicked()) {
-        m_Selection = entity;
-    }
-
-    // right click this entity
-    if (imgui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverExistingPopup)) {
-        if (imgui::MenuItem("Delete Entity")) {
-            bEntityDeleted = true;
-        }
-        ImGui::EndPopup();
-    }
-
-    if (bOpened)
-    {
-        // treenode's children here
-        // ...
-        ImGui::TreePop();
-    }
-
-    // delete this at last avoid issues
-    if (bEntityDeleted) {
-        m_Context->DestoryEntity(entity);
-        m_Selection = {};
-    }
-}
-
+#pragma region
 // NOTICE!!: make sure each Vec3Control has different label
 void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value = 0.f, float column_width = 100.f)
 {
@@ -198,7 +109,7 @@ void DrawComponent(const std::string &name, Entity entity, UIFunction ui_func)
         float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.f;
         imgui::Separator();
 
-        bool bOpen = ImGui::TreeNodeEx((void *)typeid(T).hash_code(), tree_node_flags, name.c_str());
+        bool bOpen = ImGui::TreeNodeEx((void *)typeid(T).hash_code(), tree_node_flags, "%s", name.c_str());
 
         imgui::PopStyleVar();
 
@@ -230,6 +141,95 @@ void DrawComponent(const std::string &name, Entity entity, UIFunction ui_func)
         }
     }
 }
+#pragma endregion
+
+SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &scene)
+{
+    m_Context = scene;
+}
+
+void SceneHierarchyPanel::SetContext(const Ref<Scene> &scene)
+{
+    m_Context   = scene;
+    m_Selection = {};
+}
+
+void SceneHierarchyPanel::OnImGuiRender()
+{
+    if (ImGui::Begin("Scene Hierachy"))
+    {
+        for (auto &entt : m_Context->m_Registry.storage<entt::entity>()) {
+            auto entity = Entity{entt, m_Context.get()};
+            DrawEntityNode(entity);
+        };
+
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
+            m_Selection = {};
+        }
+
+
+        // right click on black space
+        if (imgui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+            if (imgui::MenuItem("Create Empty Entity")) {
+                m_Context->CreateEntity("Empty Entity");
+            }
+            ImGui::EndPopup();
+        }
+
+        ImGui::End();
+    }
+
+
+
+    if (ImGui::Begin("Properties")) {
+        if (m_Selection) {
+            DrawComponents(m_Selection);
+        }
+        ImGui::End();
+    }
+}
+
+void SceneHierarchyPanel::DrawEntityNode(Entity entity)
+{
+    bool bEntityDeleted = false;
+
+    auto &tag = entity.GetComponent<TagComponent>().Tag;
+
+    auto flags =
+        // entity.HasChildren? ImGuiTreeNodeFlags_OpenOnArrow :0 |
+        (entity == m_Selection ? ImGuiTreeNodeFlags_Selected : 0) |
+        ImGuiTreeNodeFlags_SpanAvailWidth;
+
+    bool bOpened = ImGui::TreeNodeEx((void *)(uint64_t)(uint32_t)entity, flags, "%s", tag.c_str());
+
+
+    // left click
+    if (ImGui::IsItemClicked()) {
+        m_Selection = entity;
+    }
+
+    // right click this entity
+    if (imgui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverExistingPopup)) {
+        if (imgui::MenuItem("Delete Entity")) {
+            bEntityDeleted = true;
+        }
+        ImGui::EndPopup();
+    }
+
+    if (bOpened)
+    {
+        // treenode's children here
+        // ...
+        ImGui::TreePop();
+    }
+
+    // delete this at last avoid issues
+    if (bEntityDeleted) {
+        m_Context->DestoryEntity(entity);
+        m_Selection = {};
+    }
+}
+
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
@@ -344,5 +344,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         imgui::ColorEdit4("Color", glm::value_ptr(component.Color));
     });
 }
+
+
 
 } // namespace hazel

@@ -31,9 +31,22 @@ Scene::Scene()
 }
 
 
-void Scene::OnUpdate(Timestep ts)
+void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
 {
-    // Update scripts
+    Render2D::BeginScene(camera);
+
+    auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+    for (auto entity : group) {
+        auto [tranf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+        Render2D::DrawQuad(tranf.GetTransform(), 1.f, color);
+    }
+
+    Render2D::EndScene();
+}
+
+void Scene::OnUpdateRumtime(Timestep ts)
+{
+    // Update scripts TODO: in runtime
     {
         m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto &ns_comp) {
             // TODO: Move to Scene:BeginPlay()

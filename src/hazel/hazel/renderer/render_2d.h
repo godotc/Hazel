@@ -7,6 +7,7 @@
 
 #include "hazel/renderer/camera.h"
 #include "hazel/renderer/subtexture_2d.h"
+#include "hazel/scene/editor_camera.h"
 #include "orthographic_camera.h"
 #include "texture.h"
 
@@ -40,6 +41,7 @@ class HAZEL_API Render2D
     static void Shutdown();
 
 
+    static void BeginScene(const EditorCamera &camera);
     static void BeginScene(const Camera &camera, const glm::mat4 &transform);
     static void BeginScene(const OrthographicsCamera &camera); // TOD: remove
     static void EndScene();

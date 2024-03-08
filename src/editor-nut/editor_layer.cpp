@@ -1,3 +1,5 @@
+#include "hazel/event/application_event.h"
+#include "hazel/scene/editor_camera.h"
 #include "hz_pch.h"
 
 #include "glm/fwd.hpp"
@@ -54,10 +56,22 @@ EditorLayer::~EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-    Init();
-    m_ActiveScene = hazel::CreateRef<hazel::Scene>();
-    m_SceneHierachyPanel.SetContext(m_ActiveScene);
+    hazel::FramebufferSpecification spec;
+    spec.Width    = 1280;
+    spec.Height   = 720;
+    m_Framebuffer = hazel::Framebuffer::Create(spec);
 
+    m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
+    m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
+    m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
+    m_ActiveScene  = hazel::CreateRef<hazel::Scene>();
+
+    m_SceneHierachyPanel.SetContext(m_ActiveScene);
+    m_EditorCamera = EditorCamera(45.f, 1.6 / 0.9, 0.1, 1000.0);
+
+
+
+#if 0
     m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
     m_CameraEntity.AddComponent<CameraComponent>();
     m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
@@ -86,6 +100,9 @@ void EditorLayer::OnAttach()
         void OnDestory() {}
         void OnUpdate(Timestep ts)
         {
+            // TODO: Disable this on:
+            // 1. Select a entity in editor
+            // 2. Start playing games
             // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
             auto &translation = GetComponent<TransformComponent>().Translation;
             float speed       = 5.f;
@@ -101,6 +118,7 @@ void EditorLayer::OnAttach()
     };
 
     m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+#endif
 }
 
 void EditorLayer::OnDetach()
@@ -118,12 +136,14 @@ void EditorLayer::OnUpdate(Timestep ts)
         m_Framebuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
         m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
         // here set the ortho every fame of camera
+        m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
         m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
     }
 
     // TODO: the camera's event is block by imgui_layer, but keybord event still handled by here
     if (bViewPortFocusing) {
         m_CameraController.OnUpdate(ts);
+        m_EditorCamera.OnUpdate(ts);
     }
 
     hazel::Render2D::ResetStats();
@@ -135,8 +155,7 @@ void EditorLayer::OnUpdate(Timestep ts)
         hazel::RenderCommand::Clear();
     }
 
-
-    m_ActiveScene->OnUpdate(ts);
+    m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
     m_Framebuffer->Unbind();
 };
@@ -144,25 +163,17 @@ void EditorLayer::OnUpdate(Timestep ts)
 
 void EditorLayer::OnEvent(hazel::Event &event)
 {
-    m_CameraController.OnEvent(event);
+    static bool bPlaying = false;
+    if (!m_SceneHierachyPanel.GetSelectedEntity()) {
+        m_CameraController.OnEvent(event);
+    }
+    m_EditorCamera.OnEvent(event);
+
 
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT(this, &EditorLayer::OnKeyPressed));
 }
 
-void EditorLayer::Init()
-{
-    hazel::FramebufferSpecification spec;
-    spec.Width    = 1280;
-    spec.Height   = 720;
-    m_Framebuffer = hazel::Framebuffer::Create(spec);
-
-    m_CameraController.SetZoomLevel(3);
-
-    m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
-    m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
-    m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
-}
 
 void EditorLayer::OnImGuiRender()
 {
@@ -213,9 +224,12 @@ void EditorLayer::OnImGuiRender()
             ImGui::End();
         }
         if (ImGui::Begin("Settings")) {
+            auto pos = m_EditorCamera.GetPosition();
+            ImGui::Text("Postion: %f, %f, %f", pos.x, pos.y, pos.z);
             ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
             auto id = m_ArchTexture->GetTextureID();
             ImGui::Image((void *)id, ImVec2{64, 64});
+
 
             FontSwitcher();
 
@@ -419,7 +433,7 @@ void EditorLayer::FontSwitcher()
 void EditorLayer::Gizmos()
 {
     Entity selected_entity = m_SceneHierachyPanel.GetSelectedEntity();
-    if (!selected_entity || m_GizmoType == -1 || !selected_entity.HasComponent<TransformComponent>()) {
+    if (!selected_entity || m_GizmoType == -1) {
         return;
     }
 
@@ -429,24 +443,24 @@ void EditorLayer::Gizmos()
 
     ImGuizmo::SetOrthographic(false);
 
-    // float w = ImGui::GetWindowWidth();
-    // float h = ImGui::GetWindowHeight();
-    // ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, w, h);
-    // ImGuiIO &io = ImGui::GetIO();
     ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y,
                       m_ViewportBounds[1].x - m_ViewportBounds[0].x,
                       m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
-    // camera entity
-    auto ce = m_ActiveScene->GetPrimaryCameraEntity();
-    HZ_ASSERT(ce, "Should be valid");
-    const SceneCamera &camera            = ce.GetComponent<CameraComponent>().Camera;
-    const glm::mat4   &camera_projection = camera.GetProjection();
-    const glm::mat4    cmaera_view       = glm::inverse(ce.GetComponent<TransformComponent>().GetTransform());
+    // runtime camera from entity
+    // auto ce = m_ActiveScene->GetPrimaryCameraEntity();
+    // HZ_ASSERT(ce, "Should be valid");
+    // const SceneCamera &camera            = ce.GetComponent<CameraComponent>().Camera;
+    // const glm::mat4   &camera_projection = camera.GetProjection();
+    // const glm::mat4    cmaera_view       = glm::inverse(ce.GetComponent<TransformComponent>().GetTransform());
+
+    // Editor camera
+    const glm::mat4 &camera_projection = m_EditorCamera.GetProjection();
+    const glm::mat4  cmaera_view       = m_EditorCamera.GetViewMatrix();
 
     // selected entity transform
-    TransformComponent &tc        = selected_entity.GetComponent<TransformComponent>();
-    glm::mat4           transfrom = tc.GetTransform();
+    auto     &tc        = selected_entity.GetComponent<TransformComponent>();
+    glm::mat4 transfrom = tc.GetTransform();
 
 
     // do transform a section by a section
@@ -468,7 +482,6 @@ void EditorLayer::Gizmos()
 
     if (ImGuizmo::IsUsing())
     {
-        // TODO: Fix not work
         glm::vec3 translation, rotation, scale;
         math::DecomposeTansform(transfrom, translation, rotation, scale);
         // ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transfrom), glm::value_ptr(translation),
@@ -477,6 +490,7 @@ void EditorLayer::Gizmos()
         tc.Translation = translation;
         tc.Scale       = scale;
 
+        // tc.Rotation    = rotation;
         glm::vec3 rotation_delta = rotation - tc.Rotation;
         tc.Rotation += rotation_delta;
     }
@@ -511,29 +525,37 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
             }
             break;
         }
-        // Gizmos
-        case Key::Q:
-        {
-            m_GizmoType = -1;
-            break;
-        }
-        case Key::W:
-        {
-            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-            break;
-        }
-        case Key::E:
-        {
-            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
-            break;
-        }
-        case Key::R:
-        {
-            m_GizmoType = ImGuizmo::OPERATION::SCALE;
-            break;
-        }
         default:
             break;
+    }
+
+    auto selected_entity = m_SceneHierachyPanel.GetSelectedEntity();
+
+    if (selected_entity) {
+        switch (Ev.GetKeyCode()) {
+            // Gizmos
+            case Key::Q:
+            {
+                m_GizmoType = -1;
+                break;
+            }
+            case Key::W:
+            {
+                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                break;
+            }
+            case Key::E:
+            {
+                m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+                break;
+            }
+            case Key::R:
+            {
+                m_GizmoType = ImGuizmo::OPERATION::SCALE;
+                break;
+            }
+        }
+        return false;
     }
 
     return false;
