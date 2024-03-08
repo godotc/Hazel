@@ -8,26 +8,29 @@ namespace hazel {
 
 class OpenGLFrameBuffer : public Framebuffer
 {
-    uint32_t                 m_FramebufferID   = 0;
-    uint32_t                 m_ColorAttachment = 0;
-    uint32_t                 m_DepthAttachment = 0;
-    FramebufferSpecification m_Specification;
+    uint32_t        m_FramebufferID = 0;
+    FramebufferSpec m_Specification;
+
+    std::vector<framebuffer::TextureSpec> m_ColorAttachmentSpecs;
+    framebuffer::TextureSpec              m_DepthAttachmentSpec = framebuffer::TextureSpec{framebuffer::ETextureFormat::None};
+    std::vector<glm::uint32>              m_ColorAttachments;
+    uint32_t                              m_DepthAttachment = 0;
 
   public:
 
-    OpenGLFrameBuffer(const FramebufferSpecification &spec);
-    ~OpenGLFrameBuffer();
+    explicit OpenGLFrameBuffer(const FramebufferSpec &spec);
+    ~        OpenGLFrameBuffer() override;
 
     void Bind() override;
     void Unbind() override;
     void Resize(uint32_t w, uint32_t h) override;
 
-    uint32_t GetColorAttachmentID() override;
+    uint32_t GetColorAttachmentID(uint32_t index = 0) const override;
 
 
     void UpdateAll();
 
-    const FramebufferSpecification &GetSpecification() const override;
+    [[nodiscard]] const FramebufferSpec &GetSpecification() const override;
 };
 
 } // namespace hazel

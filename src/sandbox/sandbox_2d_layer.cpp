@@ -29,7 +29,7 @@
 void Sandbox2D::OnAttach()
 {
 
-    hazel::FramebufferSpecification spec;
+    hazel::FramebufferSpec spec;
     spec.Width    = 1280;
     spec.Height   = 720;
     m_Framebuffer = hazel::Framebuffer::Create(spec);

@@ -61,9 +61,6 @@ class HAZEL_API EditorCamera
 
 
   private:
-    std::pair<float, float> PanSpeed() const;
-    float                   RotationSpeed() const;
-    float                   ZoomSpeed() const;
 
     void UpdateView();
     void UpdateProjection();
@@ -73,6 +70,9 @@ class HAZEL_API EditorCamera
     void MousePan(const glm::vec2 &delta);
     void MouseZoom(float dt);
 
+    std::pair<float, float> PanSpeed() const;
+    float                   RotationSpeed() const;
+    float                   ZoomSpeed() const;
 
 
     glm::vec3 CalculatePosition() const;

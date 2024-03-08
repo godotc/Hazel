@@ -158,9 +158,15 @@ void SceneHierarchyPanel::OnImGuiRender()
 {
     if (ImGui::Begin("Scene Hierachy"))
     {
-        for (auto &entt : m_Context->m_Registry.storage<entt::entity>()) {
-            auto entity = Entity{entt, m_Context.get()};
-            DrawEntityNode(entity);
+        auto &entites = m_Context->m_Registry.storage<entt::entity>();
+
+#ifndef NDebug
+        int32_t size = entites.size();
+#endif
+        for (auto &entt : entites) {
+            if (auto entity = Entity{entt, m_Context.get()}) {
+                DrawEntityNode(entity);
+            }
         };
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
@@ -192,6 +198,13 @@ void SceneHierarchyPanel::OnImGuiRender()
 void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 {
     bool bEntityDeleted = false;
+    // right click this entity
+    if (imgui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverExistingPopup)) {
+        if (imgui::MenuItem("Delete Entity")) {
+            bEntityDeleted = true;
+        }
+        ImGui::EndPopup();
+    }
 
     auto &tag = entity.GetComponent<TagComponent>().Tag;
 
@@ -208,13 +221,6 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
         m_Selection = entity;
     }
 
-    // right click this entity
-    if (imgui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverExistingPopup)) {
-        if (imgui::MenuItem("Delete Entity")) {
-            bEntityDeleted = true;
-        }
-        ImGui::EndPopup();
-    }
 
     if (bOpened)
     {

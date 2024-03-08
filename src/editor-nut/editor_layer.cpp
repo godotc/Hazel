@@ -56,10 +56,11 @@ EditorLayer::~EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-    hazel::FramebufferSpecification spec;
-    spec.Width    = 1280;
-    spec.Height   = 720;
-    m_Framebuffer = hazel::Framebuffer::Create(spec);
+    hazel::FramebufferSpec spec;
+    spec.Attachments = {framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::Depth};
+    spec.Width       = 1280;
+    spec.Height      = 720;
+    m_Framebuffer    = hazel::Framebuffer::Create(spec);
 
     m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
@@ -67,7 +68,7 @@ void EditorLayer::OnAttach()
     m_ActiveScene  = hazel::CreateRef<hazel::Scene>();
 
     m_SceneHierachyPanel.SetContext(m_ActiveScene);
-    m_EditorCamera = EditorCamera(45.f, 1.6 / 0.9, 0.1, 1000.0);
+    m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
 
 
 
@@ -129,7 +130,7 @@ void EditorLayer::OnUpdate(Timestep ts)
 {
     HZ_PROFILE_SCOPE("Sandbox2d::OnUpdate");
 
-    if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+    if (FramebufferSpec spec = m_Framebuffer->GetSpecification();
         m_ViewportSize.x > 0.f && m_ViewportSize.y > 0.f &&
         (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
     {
@@ -228,8 +229,7 @@ void EditorLayer::OnImGuiRender()
             ImGui::Text("Postion: %f, %f, %f", pos.x, pos.y, pos.z);
             ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
             auto id = m_ArchTexture->GetTextureID();
-            ImGui::Image((void *)id, ImVec2{64, 64});
-
+            ImGui::Image(reinterpret_cast<void *>(id), ImVec2{64, 64});
 
             FontSwitcher();
 
@@ -377,8 +377,9 @@ void EditorLayer::ViewPort()
             m_ViewportSize = {x, y};
         }
 
-        uint64_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
-        ImGui::Image(reinterpret_cast<void *>(framebuffer_colorattachment),
+        uint64_t framebuffer_colorattachment   = m_Framebuffer->GetColorAttachmentID();
+        uint64_t framebuffer_colorattachment_1 = m_Framebuffer->GetColorAttachmentID(1);
+        ImGui::Image(reinterpret_cast<void *>(framebuffer_colorattachment_1),
                      ImVec2{m_ViewportSize.x, m_ViewportSize.y},
                      ImVec2{0, 1}, ImVec2{1, 0} // flip the image
         );

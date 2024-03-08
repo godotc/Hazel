@@ -78,6 +78,7 @@ static void MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severi
 
     using std::cout, std::endl;
     cout << "---------------------opengl-callback-start------------" << endl;
+    cout << "source: " << source << endl;
     cout << "message: " << message << endl;
     cout << "type: ";
     switch (type) {

@@ -37,7 +37,8 @@ in float v_TilingFactor;
 
 uniform sampler2D u_Textures[32];
 
-out vec4 color;
+layout (location=0) out vec4 color;
+layout (location=1) out vec4 color2;
 
 
 #define CASE(x)  case x: the_texture = texture(u_Textures[x] , v_TexCoord * v_TilingFactor); break;
@@ -87,5 +88,5 @@ void main(){
     }
 
     color =  the_texture * v_Color;
-    // color = vec4(v_TexCoord, 0, 1);
+    color2 = vec4(v_TexCoord, 0, 1);
 }
