@@ -1,5 +1,4 @@
-
-
+---@format disable
 target("nut")
     set_kind("binary")
     set_basename("hazel-editor-nut")
@@ -10,3 +9,4 @@ target("nut")
     add_files("**.cpp")
 
     add_defines("HAZEL_ENTRY_PROGRAM")
+target_end()

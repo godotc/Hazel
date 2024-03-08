@@ -419,7 +419,7 @@ void EditorLayer::FontSwitcher()
 void EditorLayer::Gizmos()
 {
     Entity selected_entity = m_SceneHierachyPanel.GetSelectedEntity();
-    if (!selected_entity || m_GizmoType == -1) {
+    if (!selected_entity || m_GizmoType == -1 || !selected_entity.HasComponent<TransformComponent>()) {
         return;
     }
 
@@ -445,8 +445,8 @@ void EditorLayer::Gizmos()
     const glm::mat4    cmaera_view       = glm::inverse(ce.GetComponent<TransformComponent>().GetTransform());
 
     // selected entity transform
-    auto      tc        = selected_entity.GetComponent<TransformComponent>();
-    glm::mat4 transfrom = tc.GetTransform();
+    TransformComponent &tc        = selected_entity.GetComponent<TransformComponent>();
+    glm::mat4           transfrom = tc.GetTransform();
 
 
     // do transform a section by a section
