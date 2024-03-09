@@ -8,6 +8,7 @@
 
 #include "hazel/renderer/vertex_array.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -15,6 +16,12 @@ namespace hazel {
 
 class OpenGLVertexArray : public VertexArray
 {
+    uint32_t                       m_VertexArrayID = 0;
+    std::vector<Ref<VertexBuffer>> m_VertexBuffers;
+    Ref<IndexBuffer>               m_IndexBuffer;
+
+    uint32_t m_VertexBufferAttrIndex = 0;
+
   public:
     OpenGLVertexArray();
     ~OpenGLVertexArray() override;
@@ -26,12 +33,6 @@ class OpenGLVertexArray : public VertexArray
     void                                         SetIndexBuffer(Ref<IndexBuffer> &index_buffer) override;
     inline const std::vector<Ref<VertexBuffer>> &GetVertexBuffer() const override { return m_VertexBuffers; }
     inline const Ref<IndexBuffer>               &GetIndexBuffer() const override { return m_IndexBuffer; }
-
-  private:
-    std::vector<Ref<VertexBuffer>> m_VertexBuffers;
-    Ref<IndexBuffer>               m_IndexBuffer;
-
-    uint32_t m_VertexArrayID = 0;
 };
 
 } // namespace hazel

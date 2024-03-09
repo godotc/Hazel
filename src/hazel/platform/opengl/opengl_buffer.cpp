@@ -34,7 +34,7 @@ OpenGLVertexBuffer::~OpenGLVertexBuffer()
 
 void OpenGLVertexBuffer::SetData(void *data, uint32_t size)
 {
-    glad_glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
     glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }
 
