@@ -57,7 +57,7 @@ EditorLayer::~EditorLayer()
 void EditorLayer::OnAttach()
 {
     hazel::FramebufferSpec spec;
-    spec.Attachments = {framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::Depth};
+    spec.Attachments = {framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::RED_INTEGER, framebuffer::ETextureFormat::Depth};
     spec.Width       = 1280;
     spec.Height      = 720;
     m_Framebuffer    = hazel::Framebuffer::Create(spec);
@@ -130,7 +130,7 @@ void EditorLayer::OnUpdate(Timestep ts)
 {
     HZ_PROFILE_SCOPE("Sandbox2d::OnUpdate");
 
-    if (FramebufferSpec spec = m_Framebuffer->GetSpecification();
+    if (const FramebufferSpec &spec = m_Framebuffer->GetSpecification();
         m_ViewportSize.x > 0.f && m_ViewportSize.y > 0.f &&
         (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
     {
@@ -158,6 +158,17 @@ void EditorLayer::OnUpdate(Timestep ts)
 
     m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
+    auto [mx, my] = ImGui::GetMousePos();
+    mx -= m_ViewportBounds[0].x;
+    my -= m_ViewportBounds[0].y;
+    my = m_ViewportSize.y - my; // flip y, make 0,0 bot-left
+
+    if (mx >= 0 && my >= 0 && mx < (int)m_ViewportSize.x && my < (int)m_ViewportSize.y)
+    {
+        int pix = m_Framebuffer->ReadPixel(1, mx, my);
+        HZ_CORE_WARN("Pos in view port: {},{}, pixel= {}", mx, my, pix);
+    }
+
     m_Framebuffer->Unbind();
 };
 
@@ -173,6 +184,7 @@ void EditorLayer::OnEvent(hazel::Event &event)
 
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT(this, &EditorLayer::OnKeyPressed));
+    dispatcher.Dispatch<MouseButtonPressedEvent>(HZ_BIND_EVENT(this, &EditorLayer::OnMouseButtonPressed));
 }
 
 
@@ -351,13 +363,13 @@ void EditorLayer::ViewPort()
 
     if (ImGui::Begin("ViewPort"))
     {
-        auto viewport_min_region = ImGui::GetWindowContentRegionMin();
-        auto viewport_max_region = ImGui::GetWindowContentRegionMax();
-        auto viewport_offset     = ImGui::GetWindowPos();
-        m_ViewportBounds[0]      = {viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y};
-        m_ViewportBounds[1]      = {viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y};
-
         {
+            auto viewport_offset     = ImGui::GetWindowPos(); // include tab bar
+            auto viewport_min_region = ImGui::GetWindowContentRegionMin();
+            auto viewport_max_region = ImGui::GetWindowContentRegionMax();
+            m_ViewportBounds[0]      = {viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y};
+            m_ViewportBounds[1]      = {viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y};
+
             bViewPortFocusing = ImGui::IsWindowFocused();
             bViewPortHovering = ImGui::IsWindowHovered();
             // HZ_CORE_WARN("is foucused {}", bViewPortFocusing);
@@ -367,22 +379,21 @@ void EditorLayer::ViewPort()
         ImGui::PopStyleVar();
 
         const ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
-
-        const float x = viewport_panel_size.x,
-                    y = viewport_panel_size.y;
+        const float  x                   = viewport_panel_size.x;
+        const float  y                   = viewport_panel_size.y;
 
         if (m_ViewportSize != glm::vec2{x, y} && x > 0 && y > 0)
         {
-            HZ_INFO("Viewpor  resized: {} {}", x, y);
+            HZ_INFO("Viewport  resized: {} {}", x, y);
             m_ViewportSize = {x, y};
         }
 
-        uint64_t framebuffer_colorattachment   = m_Framebuffer->GetColorAttachmentID();
-        uint64_t framebuffer_colorattachment_1 = m_Framebuffer->GetColorAttachmentID(1);
-        ImGui::Image(reinterpret_cast<void *>(framebuffer_colorattachment_1),
-                     ImVec2{m_ViewportSize.x, m_ViewportSize.y},
-                     ImVec2{0, 1}, ImVec2{1, 0} // flip the image
+        uint64_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
+        // m_Framebuffer->GetColorAttachmentID(1);
+        ImGui::Image(reinterpret_cast<void *>(framebuffer_colorattachment),
+                     ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0} // flip the image
         );
+
 
         Gizmos();
 
@@ -559,6 +570,16 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
         return false;
     }
 
+    return false;
+}
+
+bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
+{
+    // auto [x, y] = Input::GetMousePos();
+    // if (x > m_ViewportBounds[0].x && x < m_ViewportBounds[1].x &&
+    //     y > m_ViewportBounds[0].y && x < m_ViewportBounds[1].y)
+    // {
+    // }
     return false;
 }
 

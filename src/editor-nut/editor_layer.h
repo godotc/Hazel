@@ -77,6 +77,7 @@ class EditorLayer : public hazel::Layer
 
     // --- Events
     bool OnKeyPressed(const KeyPressedEvent &Ev);
+    bool OnMouseButtonPressed(const MouseButtonPressedEvent &Ev);
 
     // ---
     void NewScene();

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <utility>
 #include <vector>
-
 
 template <typename Signature>
 class Delegate;
@@ -12,10 +12,8 @@ template <typename ReturnType, typename... Args>
 class Delegate<ReturnType(Args...)>
 {
   public:
-    // Function type alias
     using FunctionType = std::function<ReturnType(Args...)>;
 
-    // Constructor to set the delegate function
     Delegate(){};
     Delegate(const FunctionType &function) : m_Function(function), bBound(true) {}
 
@@ -24,7 +22,6 @@ class Delegate<ReturnType(Args...)>
         m_Function = function;
         bBound     = true;
     }
-
 
     // Execute the delegate with arguments
     ReturnType operator()(Args... args) const
@@ -39,30 +36,34 @@ class Delegate<ReturnType(Args...)>
         }
     }
 
-
   private:
     FunctionType m_Function;
     bool         bBound = false;
 };
 
-
-
 template <typename... Args>
 class MulticastDelegate
 {
   public:
-    // Function type alias
     using FunctionType = std::function<void(Args...)>;
 
-    // Constructor to set the delegate function
     MulticastDelegate(){};
 
-    void Add(const FunctionType &function)
+    void Add(const FunctionType &function) { m_Functions.push_back(function); }
+
+    template <typename Obj>
+    void AddWeak(Obj *obj, void (Obj::*memberFunc)(Args...))
     {
-        m_Functions.push_back(function);
+        std::weak_ptr<Obj> weak_obj(obj);
+        m_Functions.push_back([weak_obj, memberFunc](Args... args) {
+            if (auto objPtr = weak_obj.lock()) {
+                (objPtr.get()->*memberFunc)(std::forward<Args>(args)...);
+            }
+        });
     }
 
-    void Brocast(Args... args) const
+
+    void Broadcast(Args... args) const
     {
         for (const auto &func : m_Functions) {
             func(std::forward<Args>(args)...);

@@ -150,8 +150,8 @@ SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &scene)
 
 void SceneHierarchyPanel::SetContext(const Ref<Scene> &scene)
 {
-    m_Context   = scene;
-    m_Selection = {};
+    m_Context = scene;
+    UpdateSelection({});
 }
 
 void SceneHierarchyPanel::OnImGuiRender()
@@ -170,7 +170,7 @@ void SceneHierarchyPanel::OnImGuiRender()
         };
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
-            m_Selection = {};
+            UpdateSelection({});
         }
 
 
@@ -232,7 +232,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     // delete this at last avoid issues
     if (bEntityDeleted) {
         m_Context->DestoryEntity(entity);
-        m_Selection = {};
+        UpdateSelection({});
     }
 }
 
@@ -241,12 +241,10 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
     if (entity.HasComponent<TagComponent>()) {
         auto &tag = entity.GetComponent<TagComponent>().Tag;
-        char  buf[256];
-        memset(buf, 0, sizeof(buf));
-        memcpy(buf, tag.data(), sizeof(buf));
-        if (ImGui::InputText("Tag", buf, sizeof(buf))) {
-            tag = buf;
+        if (tag.size() < 256) {
+            tag.resize(256);
         }
+        ImGui::InputText("Tag", tag.data(), tag.size());
     }
 
     imgui::SameLine();
@@ -353,4 +351,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 
 
+void SceneHierarchyPanel::UpdateSelection(Entity new_selection)
+{
+    if (m_Selection != new_selection) {
+        m_LastSelection = m_Selection;
+        m_Selection     = new_selection;
+    }
+}
 } // namespace hazel
