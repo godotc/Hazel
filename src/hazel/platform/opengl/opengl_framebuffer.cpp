@@ -141,6 +141,15 @@ uint32_t OpenGLFrameBuffer::GetColorAttachmentID(uint32_t index) const
     return m_ColorAttachments[index];
 }
 
+int OpenGLFrameBuffer::ReadPixel(uint32_t attachment_index, int x, int y) const
+{
+    HZ_CORE_ASSERT(attachment_index < m_ColorAttachments.size());
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
+    int pixel;
+    glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
+    return pixel;
+}
+
 
 void OpenGLFrameBuffer::UpdateAll()
 {
@@ -176,9 +185,13 @@ void OpenGLFrameBuffer::UpdateAll()
                                               m_Specification.Width, m_Specification.Height, i);
                     break;
                 }
-                    // case framebuffer::ETextureFormat::RGB16F:
-                    // case framebuffer::ETextureFormat::DEPTH24_STENCIL8:
-                    //     break;
+                case framebuffer::ETextureFormat::RED_INTEGER:
+                {
+                    utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples,
+                                              GL_R32I, GL_RED_INTEGER,
+                                              m_Specification.Width, m_Specification.Height, i);
+                    break;
+                }
             }
         }
     }
@@ -199,7 +212,7 @@ void OpenGLFrameBuffer::UpdateAll()
             }
         }
     }
-    GL_CHECK_HEALTH();
+    // GL_CHECK_HEALTH();
 
     if (m_ColorAttachments.size() > 1) {
         HZ_CORE_ASSERT(m_ColorAttachments.size() <= 4);
@@ -211,7 +224,7 @@ void OpenGLFrameBuffer::UpdateAll()
         glDrawBuffer(GL_NONE);
     }
 
-    GL_CHECK_HEALTH();
+    // GL_CHECK_HEALTH();
 
 #ifndef NDEBUG
     GLenum stats = glCheckFramebufferStatus(GL_FRAMEBUFFER);

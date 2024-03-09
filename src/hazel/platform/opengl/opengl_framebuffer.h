@@ -19,13 +19,14 @@ class OpenGLFrameBuffer : public Framebuffer
   public:
 
     explicit OpenGLFrameBuffer(const FramebufferSpec &spec);
-    ~        OpenGLFrameBuffer() override;
+    ~OpenGLFrameBuffer() override;
 
     void Bind() override;
     void Unbind() override;
     void Resize(uint32_t w, uint32_t h) override;
 
     uint32_t GetColorAttachmentID(uint32_t index = 0) const override;
+    int ReadPixel(uint32_t attachment_index, int x, int y) const override;
 
 
     void UpdateAll();

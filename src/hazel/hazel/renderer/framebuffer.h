@@ -16,8 +16,9 @@ enum class ETextureFormat
 
     // color
     RGBA8,
-    RGB16F,
+    RED_INTEGER,
 
+    RGB16F,
 
     // Depth/stencil
     DEPTH24_STENCIL8,
@@ -62,8 +63,9 @@ class HAZEL_API Framebuffer
 
     virtual ~Framebuffer() = default;
 
-    virtual const FramebufferSpec &GetSpecification() const                       = 0;
-    virtual uint32_t               GetColorAttachmentID(uint32_t index = 0) const = 0;
+    virtual const FramebufferSpec &GetSpecification() const                                 = 0;
+    virtual uint32_t               GetColorAttachmentID(uint32_t index = 0) const           = 0;
+    virtual int                    ReadPixel(uint32_t attachment_index, int x, int y) const = 0;
 
     virtual void Bind()   = 0;
     virtual void Unbind() = 0;
