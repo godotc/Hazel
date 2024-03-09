@@ -9,6 +9,7 @@
 #include "hazel/event/event.h"
 #include "hazel/event/key_event.h"
 #include "hazel/event/mouse_event.h"
+#include <cstddef>
 #include <cstdint>
 #include <glm/matrix.hpp>
 

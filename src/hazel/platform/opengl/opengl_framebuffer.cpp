@@ -133,9 +133,9 @@ OpenGLFrameBuffer::~OpenGLFrameBuffer()
 void OpenGLFrameBuffer::Bind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
-    float asp = m_Specification.Width / (float)m_Specification.Height;
-    glViewport(0, 0, m_Specification.Width * asp, m_Specification.Height / asp);
-    // glViewport(0, 0, m_Specification.Width, m_Specification.Height);
+    // float asp = m_Specification.Width / (float)m_Specification.Height;
+    // glViewport(0, 0, m_Specification.Width * asp, m_Specification.Height / asp);
+    glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 }
 
 void OpenGLFrameBuffer::Unbind()
