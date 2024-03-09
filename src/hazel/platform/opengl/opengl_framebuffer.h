@@ -3,6 +3,7 @@
 #include "hazel/renderer/framebuffer.h"
 #include <cstdint>
 #include <functional>
+#include <winbase.h>
 
 namespace hazel {
 
@@ -26,7 +27,8 @@ class OpenGLFrameBuffer : public Framebuffer
     void Resize(uint32_t w, uint32_t h) override;
 
     uint32_t GetColorAttachmentID(uint32_t index = 0) const override;
-    int ReadPixel(uint32_t attachment_index, int x, int y) const override;
+    void     ClearAttachment(uint32_t attachment_index, int value) override;
+    int      ReadPixel(uint32_t attachment_index, int x, int y) const override;
 
 
     void UpdateAll();

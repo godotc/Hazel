@@ -44,14 +44,12 @@ class EditorLayer : public hazel::Layer
     bool             bViewPortFocusing = false;
     bool             bViewPortHovering = false;
 
+    Entity m_HoverdEntity;
+
     // Entities
-    Entity m_CameraEntity;
-    Entity m_SecondCameraEntity;
-    Entity m_SquareEntity;
-    Entity m_GreenSquareEntity;
+    // Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
 
-    Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
-
+    int m_ViewportColorAttachmentId = 0;
 
   public:
     EditorLayer();

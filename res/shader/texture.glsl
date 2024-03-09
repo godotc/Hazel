@@ -1,16 +1,18 @@
 #type vertex
-#version 330 core
+#version 450 core
 
 layout (location =0) in vec3 a_Position;
 layout (location =1) in vec4 a_Color;
 layout (location =2) in vec2 a_TexCoord;
 layout (location =3) in float a_TexIndex;
 layout (location =4) in float a_TilingFactor;
+layout (location =5) in int a_EntityId;
 
 out vec4 v_Color;
 out vec2 v_TexCoord;
 out float v_TexIndex;
 out float v_TilingFactor;
+flat out int v_EntityId;
 
 
 uniform mat4 u_ViewProjection;
@@ -21,6 +23,7 @@ void main(){
     v_TexCoord = a_TexCoord;
     v_TexIndex = a_TexIndex;
     v_TilingFactor = a_TilingFactor;
+    v_EntityId = a_EntityId;
     // gl_Position = u_ViewProjection *  u_Transform * vec4(a_Position, 1.f);
     gl_Position = u_ViewProjection *  vec4(a_Position, 1.f);
 }
@@ -28,20 +31,23 @@ void main(){
 //------------------------
 
 #type fragment
-#version 330 core
+#version 450 core
+
+// each in different color attachment
+layout (location=0) out vec4 color;
+layout (location=1) out int color2;//-1 + id +1
 
 in vec4 v_Color;
 in vec2 v_TexCoord;
 in float v_TexIndex;
 in float v_TilingFactor;
+flat in int v_EntityId;
 
 uniform sampler2D u_Textures[32];
 
-layout (location=0) out vec4 color;
-layout (location=1) out vec4 color2;
 
 
-#define CASE(x)  case x: the_texture = texture(u_Textures[x] , v_TexCoord * v_TilingFactor); break;
+#define CASE(x) case x: the_texture = texture(u_Textures[x], v_TexCoord * v_TilingFactor); break;
 
 // #define MULTI_MACRO_HELPER(last) CASE(last)
 // #define MULTI_MACRO_HELPER(first,...) CASE(first) EXPAND_ARGS(__VA_ARGS__)
@@ -50,9 +56,9 @@ layout (location=1) out vec4 color2;
 
 void main(){
     vec4 the_texture;
-    switch(int(v_TexIndex)){
-    //     // MULTI_MACRO(0,1,2,3,4,5,6);
-        CASE(0); 
+    switch (int(v_TexIndex)){
+        //     // MULTI_MACRO(0,1,2,3,4,5,6);
+        CASE(0);
         CASE(1);
         CASE(2);
         CASE(3);
@@ -88,5 +94,5 @@ void main(){
     }
 
     color =  the_texture * v_Color;
-    color2 = vec4(v_TexCoord, 0, 1);
+    color2 = v_EntityId;
 }

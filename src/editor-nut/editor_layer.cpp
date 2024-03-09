@@ -58,14 +58,14 @@ void EditorLayer::OnAttach()
 {
     hazel::FramebufferSpec spec;
     spec.Attachments = {framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::RED_INTEGER, framebuffer::ETextureFormat::Depth};
-    spec.Width       = 1280;
-    spec.Height      = 720;
+    spec.Width       = 800;
+    spec.Height      = 600;
     m_Framebuffer    = hazel::Framebuffer::Create(spec);
 
-    m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
-    m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
-    m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
-    m_ActiveScene  = hazel::CreateRef<hazel::Scene>();
+    // m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
+    // m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
+    // m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
+    m_ActiveScene = hazel::CreateRef<hazel::Scene>();
 
     m_SceneHierachyPanel.SetContext(m_ActiveScene);
     m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
@@ -154,19 +154,26 @@ void EditorLayer::OnUpdate(Timestep ts)
         HZ_PROFILE_SCOPE("Renderer Prep");
         hazel::RenderCommand::SetClearColor(m_ClearColor);
         hazel::RenderCommand::Clear();
+
+        // reset the entity_id attachment to -1
+        m_Framebuffer->ClearAttachment(1, -1);
     }
 
     m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
-    auto [mx, my] = ImGui::GetMousePos();
-    mx -= m_ViewportBounds[0].x;
-    my -= m_ViewportBounds[0].y;
-    my = m_ViewportSize.y - my; // flip y, make 0,0 bot-left
-
-    if (mx >= 0 && my >= 0 && mx < (int)m_ViewportSize.x && my < (int)m_ViewportSize.y)
+    // Mouse hover/picking preps
     {
-        int pix = m_Framebuffer->ReadPixel(1, mx, my);
-        HZ_CORE_WARN("Pos in view port: {},{}, pixel= {}", mx, my, pix);
+        auto [mx, my] = ImGui::GetMousePos();
+        mx -= m_ViewportBounds[0].x;
+        my -= m_ViewportBounds[0].y;
+        my = m_ViewportSize.y - my; // flip y, make 0,0 bot-left
+
+        if (mx >= 0 && my >= 0 && mx < (int)m_ViewportSize.x && my < (int)m_ViewportSize.y)
+        {
+            int pixel      = m_Framebuffer->ReadPixel(1, mx, my);
+            m_HoverdEntity = pixel == -1 ? Entity{} : Entity{(entt::entity)pixel, m_ActiveScene.get()};
+            // HZ_CORE_WARN("Pos in view port: {},{}, pixel= {}", mx, my, pix);
+        }
     }
 
     m_Framebuffer->Unbind();
@@ -209,15 +216,15 @@ void EditorLayer::OnImGuiRender()
         {
             float min_windows_width = style.WindowMinSize.x;
             style.WindowMinSize.x   = 320.f;
+            style.WindowMinSize.x   = min_windows_width;
+        }
 
-            if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-            {
-                ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
-                ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), m_DockspaceFlags);
-                // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-            }
-
-            style.WindowMinSize.x = min_windows_width;
+        //  make this window dockspace
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), m_DockspaceFlags);
+            // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         }
 
         MenuBar();
@@ -240,8 +247,15 @@ void EditorLayer::OnImGuiRender()
             auto pos = m_EditorCamera.GetPosition();
             ImGui::Text("Postion: %f, %f, %f", pos.x, pos.y, pos.z);
             ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
-            auto id = m_ArchTexture->GetTextureID();
-            ImGui::Image(reinterpret_cast<void *>(id), ImVec2{64, 64});
+            // auto id = m_ArchTexture->GetTextureID();
+            // ImGui::Image(reinterpret_cast<void *>(id), ImVec2{64, 64});
+            ImGui::InputInt("Attachment Id", &m_ViewportColorAttachmentId);
+
+            const char *name = "None";
+            if (m_HoverdEntity) {
+                name = m_HoverdEntity.GetComponent<TagComponent>().Tag.c_str();
+            }
+            ImGui::Text("Hoverd Entiy: %s", name);
 
             FontSwitcher();
 
@@ -388,8 +402,7 @@ void EditorLayer::ViewPort()
             m_ViewportSize = {x, y};
         }
 
-        uint64_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID();
-        // m_Framebuffer->GetColorAttachmentID(1);
+        uint64_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID(m_ViewportColorAttachmentId);
         ImGui::Image(reinterpret_cast<void *>(framebuffer_colorattachment),
                      ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0} // flip the image
         );

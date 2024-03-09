@@ -1,4 +1,5 @@
 #include "hazel/core/base.h"
+#include "hazel/renderer/framebuffer.h"
 #include "hz_pch.h"
 
 #include "glad/glad.h"
@@ -75,6 +76,8 @@ static auto AttachDepthTexture(const uint32_t texture_id, const int samples,
                            TextureTarget(bMultiSample), texture_id, 0);
     GL_CHECK_HEALTH();
 }
+
+
 static bool IsDepthFormat(const framebuffer::ETextureFormat format)
 {
     switch (format) {
@@ -84,6 +87,24 @@ static bool IsDepthFormat(const framebuffer::ETextureFormat format)
         default:;
     }
     return false;
+}
+
+static GLenum HazelFBTextureFormatToGL(framebuffer::ETextureFormat format)
+{
+    switch (format)
+    {
+        case framebuffer::ETextureFormat::RGBA8:
+            return GL_RGBA8;
+        case framebuffer::ETextureFormat::RED_INTEGER:
+            return GL_RED_INTEGER;
+        case framebuffer::ETextureFormat::None:
+        case framebuffer::ETextureFormat::RGB16F:
+        case framebuffer::ETextureFormat::DEPTH24_STENCIL8:
+            break;
+    }
+
+    HZ_CORE_ASSERT(false);
+    return 0;
 }
 } // namespace utils
 
@@ -137,16 +158,26 @@ void OpenGLFrameBuffer::Resize(uint32_t w, uint32_t h)
 
 uint32_t OpenGLFrameBuffer::GetColorAttachmentID(uint32_t index) const
 {
-    HZ_CORE_ASSERT(index < m_ColorAttachments.size());
+    HZ_CORE_ASSERT(index < m_ColorAttachments.size(), "Invalid ColorAttachment Index!");
     return m_ColorAttachments[index];
+}
+
+void OpenGLFrameBuffer::ClearAttachment(uint32_t attachment_index, int value)
+{
+    HZ_CORE_ASSERT(attachment_index < m_ColorAttachments.size(), "Invalid Attachment index");
+    auto &spec = m_ColorAttachmentSpecs[attachment_index];
+    glClearTexImage(m_ColorAttachments[attachment_index], 0,
+                    utils::HazelFBTextureFormatToGL(spec.TextureFormat),
+                    GL_INT, &value);
 }
 
 int OpenGLFrameBuffer::ReadPixel(uint32_t attachment_index, int x, int y) const
 {
-    HZ_CORE_ASSERT(attachment_index < m_ColorAttachments.size());
+    HZ_CORE_ASSERT(attachment_index < m_ColorAttachments.size(), "Invalid Attachment index");
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
-    int pixel;
-    glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
+    int pixel = -1;
+    glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, (void *)&pixel);
+    // glReadPixels
     return pixel;
 }
 
@@ -192,6 +223,10 @@ void OpenGLFrameBuffer::UpdateAll()
                                               m_Specification.Width, m_Specification.Height, i);
                     break;
                 }
+                case framebuffer::ETextureFormat::None:
+                case framebuffer::ETextureFormat::RGB16F:
+                case framebuffer::ETextureFormat::DEPTH24_STENCIL8:
+                    break;
             }
         }
     }

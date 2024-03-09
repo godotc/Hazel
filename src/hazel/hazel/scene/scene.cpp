@@ -1,4 +1,5 @@
 #include "entt/core/iterator.hpp"
+#include "entt/entity/fwd.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "hazel/core/base.h"
 #include "hazel/renderer/camera.h"
@@ -36,9 +37,9 @@ void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
     Render2D::BeginScene(camera);
 
     auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-    for (auto entity : group) {
+    for (entt::entity entity : group) {
         auto [tranf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-        Render2D::DrawQuad(tranf.GetTransform(), 1.f, color);
+        Render2D::DrawSprite(tranf.GetTransform(), color, int(entity));
     }
 
     Render2D::EndScene();

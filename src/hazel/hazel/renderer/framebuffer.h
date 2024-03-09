@@ -65,6 +65,7 @@ class HAZEL_API Framebuffer
 
     virtual const FramebufferSpec &GetSpecification() const                                 = 0;
     virtual uint32_t               GetColorAttachmentID(uint32_t index = 0) const           = 0;
+    virtual void                   ClearAttachment(uint32_t attachment_index, int value)    = 0;
     virtual int                    ReadPixel(uint32_t attachment_index, int x, int y) const = 0;
 
     virtual void Bind()   = 0;

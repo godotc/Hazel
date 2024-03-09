@@ -189,17 +189,25 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string> &shader
         GLint success;
         GL_CALL(glGetShaderiv(shader_handle, GL_COMPILE_STATUS, &success));
         if (!success) {
-            GLint max_len = {0};
-            glGetShaderiv(shader_type, GL_INFO_LOG_LENGTH, &max_len);
-            std::vector<GLchar> log(max_len);
-            GL_CALL(glGetShaderInfoLog(shader_handle, max_len, &max_len, log.data()));
+            GLint max_len = 0;
+            GL_CALL(glGetShaderiv(shader_handle, GL_INFO_LOG_LENGTH, &max_len));
+            if (max_len > 0) {
+                std::vector<GLchar> log(max_len);
+                GLsizei             length = 0;
+                glGetShaderInfoLog(shader_handle, max_len, &length, log.data());
+                if (length > 0) {
+                    HZ_CORE_ERROR("Shader compilation log: {}", log.data());
+                }
+                else {
+                    HZ_CORE_ERROR("Failed to retrieve shader compilation log.");
+                }
+            }
+            else {
+                HZ_CORE_ERROR("Shader compilation log length is 0.");
+            }
 
             glDeleteShader(shader_handle);
-
-            HZ_CORE_ERROR("{}", log.data());
-            HZ_CORE_ASSERT(false, "shader compilation failed!");
-
-            break;
+            HZ_CORE_ASSERT(false, "Shader compilation failed!");
         }
 
         shaders.push_back(shader_handle);
