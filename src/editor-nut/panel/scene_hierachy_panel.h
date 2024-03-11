@@ -20,7 +20,7 @@ class SceneHierarchyPanel
 
     void         SetContext(const Ref<Scene> &scene);
     const Entity GetSelectedEntity() const { return m_Selection; }
-    void         UpdateSelection(Entity new_selection);
+    void         SetSelection(Entity new_selection);
 
 
     void OnImGuiRender();

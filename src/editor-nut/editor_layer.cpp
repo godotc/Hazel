@@ -1,3 +1,4 @@
+#include "hazel/core/mouse_button.h"
 #include "hazel/event/application_event.h"
 #include "hazel/scene/editor_camera.h"
 #include "hz_pch.h"
@@ -130,6 +131,9 @@ void EditorLayer::OnUpdate(Timestep ts)
 {
     HZ_PROFILE_SCOPE("Sandbox2d::OnUpdate");
 
+    m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+
+    // resize
     if (const FramebufferSpec &spec = m_Framebuffer->GetSpecification();
         m_ViewportSize.x > 0.f && m_ViewportSize.y > 0.f &&
         (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
@@ -138,14 +142,13 @@ void EditorLayer::OnUpdate(Timestep ts)
         m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
         // here set the ortho every fame of camera
         m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-        m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
     }
 
     // TODO: the camera's event is block by imgui_layer, but keybord event still handled by here
     if (bViewPortFocusing) {
         m_CameraController.OnUpdate(ts);
-        m_EditorCamera.OnUpdate(ts);
     }
+    m_EditorCamera.OnUpdate(ts);
 
     hazel::Render2D::ResetStats();
 
@@ -588,11 +591,16 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
 
 bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
 {
-    // auto [x, y] = Input::GetMousePos();
-    // if (x > m_ViewportBounds[0].x && x < m_ViewportBounds[1].x &&
-    //     y > m_ViewportBounds[0].y && x < m_ViewportBounds[1].y)
-    // {
-    // }
+    Mouse::Button btn = (Mouse::Button)Ev.GetMouseButton();
+    switch (btn) {
+        case Mouse::Button_Left:
+        {
+            if (bViewPortHovering && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
+                m_SceneHierachyPanel.SetSelection(m_HoverdEntity);
+            }
+            break;
+        }
+    }
     return false;
 }
 

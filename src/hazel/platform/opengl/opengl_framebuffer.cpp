@@ -1,7 +1,8 @@
+#include "hz_pch.h"
+
 #include "hazel/core/base.h"
 #include "hazel/renderer/framebuffer.h"
 #include "hazel/renderer/render_command.h"
-#include "hz_pch.h"
 
 #include "glad/glad.h"
 
@@ -9,9 +10,7 @@
 
 #include "gl_macros.h"
 
-#include <cstddef>
 
-#
 
 namespace hazel {
 
@@ -136,7 +135,8 @@ void OpenGLFrameBuffer::Bind()
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
     // float asp = m_Specification.Width / (float)m_Specification.Height;
     // RenderCommand::SetViewport(0, 0, m_Specification.Width * asp, m_Specification.Height / asp);
-    RenderCommand::SetViewport(0, 0, m_Specification.Width, m_Specification.Height);
+    // RenderCommand::SetViewport(0, 0, m_Specification.Width, m_Specification.Height);
+    glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 }
 
 void OpenGLFrameBuffer::Unbind()

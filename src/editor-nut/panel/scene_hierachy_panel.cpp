@@ -151,7 +151,7 @@ SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &scene)
 void SceneHierarchyPanel::SetContext(const Ref<Scene> &scene)
 {
     m_Context = scene;
-    UpdateSelection({});
+    SetSelection({});
 }
 
 void SceneHierarchyPanel::OnImGuiRender()
@@ -170,7 +170,7 @@ void SceneHierarchyPanel::OnImGuiRender()
         };
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
-            UpdateSelection({});
+            SetSelection({});
         }
 
 
@@ -232,7 +232,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     // delete this at last avoid issues
     if (bEntityDeleted) {
         m_Context->DestoryEntity(entity);
-        UpdateSelection({});
+        SetSelection({});
     }
 }
 
@@ -351,7 +351,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 
 
-void SceneHierarchyPanel::UpdateSelection(Entity new_selection)
+void SceneHierarchyPanel::SetSelection(Entity new_selection)
 {
     if (m_Selection != new_selection) {
         m_LastSelection = m_Selection;

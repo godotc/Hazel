@@ -7,7 +7,7 @@
 
 namespace Mouse {
 
-enum MouseButton
+enum Button
 {
     Button_1      = 0,
     Button_2      = 1,
