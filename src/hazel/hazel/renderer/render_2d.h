@@ -53,9 +53,12 @@ class HAZEL_API Render2D
     static void DrawQuad(const glm::mat4 &transf, const glm::vec4 &tint = glm::vec4(1.f), int entity_id = -1);
     static void DrawQuad(const glm::mat4 &transf, const Ref<Texture2D> &texture, float tiling = 1.f, const glm::vec4 &tint = glm::vec4(1.f), int entity_id = -1);
 
+    static void DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<Texture2D> &texture, float tiling = 1.f, const glm::vec4 &tint = glm::vec4(1.f));
+    static void DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<SubTexture2D> &subtexture, float tiling = 1.f, const glm::vec4 &tint = glm::vec4(1.f));
+
     static void DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation = 0.f, const glm::vec4 &tint = glm::vec4(1.f));
-    static void DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const Ref<Texture2D> &texture, float tiling, const glm::vec4 &tint = glm::vec4(1, 1, 1, 1));
-    static void DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const Ref<SubTexture2D> &subtexture, float tiling, const glm::vec4 &tint = glm::vec4(1, 1, 1, 1));
+    static void DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const Ref<Texture2D> &texture, float tiling = 1.f, const glm::vec4 &tint = glm::vec4(1, 1, 1, 1));
+    static void DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const Ref<SubTexture2D> &subtexture, float tiling = 1.f, const glm::vec4 &tint = glm::vec4(1, 1, 1, 1));
 
   private:
     static void FlushAndReset();

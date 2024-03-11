@@ -6,11 +6,10 @@ add_requires("glfw", {
 })
 add_requires("glad", { configs = { debug = true } })
 
-add_requires("spdlog")
-add_packages("spdlog")
 
 
 add_requires("imgui docking", {
+    system = false,
     configs = {
         debug = true,
         opengl3 = true,

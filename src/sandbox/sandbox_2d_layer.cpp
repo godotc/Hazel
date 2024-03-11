@@ -83,17 +83,16 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
 
             // tilesheet sample
             {
-                hazel::Render2D::DrawQuad({2, 1, -0.1}, {1, 1}, m_TinyTownSheet, 1);
-
+                hazel::Render2D::DrawRotateQuad({2, 1, -0.1}, {1, 1}, 0, m_TinyTownSheet, 1);
                 for (int i = 0; i < 12; ++i) {
                     for (int j = 0; j < 11; ++j) {
                         const float size = 0.1f;
                         glm::vec2   pos  = glm::vec2{2, 2} + glm::vec2{i * size, j * size};
-                        hazel::Render2D::DrawQuad(pos, {size, size}, m_SubBlock[i][j]);
+                        hazel::Render2D::DrawRotateQuad(glm::vec3(pos, 0), {size, size}, 0, m_SubBlock[i][j]);
                     }
                 }
-                hazel::Render2D::DrawQuad({3, 3}, {1, 1}, m_WaterBuck);
-                hazel::Render2D::DrawQuad({3, 4}, {1, 2}, m_Tree);
+                hazel::Render2D::DrawQuad({3, 3, 0}, {1, 1}, m_WaterBuck);
+                hazel::Render2D::DrawQuad({3, 4, 0}, {1, 2}, m_Tree);
             }
 
             // game map
@@ -117,7 +116,7 @@ void Sandbox2D::OnUpdate(hazel::Timestep timestep)
                     auto [tx, ty] = tile_block_map.find(game_map[i])->second;
 
                     hazel::Render2D::DrawQuad(
-                        {-x, -y},
+                        {-x, -y, 0},
                         {1, 1},
                         m_SubBlock[tx][ty]);
                 }
