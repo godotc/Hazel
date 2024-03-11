@@ -2,8 +2,6 @@
 
 #include "hazel/renderer/framebuffer.h"
 #include <cstdint>
-#include <functional>
-#include <winbase.h>
 
 namespace hazel {
 

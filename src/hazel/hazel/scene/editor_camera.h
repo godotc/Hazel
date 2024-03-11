@@ -14,8 +14,6 @@ namespace hazel {
 class HAZEL_API EditorCamera
     : public Camera
 {
-    friend class EditorLayer;
-
     glm::mat4 m_ViewMatrix;
 
     glm::vec3 m_Position   = {0.f, 0.f, 0.f};
@@ -44,7 +42,11 @@ class HAZEL_API EditorCamera
     void OnEvent(Event &e);
 
   public:
-    inline void SetViewportSize(uint32_t w, uint32_t h) { m_ViewportWidth = w, m_ViewportHeight = h; };
+    void SetViewportSize(uint32_t w, uint32_t h)
+    {
+        m_ViewportWidth = w, m_ViewportHeight = h;
+        UpdateProjection();
+    };
 
     glm::mat4        GetViewProjection() const { return m_Projection * m_ViewMatrix; }
     const glm::mat4 &GetViewMatrix() const { return m_ViewMatrix; }
@@ -58,6 +60,25 @@ class HAZEL_API EditorCamera
     glm::vec3 GetUpDirection() const;
     glm::vec3 GetForwardDirection() const;
     glm::vec3 GetRightDirection() const;
+
+    float GetNearClip() const { return m_NearClip; }
+    void  SetNearClip(float v)
+    {
+        m_NearClip = v;
+        UpdateProjection();
+    }
+    float GetFarClip() const { return m_FarClip; }
+    void  setFarClip(float v)
+    {
+        m_NearClip = v;
+        UpdateProjection();
+    }
+    float GetFOV() const { return m_FOV; }
+    void  SetFOV(float v)
+    {
+        m_FOV = v;
+        UpdateProjection();
+    }
 
 
   private:

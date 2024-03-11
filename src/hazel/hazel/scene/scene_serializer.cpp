@@ -20,6 +20,7 @@
 
 
 
+#include <cstdint>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -104,7 +105,7 @@ SceneSerializer::SceneSerializer(const Ref<Scene> &scene)
 static void SerializeEntity(YAML::Emitter &out, Entity &entity)
 {
     out << YAML::BeginMap;
-    out << YAML::Key << "Entity" << YAML::Value << "TODO";
+    out << YAML::Key << "Entity" << YAML::Value << (uint32_t)entity;
 
     if (entity.HasComponent<TagComponent>()) {
         auto &comp = entity.GetComponent<TagComponent>();

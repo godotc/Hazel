@@ -133,6 +133,8 @@ OpenGLFrameBuffer::~OpenGLFrameBuffer()
 void OpenGLFrameBuffer::Bind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
+
+    // No need to calc the asp and set viewport, because see the ThisClass::UpdateProject(), it will make a projection matrix to do what you need
     // float asp = m_Specification.Width / (float)m_Specification.Height;
     // RenderCommand::SetViewport(0, 0, m_Specification.Width * asp, m_Specification.Height / asp);
     // RenderCommand::SetViewport(0, 0, m_Specification.Width, m_Specification.Height);
@@ -150,7 +152,6 @@ void OpenGLFrameBuffer::Resize(uint32_t w, uint32_t h)
         HZ_CORE_WARN("Window resized out of range {} {}", w, h);
         return;
     }
-
 
     m_Specification.Width  = w;
     m_Specification.Height = h;
