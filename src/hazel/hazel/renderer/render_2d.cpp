@@ -66,7 +66,7 @@ struct Render2DData {
 
     std::array<glm::vec4, 4> QuadVertexPositions;
     //
-    std::array<glm::vec2, 4> WhilteTExtureCoord;
+    std::array<glm::vec2, 4> WhiteTextureCoord;
     glm::vec2               *DefaultQuadTextureCoord = nullptr;
 
     Render2D::Statistics Stats;
@@ -150,12 +150,12 @@ void Render2D::Init()
     s_Data.QuadVertexPositions[2] = {0.5f, 0.5f, 0.0f, 1.f};
     s_Data.QuadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.f};
 
-    s_Data.WhilteTExtureCoord[0] = {0.f, 0.f};
-    s_Data.WhilteTExtureCoord[1] = {1.f, 0.f};
-    s_Data.WhilteTExtureCoord[2] = {1.f, 1.f};
-    s_Data.WhilteTExtureCoord[3] = {0.f, 1.f};
+    s_Data.WhiteTextureCoord[0] = {0.f, 0.f};
+    s_Data.WhiteTextureCoord[1] = {1.f, 0.f};
+    s_Data.WhiteTextureCoord[2] = {1.f, 1.f};
+    s_Data.WhiteTextureCoord[3] = {0.f, 1.f};
 
-    s_Data.DefaultQuadTextureCoord = s_Data.WhilteTExtureCoord.data();
+    s_Data.DefaultQuadTextureCoord = s_Data.WhiteTextureCoord.data();
 
 
 
@@ -300,7 +300,7 @@ void Render2D::DrawQuad(const glm::mat4 &transf, float tiling, const glm::vec4 &
     for (size_t i = 0; i < quad_vertex_count; ++i) {
         s_Data.QuadVertexBufferPtr->Position     = transform * s_Data.QuadVertexPositions[i];
         s_Data.QuadVertexBufferPtr->Color        = color;
-        s_Data.QuadVertexBufferPtr->Texcoord     = s_Data.WhilteTExtureCoord[i];
+        s_Data.QuadVertexBufferPtr->Texcoord     = s_Data.WhiteTextureCoord[i];
         s_Data.QuadVertexBufferPtr->TextureIndex = texture_index;
         s_Data.QuadVertexBufferPtr->TilingFactor = tiling;
         s_Data.QuadVertexBufferPtr++;
@@ -327,7 +327,7 @@ void Render2D::DrawQuad(const glm::mat4 &transf, const glm::vec4 &tint, int enti
     for (size_t i = 0; i < quad_vertex_count; ++i) {
         s_Data.QuadVertexBufferPtr->Position     = transform * s_Data.QuadVertexPositions[i];
         s_Data.QuadVertexBufferPtr->Color        = color;
-        s_Data.QuadVertexBufferPtr->Texcoord     = s_Data.WhilteTExtureCoord[i];
+        s_Data.QuadVertexBufferPtr->Texcoord     = s_Data.WhiteTextureCoord[i];
         s_Data.QuadVertexBufferPtr->TextureIndex = texture_index;
         s_Data.QuadVertexBufferPtr->TilingFactor = tiling;
         s_Data.QuadVertexBufferPtr->EntityId     = entity_id;
@@ -369,7 +369,7 @@ void Render2D::DrawQuad(const glm::mat4 &transform, const Ref<Texture2D> &textur
     for (size_t i = 0; i < quad_vertex_count; ++i) {
         s_Data.QuadVertexBufferPtr->Position     = transform * s_Data.QuadVertexPositions[i];
         s_Data.QuadVertexBufferPtr->Color        = color;
-        s_Data.QuadVertexBufferPtr->Texcoord     = s_Data.WhilteTExtureCoord[i];
+        s_Data.QuadVertexBufferPtr->Texcoord     = s_Data.WhiteTextureCoord[i];
         s_Data.QuadVertexBufferPtr->TextureIndex = texture_index;
         s_Data.QuadVertexBufferPtr->TilingFactor = tiling;
         s_Data.QuadVertexBufferPtr->EntityId     = entity_id;

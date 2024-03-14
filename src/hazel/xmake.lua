@@ -6,8 +6,6 @@ add_requires("glfw", {
 })
 add_requires("glad", { configs = { debug = true } })
 
-
-
 add_requires("imgui docking", {
     system = false,
     configs = {
@@ -18,6 +16,9 @@ add_requires("imgui docking", {
 })
 
 add_deps("imguizmo")
+
+-- 2024/3/15 integrate vulkan and spriv system
+add_requires("vulkansdk","shaderc")
 
 ---@format disable
 target("hazel")
@@ -46,6 +47,8 @@ target("hazel")
 
     add_packages("imgui", {public=true})
     add_packages("imguizmo", {public=true})
+
+    add_packages("shaderc")
 
 
     if is_os("windows") then

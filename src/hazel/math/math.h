@@ -6,7 +6,7 @@
 
 namespace hazel::math {
 
-bool HAZEL_API DecomposeTansform(const glm::mat4 &transform,
+bool HAZEL_API DecomposeTransform(const glm::mat4 &transform,
                                  glm::vec3 &out_translation, glm::vec3 &out_rotation, glm::vec3 &out_scale);
 
 }

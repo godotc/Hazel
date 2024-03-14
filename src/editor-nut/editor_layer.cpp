@@ -144,7 +144,7 @@ void EditorLayer::OnUpdate(Timestep ts)
         m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
     }
 
-    // TODO: the camera's event is block by imgui_layer, but keybord event still handled by here
+    // TODO: the camera's event is block by imgui_layer, but keyboard event still handled by here
     if (bViewPortFocusing) {
         m_CameraController.OnUpdate(ts);
     }
@@ -389,7 +389,7 @@ void EditorLayer::ViewPort()
 
             bViewPortFocusing = ImGui::IsWindowFocused();
             bViewPortHovering = ImGui::IsWindowHovered();
-            // HZ_CORE_WARN("is foucused {}", bViewPortFocusing);
+            // HZ_CORE_WARN("is focused {}", bViewPortFocusing);
             App::Get().GetImGuiLayer()->SetBlockEvents(!bViewPortFocusing && !bViewPortFocusing);
         }
 
@@ -480,15 +480,15 @@ void EditorLayer::Gizmos()
     // HZ_ASSERT(ce, "Should be valid");
     // const SceneCamera &camera            = ce.GetComponent<CameraComponent>().Camera;
     // const glm::mat4   &camera_projection = camera.GetProjection();
-    // const glm::mat4    cmaera_view       = glm::inverse(ce.GetComponent<TransformComponent>().GetTransform());
+    // const glm::mat4    camera_view       = glm::inverse(ce.GetComponent<TransformComponent>().GetTransform());
 
     // Editor camera
     const glm::mat4 &camera_projection = m_EditorCamera.GetProjection();
-    const glm::mat4  cmaera_view       = m_EditorCamera.GetViewMatrix();
+    const glm::mat4  camera_view       = m_EditorCamera.GetViewMatrix();
 
     // selected entity transform
     auto     &tc        = selected_entity.GetComponent<TransformComponent>();
-    glm::mat4 transfrom = tc.GetTransform();
+    glm::mat4 transform = tc.GetTransform();
 
 
     // do transform a section by a section
@@ -503,16 +503,16 @@ void EditorLayer::Gizmos()
         snap_value,
     };
 
-    ImGuizmo::Manipulate(glm::value_ptr(cmaera_view), glm::value_ptr(camera_projection),
+    ImGuizmo::Manipulate(glm::value_ptr(camera_view), glm::value_ptr(camera_projection),
                          ImGuizmo::OPERATION(m_GizmoType), ImGuizmo::MODE::LOCAL,
-                         glm::value_ptr(transfrom),
+                         glm::value_ptr(transform),
                          nullptr, snap ? snap_values : nullptr);
 
     if (ImGuizmo::IsUsing())
     {
         glm::vec3 translation, rotation, scale;
-        math::DecomposeTansform(transfrom, translation, rotation, scale);
-        // ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transfrom), glm::value_ptr(translation),
+        math::DecomposeTransform(transform, translation, rotation, scale);
+        // ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform), glm::value_ptr(translation),
         //                                       glm::value_ptr(rotation), glm::value_ptr(scale));
 
         tc.Translation = translation;
@@ -531,30 +531,32 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
     }
     bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
     bool shift   = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
-    switch (Ev.GetKeyCode()) {
-        case Key::N:
-        {
-            if (control) {
-                NewScene();
+    if (!ImGuizmo::IsUsing()) {
+        switch (Ev.GetKeyCode()) {
+            case Key::N:
+            {
+                if (control) {
+                    NewScene();
+                }
+                break;
             }
-            break;
-        }
-        case Key::O:
-        {
-            if (control) {
-                OpenScene();
+            case Key::O:
+            {
+                if (control) {
+                    OpenScene();
+                }
+                break;
             }
-            break;
-        }
-        case Key::S:
-        {
-            if (control && shift) {
-                SaveAs();
+            case Key::S:
+            {
+                if (control && shift) {
+                    SaveAs();
+                }
+                break;
             }
-            break;
+            default:
+                break;
         }
-        default:
-            break;
     }
 
     auto selected_entity = m_SceneHierachyPanel.GetSelectedEntity();

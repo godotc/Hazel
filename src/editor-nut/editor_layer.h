@@ -70,7 +70,7 @@ class EditorLayer : public hazel::Layer
     void MenuBar();
     void ViewPort();
     void FontSwitcher();
-    // Must call in viewprot draw process(in the same window)
+    // Must call in viewport draw process(in the same window)
     void Gizmos();
 
     // --- Events

@@ -11,7 +11,7 @@
 
 namespace hazel::math {
 
-bool HAZEL_API DecomposeTansform(const glm::mat4 &transform, glm::vec3 &out_translation, glm::vec3 &out_rotation, glm::vec3 &out_scale)
+bool HAZEL_API DecomposeTransform(const glm::mat4 &transform, glm::vec3 &out_translation, glm::vec3 &out_rotation, glm::vec3 &out_scale)
 {
     // from glm::decompose in matrix_decompose.inl
     using namespace glm;
@@ -19,7 +19,7 @@ bool HAZEL_API DecomposeTansform(const glm::mat4 &transform, glm::vec3 &out_tran
 
     mat4 local_matrix(transform);
 
-    // check normallize
+    // check normalize
     if (epsilonEqual(local_matrix[3][3], static_cast<float>(0), epsilon<T>())) {
         return false;
     }
@@ -29,12 +29,12 @@ bool HAZEL_API DecomposeTansform(const glm::mat4 &transform, glm::vec3 &out_tran
         epsilonEqual(local_matrix[1][3], static_cast<float>(0), epsilon<T>()) ||
         epsilonEqual(local_matrix[2][3], static_cast<float>(0), epsilon<T>()))
     {
-        // clear the perspective partitionj
+        // clear the perspective partition
         local_matrix[0][3] = local_matrix[1][3] = local_matrix[2][3] = static_cast<T>(0);
         local_matrix[3][3]                                           = static_cast<T>(3);
     }
 
-    // 2. translation (esay?)
+    // 2. translation (easy?)
     out_translation = local_matrix[3];
     local_matrix[3] = vec4(0, 0, 0, local_matrix[3].w);
 

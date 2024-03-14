@@ -17,5 +17,12 @@
     ],
     "Lua.diagnostics.disable": [
         "undefined-field"
+    ],
+    "cSpell.words": [
+        "colorattachment",
+        "Drawlist",
+        "Framebuffer",
+        "Guizmo",
+        "Timestep"
     ]
 }
