@@ -1,4 +1,5 @@
 #pragma once
+#include "__microshit_api_hazel.h"
 #include "base.h"
 
 #include "hazel/imgui/imgui_layer.h"
@@ -22,11 +23,22 @@
 
 namespace hazel {
 
+struct HAZEL_API AppCommandLineArgs {
+    int    count = 0;
+    char **args  = nullptr;
+
+    const char *operator[](int i) const
+    {
+        HZ_CORE_ASSERT(i < count);
+        return args[i];
+    }
+};
 
 
 class HAZEL_API App
 {
-    static App *Application;
+    static App        *Application;
+    AppCommandLineArgs Args;
 
     LayerStack m_LayerStack;
     Window    *m_Window;
@@ -45,7 +57,7 @@ class HAZEL_API App
 
 
   public:
-    App(const std::string &name = "Hazel Engine");
+    App(const std::string &name = "Hazel Engine", AppCommandLineArgs args = AppCommandLineArgs{});
     virtual ~App();
 
     static inline App &Get() { return *Application; }
@@ -64,6 +76,8 @@ class HAZEL_API App
 
     inline Window &GetWindow() { return *m_Window; }
 
+    AppCommandLineArgs GetCommandLineArgs() const { return Args; }
+
   protected:
     void OnEvent(Event &ev);
 
@@ -72,7 +86,7 @@ class HAZEL_API App
     bool OnKeyPressed(KeyPressedEvent &ev);
 };
 
-App *CreateApplication();
+App *CreateApplication(AppCommandLineArgs args);
 
 
 } // namespace hazel

@@ -20,7 +20,7 @@ class EditorLayer : public hazel::Layer
     Ref<Scene> m_ActiveScene;
 
     // Pannel
-    SceneHierarchyPanel m_SceneHierachyPanel;
+    SceneHierarchyPanel m_SceneHierarchyPanel;
     EditorCamera        m_EditorCamera;
 
     OrthographicsCameraController m_CameraController{16 / 9.f, true};

@@ -30,7 +30,7 @@ namespace hazel {
 
 App *App::Application = nullptr;
 
-App::App(const std::string &name)
+App::App(const std::string &name, AppCommandLineArgs args)
 {
     HZ_PROFILE_FUNCTION();
 

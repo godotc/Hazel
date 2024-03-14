@@ -66,10 +66,17 @@ void EditorLayer::OnAttach()
     // m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     // m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
     // m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
+
     m_ActiveScene = hazel::CreateRef<hazel::Scene>();
 
-    m_SceneHierachyPanel.SetContext(m_ActiveScene);
-    m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
+    auto commandlines = App::Get().GetCommandLineArgs();
+    if (commandlines.count > 1) {
+        auto            scene_filepath = commandlines.args[1];
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Deserialize(scene_filepath);
+    }
 
 
 
@@ -186,7 +193,7 @@ void EditorLayer::OnUpdate(Timestep ts)
 void EditorLayer::OnEvent(hazel::Event &event)
 {
     static bool bPlaying = false;
-    if (!m_SceneHierachyPanel.GetSelectedEntity()) {
+    if (!m_SceneHierarchyPanel.GetSelectedEntity()) {
         m_CameraController.OnEvent(event);
     }
     m_EditorCamera.OnEvent(event);
@@ -233,7 +240,7 @@ void EditorLayer::OnImGuiRender()
         MenuBar();
 
 
-        m_SceneHierachyPanel.OnImGuiRender();
+        m_SceneHierarchyPanel.OnImGuiRender();
 
 
         if (ImGui::Begin("Render2D stats")) {
@@ -460,7 +467,7 @@ void EditorLayer::FontSwitcher()
 
 void EditorLayer::Gizmos()
 {
-    Entity selected_entity = m_SceneHierachyPanel.GetSelectedEntity();
+    Entity selected_entity = m_SceneHierarchyPanel.GetSelectedEntity();
     if (!selected_entity || m_GizmoType == -1) {
         return;
     }
@@ -559,7 +566,7 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
         }
     }
 
-    auto selected_entity = m_SceneHierachyPanel.GetSelectedEntity();
+    auto selected_entity = m_SceneHierarchyPanel.GetSelectedEntity();
 
     if (selected_entity) {
         switch (Ev.GetKeyCode()) {
@@ -598,7 +605,7 @@ bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
         case Mouse::Button_Left:
         {
             if (bViewPortHovering && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
-                m_SceneHierachyPanel.SetSelection(m_HoverdEntity);
+                m_SceneHierarchyPanel.SetSelection(m_HoverdEntity);
             }
             break;
         }
@@ -610,7 +617,7 @@ void EditorLayer::NewScene()
 {
     m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
     m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-    m_SceneHierachyPanel.SetContext(m_ActiveScene);
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OpenScene()
@@ -620,7 +627,7 @@ void EditorLayer::OpenScene()
     if (!path.empty()) {
         m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
         m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-        m_SceneHierachyPanel.SetContext(m_ActiveScene);
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         SceneSerializer Serialize(m_ActiveScene);
         Serialize.Deserialize(path);
     }

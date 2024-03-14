@@ -19,7 +19,8 @@ using hazel::App;
 class HazelEditor : public hazel::App
 {
   public:
-    HazelEditor() : hazel::App("Hazel Editor")
+    HazelEditor(AppCommandLineArgs args)
+        : hazel::App("Hazel Editor", args)
     {
         HZ_INFO("Editor construct...");
         PushLayer(new hazel::EditorLayer());
@@ -35,9 +36,9 @@ class HazelEditor : public hazel::App
 };
 
 
-App *CreateApplication()
+App *CreateApplication(AppCommandLineArgs args)
 {
-    return new HazelEditor;
+    return new HazelEditor(args);
 }
 
 }; // namespace hazel
