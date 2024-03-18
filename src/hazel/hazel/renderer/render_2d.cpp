@@ -1,6 +1,9 @@
 //
 // Created by nono on 10/14/23.
 //
+#include "glm/fwd.hpp"
+#include "glm/matrix.hpp"
+#include "hazel/renderer/uniform_buffer.h"
 #include "hz_pch.h"
 
 #include "render_2d.h"
@@ -27,6 +30,7 @@
 #include "hazel/renderer/texture.h"
 #include <cstddef>
 #include <cstdint>
+#include <wingdi.h>
 
 #include "utils/path.h"
 
@@ -54,25 +58,30 @@ struct Render2DData {
     Ref<VertexArray>  QuadVertexArray;
     Ref<VertexBuffer> QuadVertexBuffer;
     Ref<Shader>       TextureShader;
-    Ref<Texture2D>    WhileTexture;
+
 
     uint32_t    QuadIndexCount       = 0;
     QuadVertex *QuadVertexBufferHead = nullptr;
     QuadVertex *QuadVertexBufferPtr  = nullptr;
 
+    Ref<Texture2D>                              WhileTexture;
     std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
     uint32_t                                    TextureSlotIndex = 1; // 0 => white texture
 
 
     std::array<glm::vec4, 4> QuadVertexPositions;
-    //
     std::array<glm::vec2, 4> WhiteTextureCoord;
     glm::vec2               *DefaultQuadTextureCoord = nullptr;
 
     Render2D::Statistics Stats;
-}; // namespace hazel
 
-Render2DData          s_Data;
+    struct CameraData {
+        glm::mat4 ViewProjection;
+    } CameraBuffer;
+    Ref<UniformBuffer> CameraUniformBuffer;
+
+} s_Data; // namespace hazel
+
 Render2D::Statistics &Render2D::GetStatics()
 {
     return s_Data.Stats;
@@ -86,7 +95,7 @@ void Render2D::ResetStats()
 
 
 
-void Render2D::ClaeanupRender2D()
+void Render2D::CleanupRender2D()
 {
     // Reason: White texture hold by s_Data and s_Data's TextureSlots, so release here will not work
     s_Data.WhileTexture.reset();
@@ -100,7 +109,7 @@ void Render2D::Init()
 {
     HZ_PROFILE_FUNCTION();
 
-    App::Get().PreDestruction.Add(Render2D::ClaeanupRender2D);
+    App::Get().PreDestruction.Add(Render2D::CleanupRender2D);
 
 
     // VertexArray
@@ -162,7 +171,6 @@ void Render2D::Init()
     // white texture
     {
         s_Data.WhileTexture = Texture2D::Create(1, 1);
-        // HZ_CORE_INFO("The render_2d's white texutre's id: {}", s_Data.WhileTexture->GetTextureID());
 
         // R G B A 8bit x 4
         // f == 16 == 2^5
@@ -183,10 +191,8 @@ void Render2D::Init()
 
     // shader
     s_Data.TextureShader = Shader::Create(FPath("res/shader/texture.glsl"));
-    s_Data.TextureShader->Bind();
-
-    // s_Data.TextureShader->SetInt("u_Texture", 0);
-    s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+    // s_Data.TextureShader->Bind();
+    // s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 } // namespace hazel
 
 void Render2D::Shutdown()
@@ -200,30 +206,25 @@ void Render2D::BeginScene(const EditorCamera &camera)
 {
     HZ_PROFILE_FUNCTION();
 
-    const glm::mat4 &view_projection = camera.GetViewProjection();
+    const glm::mat4 view_projection = camera.GetViewProjection();
+    // just set camera once for one scene process
+    s_Data.CameraBuffer.ViewProjection = std::move(view_projection);
+    s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Render2DData::CameraData));
 
-    s_Data.TextureShader->Bind();
-    s_Data.TextureShader->SetMat4("u_ViewProjection", view_projection);
-
-    s_Data.QuadIndexCount      = 0;
-    s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferHead; // begin
-
-    s_Data.TextureSlotIndex = 1;
+    StartBatch();
 }
 
 void Render2D::BeginScene(const Camera &camera, const glm::mat4 &transform)
 {
     HZ_PROFILE_FUNCTION();
 
-    const glm::mat4 &view_projection = camera.GetProjection() * glm::inverse(transform);
+    const glm::mat4 view_projection = camera.GetProjection() * glm::inverse(transform);
 
-    s_Data.TextureShader->Bind();
-    s_Data.TextureShader->SetMat4("u_ViewProjection", view_projection);
+    // just set camera once for one scene process
+    s_Data.CameraBuffer.ViewProjection = std::move(view_projection);
+    s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Render2DData::CameraData));
 
-    s_Data.QuadIndexCount      = 0;
-    s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferHead; // begin
-
-    s_Data.TextureSlotIndex = 1;
+    StartBatch();
 }
 
 
@@ -234,10 +235,14 @@ void Render2D::BeginScene(const OrthographicsCamera &camera)
     s_Data.TextureShader->Bind();
     s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
+    StartBatch();
+}
+
+void Render2D::StartBatch()
+{
     s_Data.QuadIndexCount      = 0;
     s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferHead; // begin
-
-    s_Data.TextureSlotIndex = 1;
+    s_Data.TextureSlotIndex    = 1;
 }
 
 void Render2D::FlushAndReset()
@@ -267,11 +272,14 @@ void Render2D::Flush()
 {
     HZ_PROFILE_SESSION_END();
 
+    // Bind textures
     for (uint32_t i = 0; i < s_Data.TextureSlotIndex; ++i) {
         s_Data.TextureSlots[i]->Bind(i);
     }
-    RenderCommand::DrawIndex(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 
+    // WHY bind at flush?
+    s_Data.TextureShader->Bind();
+    RenderCommand::DrawIndex(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
     ++s_Data.Stats.DrawCalls;
 }
 
