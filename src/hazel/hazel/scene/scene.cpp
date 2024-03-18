@@ -21,7 +21,7 @@ Entity Scene::CreateEntity(const std::string &name)
     return entity;
 }
 
-void Scene::DestoryEntity(Entity entity)
+void Scene::DestroyEntity(Entity entity)
 {
     m_Registry.destroy(entity);
 }
@@ -45,7 +45,7 @@ void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
     Render2D::EndScene();
 }
 
-void Scene::OnUpdateRumtime(Timestep ts)
+void Scene::OnUpdateRuntime(Timestep ts)
 {
     // Update scripts TODO: in runtime
     {

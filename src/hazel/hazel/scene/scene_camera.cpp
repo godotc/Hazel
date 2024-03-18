@@ -1,5 +1,14 @@
+/**
+ *  Author: @godot42
+ *  Create Time: 2023-12-12 21:23:50
+ *  Modified by: @godot42
+ *  Modified time: 2024-03-19 02:03:39
+ *  Description:
+ */
+
 #include "scene_camera.h"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "hazel/core/base.h"
 #include <cstdint>
 
 namespace hazel {
@@ -14,14 +23,14 @@ void SceneCamera::SetOrthographic(float size, float the_near, float the_far)
     m_OrthographicNear = the_near;
     m_OrthographicFar  = the_far;
 
-    RecalculateProjection(); // Fixed function name
+    RecalculateProjection();
 }
 
 void SceneCamera::SetViewportSize(uint32_t w, uint32_t h)
 {
+    HZ_CORE_ASSERT(w > 0 && h > 0);
     m_AspectRatio = w / (float)h;
-
-    RecalculateProjection(); // Fixed function name
+    RecalculateProjection();
 }
 
 void SceneCamera::SetOrthographicSize(float size)

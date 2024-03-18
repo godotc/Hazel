@@ -22,8 +22,11 @@
         "colorattachment",
         "commandlines",
         "Drawlist",
+        "entt",
         "Framebuffer",
         "Guizmo",
+        "shaderc",
+        "SPIRV",
         "Timestep"
     ]
 }

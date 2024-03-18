@@ -35,13 +35,13 @@ class HAZEL_API Scene
     virtual ~Scene() = default;
 
     void   OnUpdateEditor(Timestep ts, EditorCamera &camera);
-    void   OnUpdateRumtime(Timestep ts);
+    void   OnUpdateRuntime(Timestep ts);
     void   OnViewportResize(uint32_t w, uint32_t h);
     Entity GetPrimaryCameraEntity();
 
   public:
     Entity CreateEntity(const std::string &name);
-    void   DestoryEntity(Entity entity);
+    void   DestroyEntity(Entity entity);
 
   private:
     template <class T>

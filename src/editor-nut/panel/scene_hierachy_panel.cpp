@@ -231,7 +231,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
     // delete this at last avoid issues
     if (bEntityDeleted) {
-        m_Context->DestoryEntity(entity);
+        m_Context->DestroyEntity(entity);
         SetSelection({});
     }
 }
