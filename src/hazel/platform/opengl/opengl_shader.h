@@ -1,18 +1,38 @@
+/**
+ *  Author: @godot42
+ *  Create Time: 2023-11-17 23:45:29
+ *  Modified by: @godot42
+ *  Modified time: 2024-03-19 02:10:03
+ *  Description:
+ */
+
+
 //
 // Created by nono on 9/23/23.
-//
 
 #ifndef HAZEL_OPEN_GL_SHADER_H
 #define HAZEL_OPEN_GL_SHADER_H
 
 #include "hazel/renderer/shader.h"
 #include <cstdint>
+#include <filesystem>
+#include <unordered_map>
+#include <vector>
 
 namespace hazel {
 
+using GLenum = unsigned int;
 
 class OpenGLShader : public Shader
 {
+    std::string           m_Name{};
+    uint32_t              m_ShaderID{0};
+    std::filesystem::path m_FilePath;
+
+    std::unordered_map<GLenum, std::vector<uint32_t>> m_Vulkan_SPIRV;
+    std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGL_SPIRV;
+    std::unordered_map<GLenum, std::string>           m_OpenGL_SourceCode;
+
   public:
     OpenGLShader(const std::string &shader_file_path);
     OpenGLShader(const std::string &name, const std::string &vert_src, const std::string &frag_src);
@@ -46,11 +66,12 @@ class OpenGLShader : public Shader
   private:
     std::string                                   ReadFile(const std::string &file_path);
     std::unordered_map<unsigned int, std::string> PreProcess(const std::string &source);
-    void                                          Compile(const std::unordered_map<unsigned int, std::string> &shader_sources);
 
-  private:
-    std::string m_Name{};
-    uint32_t    m_ShaderID{0};
+    void Compile();
+    void CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources);
+    void CompileOrGet_GLBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources);
+    void CreateProgram();
+    void Reflect(GLenum stage, const std::vector<uint32_t> &shader_data);
 };
 
 } // namespace hazel

@@ -7,6 +7,7 @@
 
 
 #include "platform/opengl/opengl_shader.h"
+#include <hazel/core/app.h>
 
 // entry point
 
@@ -32,7 +33,7 @@ class Sandbox : public hazel::App
 };
 
 
-hazel::App *hazel::CreateApplication()
+hazel::App *hazel::CreateApplication(hazel::AppCommandLineArgs /*args*/)
 {
     return new Sandbox;
 }

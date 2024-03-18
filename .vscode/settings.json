@@ -26,6 +26,7 @@
         "Framebuffer",
         "Guizmo",
         "shaderc",
+        "SPIR",
         "SPIRV",
         "Timestep"
     ]

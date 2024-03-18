@@ -1,3 +1,13 @@
+--[[
+/**
+ *  Author: @godot42
+ *  Create Time: 2024-03-11 22:31:15
+ *  Modified by: @godot42
+ *  Modified time: 2024-03-19 02:58:34
+ *  Description:
+ */
+ ]]
+
 ---@diagnostic disable: undefined-global
 add_requires("glfw", {
     configs = {
@@ -18,7 +28,10 @@ add_requires("imgui docking", {
 add_deps("imguizmo")
 
 -- 2024/3/15 integrate vulkan and spriv system
-add_requires("vulkansdk","shaderc")
+add_requires("vulkansdk")
+-- add_requires("shaderc")
+
+
 
 ---@format disable
 target("hazel")
@@ -48,14 +61,24 @@ target("hazel")
     add_packages("imgui", {public=true})
     add_packages("imguizmo", {public=true})
 
-    add_packages("shaderc")
 
+    add_packages("vulkansdk",{public=true})
+    if is_plat("windows") then
+        add_links(
+            "vulkan-1.lib",
+            -- "VkLayer_utils.lib",
+
+            "shaderc_shared.lib",
+            "spirv-cross-core.lib",
+            "spirv-cross-glsl.lib"
+        )
+    end
 
     if is_os("windows") then
         if is_mode("debug") then
-            --             add_cxxflags("/MDd")
+            set_runtimes("MDd")
         elseif is_mode("release") then
-            --             add_cxxflags("/MT")
+            set_runtimes("/MD")
         end
     end
 
