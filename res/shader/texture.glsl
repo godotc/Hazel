@@ -8,24 +8,42 @@ layout (location =3) in float a_TexIndex;
 layout (location =4) in float a_TilingFactor;
 layout (location =5) in int a_EntityId;
 
-out vec4 v_Color;
-out vec2 v_TexCoord;
-out float v_TexIndex;
-out float v_TilingFactor;
-flat out int v_EntityId;
 
+// constant in each scene(Cmaera location and Perspec)
+layout(std140, binding=0) uniform Camera{
+    mat4 u_ViewProjection;
+};
+// constant for each object, now each object need one draw call
+// no need to pass it on draw each shape
+/* Vulkan spec same as below in glsl
+struct Transform{...fields...};
+uniform Transform u_RendererUniforms;
+*/
+layout(push_constant) uniform Transform{
+    mat4 Transform;
+} u_RendererUniforms;
 
-uniform mat4 u_ViewProjection;
-// uniform mat4 u_Transform;
+struct VertexOutput{
+    vec4 Color;
+    vec2 TexCoord;
+    float TexIndex;
+    float TilingFactor;
+};
+layout( location =0) out VertexOutput Output;
+layout( location =4) out flat int v_EntityId;
 
 void main(){
-    v_Color = a_Color;
-    v_TexCoord = a_TexCoord;
-    v_TexIndex = a_TexIndex;
-    v_TilingFactor = a_TilingFactor;
+    Output.Color = a_Color;
+    Output.TexCoord = a_TexCoord;
+    Output.TexIndex = a_TexIndex;
+    Output.TilingFactor = a_TilingFactor;
     v_EntityId = a_EntityId;
-    // gl_Position = u_ViewProjection *  u_Transform * vec4(a_Position, 1.f);
-    gl_Position = u_ViewProjection *  vec4(a_Position, 1.f);
+
+#if OPENGL
+#endif
+    gl_Position = u_ViewProjection *
+                  u_RendererUniforms.Transform *
+                  vec4(a_Position, 1.f);
 }
 
 //------------------------
@@ -33,21 +51,25 @@ void main(){
 #type fragment
 #version 450 core
 
+struct VertexOutput{
+    vec4 Color;
+    vec2 TexCoord;
+    float TexIndex;
+    float TilingFactor;
+};
+layout( location =0) in VertexOutput Input;
+layout( location =4) in flat int v_EntityId;
+
+layout(binding = 0) uniform sampler2D u_Textures[32];
+
 // each in different color attachment
 layout (location=0) out vec4 color;
 layout (location=1) out int color2;//-1 + id +1
 
-in vec4 v_Color;
-in vec2 v_TexCoord;
-in float v_TexIndex;
-in float v_TilingFactor;
-flat in int v_EntityId;
-
-uniform sampler2D u_Textures[32];
 
 
 
-#define CASE(x) case x: the_texture = texture(u_Textures[x], v_TexCoord * v_TilingFactor); break;
+#define CASE(x) case x: the_texture = texture(u_Textures[x], Input.TexCoord * Input.TilingFactor); break;
 
 // #define MULTI_MACRO_HELPER(last) CASE(last)
 // #define MULTI_MACRO_HELPER(first,...) CASE(first) EXPAND_ARGS(__VA_ARGS__)
@@ -56,7 +78,7 @@ uniform sampler2D u_Textures[32];
 
 void main(){
     vec4 the_texture;
-    switch (int(v_TexIndex)){
+    switch (int(Input.TexIndex)){
         //     // MULTI_MACRO(0,1,2,3,4,5,6);
         CASE(0);
         CASE(1);
@@ -93,6 +115,6 @@ void main(){
         // CASE(32);
     }
 
-    color =  the_texture * v_Color;
+    color =  the_texture * Input.Color;
     color2 = v_EntityId;
 }

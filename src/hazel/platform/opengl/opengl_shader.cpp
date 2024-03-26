@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2023-11-17 23:45:29
  *  Modified by: @godot42
- *  Modified time: 2024-03-19 02:20:00
+ *  Modified time: 2024-03-27 02:06:11
  *  Description:
  */
 
@@ -17,7 +17,6 @@
 
 #include "hazel/core/log.h"
 #include "hazel/debug/instrumentor.h"
-#include "hazel/utils/platform_utils.h"
 
 #include "gl_macros.h"
 #include "hazel/core/base.h"
@@ -33,10 +32,9 @@
 #include <fstream>
 #include <ios>
 
-#include <shaderc/shaderc.hpp>
-#include <spirv_cross/spirv_cross.hpp>
-#include <spirv_cross/spirv_glsl.hpp>
 #include <vector>
+
+#include "vkwrapper/fwd.h"
 
 
 
@@ -55,17 +53,17 @@ static GLenum ShaderTypeFromString(const std::string &type)
     return 0;
 }
 
-static shaderc_shader_kind GLShaderStageToShaderC(GLenum Stage)
-{
-    switch (Stage) {
-        case GL_VERTEX_SHADER:
-            return shaderc_glsl_vertex_shader;
-        case GL_FRAGMENT_SHADER:
-            return shaderc_glsl_fragment_shader;
-    }
-    HZ_CORE_ASSERT(false, "Unknown shader type!");
-    return shaderc_shader_kind(0);
-}
+// static shaderc_shader_kind GLShaderStageToShaderC(GLenum Stage)
+// {
+//     switch (Stage) {
+//         case GL_VERTEX_SHADER:
+//             return shaderc_glsl_vertex_shader;
+//         case GL_FRAGMENT_SHADER:
+//             return shaderc_glsl_fragment_shader;
+//     }
+//     HZ_CORE_ASSERT(false, "Unknown shader type!");
+//     return shaderc_shader_kind(0);
+// }
 
 static const char *GLShaderStageToString(GLenum stage)
 {
@@ -270,13 +268,8 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources)
 {
     HZ_PROFILE_FUNCTION();
-    shaderc::Compiler       compiler;
-    shaderc::CompileOptions options;
-    options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
-    const bool optimize = true;
-    if (optimize) {
-        options.SetOptimizationLevel(shaderc_optimization_level_performance);
-    }
+
+    vkwrapper::VulkanCompiler compiler;
 
     auto  cached_dir  = utils::GetCacheDirectory();
     auto &shader_data = m_Vulkan_SPIRV;
@@ -299,19 +292,15 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
             f.close();
         }
         else {
-            shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
+            std::vector<uint32_t> data;
+
+            compiler.Compile(
                 source,
-                utils::GLShaderStageToShaderC(stage),
                 m_FilePath.string().c_str(),
-                options);
+                stage,
+                data);
 
-            if (result.GetCompilationStatus() != shaderc_compilation_status_success)
-            {
-                HZ_CORE_ERROR(result.GetErrorMessage());
-                HZ_CORE_ASSERT(false);
-            }
-
-            shader_data[stage] = std::vector<uint32_t>(result.begin(), result.end());
+            shader_data[stage] = data;
             std::ofstream ofs(cached_path, std::ios::out | std::ios::binary);
             if (ofs.is_open()) {
                 auto &data = shader_data[stage];
@@ -332,15 +321,7 @@ void OpenGLShader::CompileOrGet_GLBinaries(const std::unordered_map<unsigned int
 {
     auto &shader_data = m_OpenGL_SPIRV;
 
-    shaderc::Compiler       compiler;
-    shaderc::CompileOptions options;
-    options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-
-    const bool optimize = false;
-    if (optimize) {
-        options.SetOptimizationLevel(shaderc_optimization_level_performance);
-    }
-
+    vkwrapper::OpenGlCompiler compiler;
 
     std::filesystem::path cached_directory = utils::GetCacheDirectory();
     shader_data.clear();
@@ -367,23 +348,16 @@ void OpenGLShader::CompileOrGet_GLBinaries(const std::unordered_map<unsigned int
         }
         else
         {
-            spirv_cross::CompilerGLSL glsl_compiler(spirv_binary);
-            m_OpenGL_SourceCode[stage] = glsl_compiler.compile();
+            std::string           out_gl_source;
+            std::vector<uint32_t> out_data;
+            compiler.Compile(spirv_binary,
+                             m_FilePath.string().c_str(),
+                             stage,
+                             out_gl_source,
+                             out_data);
 
-            auto &source = m_OpenGL_SourceCode[stage];
-
-            shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
-                source,
-                utils::GLShaderStageToShaderC(stage),
-                m_FilePath.string().c_str());
-
-            if (result.GetCompilationStatus() != shaderc_compilation_status_success)
-            {
-                HZ_CORE_ERROR(result.GetErrorMessage());
-                HZ_CORE_ASSERT(false);
-            }
-
-            shader_data[stage] = std::vector<uint32_t>(result.cbegin(), result.cend());
+            m_OpenGL_SourceCode[stage] = out_gl_source;
+            shader_data[stage]         = out_data;
 
             std::ofstream out(cached_filepath, std::ios::out | std::ios::binary);
             if (out.is_open())
@@ -447,25 +421,19 @@ void OpenGLShader::CreateProgram()
 void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t> &shader_data)
 {
 
-    spirv_cross::Compiler        compiler(shader_data);
-    spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+    vkwrapper::ReflectOutput info = vkwrapper::Reflect(shader_data);
 
     HZ_CORE_TRACE("OpenGLShader:Reflect  - {} {}", utils::GLShaderStageToString(stage), m_FilePath.string());
-    HZ_CORE_TRACE("\t {} uniform buffers", resources.uniform_buffers.size());
-    HZ_CORE_TRACE("\t {} resources", resources.sampled_images.size());
+    HZ_CORE_TRACE("\t {} uniform buffers", info.num_uniform_buffer);
+    HZ_CORE_TRACE("\t {} resources", info.num_sampled_image);
 
     HZ_CORE_TRACE("Uniform buffers:");
-    for (const auto &resource : resources.uniform_buffers)
+    for (const auto &resource : info.uniform_infos)
     {
-        const auto &buffer_type  = compiler.get_type(resource.base_type_id);
-        uint32_t    bufferSize   = compiler.get_declared_struct_size(buffer_type);
-        uint32_t    binding      = compiler.get_decoration(resource.id, spv::DecorationBinding);
-        int         member_count = buffer_type.member_types.size();
-
         HZ_CORE_TRACE("  {0}", resource.name);
-        HZ_CORE_TRACE("\tSize = {0}", bufferSize);
-        HZ_CORE_TRACE("\tBinding = {0}", binding);
-        HZ_CORE_TRACE("\tMembers = {0}", member_count);
+        HZ_CORE_TRACE("\tSize = {0}", resource.buffersize);
+        HZ_CORE_TRACE("\tBinding = {0}", resource.binding);
+        HZ_CORE_TRACE("\tMembers = {0}", resource.member_count);
     }
 }
 

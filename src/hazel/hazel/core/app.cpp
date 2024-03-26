@@ -1,5 +1,6 @@
-#include "hazel/core/layer_stack.h"
 #include "hz_pch.h"
+
+#include "hazel/core/layer_stack.h"
 
 #include "hazel/core/base.h"
 #include "hazel/core/window.h"

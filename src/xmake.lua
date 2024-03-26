@@ -18,3 +18,4 @@ add_packages("yaml-cpp", { public = true })
 
 includes("pkgs")
 includes("hazel", "editor-nut", "sandbox")
+

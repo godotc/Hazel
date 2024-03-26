@@ -7,3 +7,6 @@ target("imguizmo")
     add_includedirs("./imguizmo", {public=true})
 -- add_defines("IMGUI_DEFINE_MATH_OPERATORS")
 target_end()
+
+
+includes("vulkan_wrapper")

@@ -3,10 +3,14 @@
 #pragma once
 
 #ifdef _WIN32
-    #ifdef BUILD_SHARED_HAZEL
-        #define HZ_UTILS_API __declspec(dllexport)
+    #ifdef SHARED_PROGRAM
+        #ifdef BUILD_SHARED_HAZEL
+            #define HZ_UTILS_API __declspec(dllexport)
+        #else
+            #define HZ_UTILS_API __declspec(dllimport)
+        #endif
     #else
-        #define HZ_UTILS_API __declspec(dllimport)
+        #define HZ_UTILS_API
     #endif
 #else
     #define HZ_UTILS_API

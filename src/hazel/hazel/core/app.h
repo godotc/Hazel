@@ -3,8 +3,6 @@
 #include "base.h"
 
 #include "hazel/imgui/imgui_layer.h"
-#include "hazel/renderer/framebuffer.h"
-#include "imgui.h"
 #include "layer_stack.h"
 #include "utils/delegate.h"
 #include "window.h"
