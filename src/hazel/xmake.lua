@@ -3,7 +3,7 @@
  *  Author: @godot42
  *  Create Time: 2024-03-11 22:31:15
  *  Modified by: @godot42
- *  Modified time: 2024-03-27 02:26:25
+ *  Modified time: 2024-03-27 02:40:05
  *  Description:
  */
  ]]
@@ -25,9 +25,7 @@ add_requires("imgui docking", {
     },
 })
 
-add_deps("imguizmo")
 
--- 2024/3/15 integrate vulkan and spriv system
 -- add_requires("vulkansdk", {
 --     configs = {
 --         -- runtimes = is_mode("debug") and "MDd" or "MD",
@@ -63,7 +61,8 @@ target("hazel")
 
 
     add_deps("vkwrapper")
-    add_cxflags("/DYNAMICBASE")
+    add_deps("imguizmo")
+    -- add_cxflags("/DYNAMICBASE")
 
     add_includedirs("./", { public = true })
     add_headerfiles("**.h")
@@ -87,38 +86,7 @@ target("hazel")
     add_packages("glfw", { public = true })
 
     add_packages("imgui", {public=true})
-    add_packages("imguizmo", {public=true})
 
-
-
-    -- local vulkan = os.getenv("VUKLAN_SDK") or os.getenv("VK_SDK_PATH")
-    -- print(vulkan)
-    -- if is_plat("windows") then
-    --     add_includedirs(vulkan.."\\Include")
-    --     local vulkan_dll_dir ={  vulkan.."\\Bin", vulkan.."\\Lib" };
-    --     for k,v in pairs(vulkan_dll_dir) do
-    --         add_linkdirs(v)
-    --         add_rpathdirs(v)
-    --         print(v)
-    --     end
-    -- end
-
-    -- if is_plat("windows") then
-    --     if is_mode("debug") then
-    --         add_shflags(
-    --                 "vulkan-1",
-    --                 "shaderc_sharedd",
-    --                 "spirv-cross-cored",
-    --                 "spirv-cross-glsld"
-    --             )
-    --         add_links(
-    --                 "vulkan-1",
-    --                 "shaderc_sharedd",
-    --                 "spirv-cross-cored",
-    --                 "spirv-cross-glsld"
-    --             )
-    --     end
-    -- end
 
     -- set_runtimes("MT")
     -- if is_os("windows") then
@@ -128,8 +96,6 @@ target("hazel")
     --         set_runtimes("/MD")
     --     end
     -- end
-
-
 
 
 
