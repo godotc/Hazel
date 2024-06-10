@@ -1,7 +1,7 @@
 # Hazel
 Hazel Engine 
 
-Which just follow the @cherno's Game Engine series. 
+Which just follow the @TheCherno's Game Engine series. 
 
 But I've development it mainly on linux environment, and I use the `xmake` as the build tools x package manager.
 And could save a lot time for the 3rd party package migration works...
