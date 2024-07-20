@@ -25,6 +25,7 @@
         "entt",
         "Framebuffer",
         "Guizmo",
+        "IMGUIZMO",
         "shaderc",
         "SPIR",
         "SPIRV",

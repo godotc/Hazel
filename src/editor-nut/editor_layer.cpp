@@ -1,11 +1,10 @@
-#include "hazel/core/mouse_button.h"
-#include "hazel/event/application_event.h"
-#include "hazel/scene/editor_camera.h"
 #include "hz_pch.h"
+//
+
+#include "hazel/core/mouse_button.h"
+#include "hazel/scene/editor_camera.h"
 
 #include "glm/fwd.hpp"
-
-#include "hazel/scene/scene_camera.h"
 
 #include "hazel/core/base.h"
 #include "hazel/core/input.h"
@@ -180,8 +179,8 @@ void EditorLayer::OnUpdate(Timestep ts)
 
         if (mx >= 0 && my >= 0 && mx < (int)m_ViewportSize.x && my < (int)m_ViewportSize.y)
         {
-            int pixel      = m_Framebuffer->ReadPixel(1, mx, my);
-            m_HoverdEntity = pixel == -1 ? Entity{} : Entity{(entt::entity)pixel, m_ActiveScene.get()};
+            int pixel       = m_Framebuffer->ReadPixel(1, mx, my);
+            m_HoveredEntity = pixel == -1 ? Entity{} : Entity{(entt::entity)pixel, m_ActiveScene.get()};
             // HZ_CORE_WARN("Pos in view port: {},{}, pixel= {}", mx, my, pix);
         }
     }
@@ -262,8 +261,8 @@ void EditorLayer::OnImGuiRender()
             ImGui::InputInt("Attachment Id", &m_ViewportColorAttachmentId);
 
             const char *name = "None";
-            if (m_HoverdEntity) {
-                name = m_HoverdEntity.GetComponent<TagComponent>().Tag.c_str();
+            if (m_HoveredEntity) {
+                name = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
             }
             ImGui::Text("Hoverd Entiy: %s", name);
 
@@ -605,7 +604,7 @@ bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
         case Mouse::Button_Left:
         {
             if (bViewPortHovering && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
-                m_SceneHierarchyPanel.SetSelection(m_HoverdEntity);
+                m_SceneHierarchyPanel.SetSelection(m_HoveredEntity);
             }
             break;
         }

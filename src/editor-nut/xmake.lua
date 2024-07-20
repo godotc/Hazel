@@ -8,5 +8,14 @@ target("nut")
     add_headerfiles("**.h")
     add_files("**.cpp")
 
-    add_defines("HAZEL_ENTRY_PROGRAM")
+
+    on_config(function(target)
+        local kind = target:get("kind")
+        print(format("--[%s] type: %s", target:name(), kind))
+        if kind == "binary" then
+            target:add("defines", "HAZEL_ENTRY_PROGRAM")
+        end
+    end)
+
+
 target_end()

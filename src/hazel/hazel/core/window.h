@@ -34,7 +34,7 @@ class HAZEL_API Window
 
     virtual ~Window()
     {
-        HZ_CORE_INFO("Windows context destructon...");
+        HZ_CORE_INFO("Windows context destruction...");
     }
 
     virtual void OnUpdate() = 0;

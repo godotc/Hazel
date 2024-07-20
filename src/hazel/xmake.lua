@@ -3,15 +3,14 @@
  *  Author: @godot42
  *  Create Time: 2024-03-11 22:31:15
  *  Modified by: @godot42
- *  Modified time: 2024-03-27 02:40:05
+ *  Modified time: 2024-07-21 02:11:05
  *  Description:
  */
  ]]
 
 ---@diagnostic disable: undefined-global
 add_requires("glfw", {
-    configs = {
-        -- debug = true,
+    configs = { -- debug = true,
     }
 })
 add_requires("glad", { configs = { debug = true, pic = ture } })
@@ -57,7 +56,7 @@ add_requires("imgui docking", {
 
 ---@format disable
 target("hazel")
-    set_kind("shared")
+    set_kind("static")
 
 
     add_deps("vkwrapper")
@@ -67,7 +66,6 @@ target("hazel")
     add_includedirs("./", { public = true })
     add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")
-    -- add_files("hz_pch.cpp")
 
     -- add_files("config/**.cpp")
     add_files("hazel/**.cpp")
@@ -78,13 +76,13 @@ target("hazel")
     -- TODO: Sperator the windows and linux platfrom files
     add_files("platform/windows/**.cpp")
     add_files("platform/linux/**.cpp")
+
     if is_plat("windows") then
         add_links("Comdlg32")
     end
 
-    add_packages("spdlog", "glad")
+    add_packages("glad", { public = true })
     add_packages("glfw", { public = true })
-
     add_packages("imgui", {public=true})
 
 
@@ -97,11 +95,11 @@ target("hazel")
     --     end
     -- end
 
-
-
     on_config(function(target)
-        if target:get("kind") == "shared" then
-            print("--[" .. target:name() .. "] is the shared library")
+        local kind = target:get("kind")
+        print(format("--[%s] type: %s", target:name(), kind ))
+
+        if kind == "shared" then
             if target:is_plat("windows") then
                 if is_mode("debug") then
                     -- target:set("runtimes","MDd")
