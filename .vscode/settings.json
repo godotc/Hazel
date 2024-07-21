@@ -1,4 +1,22 @@
 {
+    "cSpell.words": [
+        "colorattachment",
+        "commandlines",
+        "Drawlist",
+        "entt",
+        "Framebuffer",
+        "Guizmo",
+        "hwnd",
+        "IMGUIZMO",
+        "lpstr",
+        "nono",
+        "OPENFILENAMEA",
+        "shaderc",
+        "spdlog",
+        "SPIR",
+        "SPIRV",
+        "Timestep"
+    ],
     "Lua.diagnostics.globals": [
         "add_requires",
         "target",
@@ -18,17 +36,4 @@
     "Lua.diagnostics.disable": [
         "undefined-field"
     ],
-    "cSpell.words": [
-        "colorattachment",
-        "commandlines",
-        "Drawlist",
-        "entt",
-        "Framebuffer",
-        "Guizmo",
-        "IMGUIZMO",
-        "shaderc",
-        "SPIR",
-        "SPIRV",
-        "Timestep"
-    ]
 }

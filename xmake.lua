@@ -1,12 +1,22 @@
----@diagnostic disable: undefined-global
+--[[
+/**
+ *  Author: @godot42
+ *  Create Time: 2024-07-21 01:48:13
+ *  Modified by: @godot42
+ *  Modified time: 2024-07-22 03:24:35
+ *  Description:
+ */
+ ]]
+
+
+
 add_rules("mode.debug", "mode.release")
 -- add_rules("debug_game")
 
-set_languages("c++20")
-set_targetdir("bin/$(plat)/$(mode)/$(arch)/")
 set_symbols("debug")
 
 set_project("hazel")
+set_languages("c++20")
 
 if is_mode("debug") then
     add_defines("__HZ_DEBUG")
@@ -23,9 +33,22 @@ elseif is_plat("windows") then
     -- add_defines("_MSVC_LANG=202002L")
 end
 
+-- Why the vulkan require the MD not MT ?
+-- And the vulkan still cannot link to my shared lib , and then I must set it as "static"
+if is_plat("windows") then
+    local runtimes = is_mode("debug") and "MDd" or "MD"
+    set_runtimes(runtimes)
+end
+
+
 
 includes("./src")
 
+local function exec_cmds(...)
+    for _, c in pairs(...) do
+        print(os.exec(c))
+    end
+end
 
 
 on_config(function()
@@ -47,10 +70,12 @@ end)
 task("test")
     set_menu {}
     on_run(function()
-        -- print(os.exec("xmake f -m debug --test=y")
-        os.exec("xmake f -m debug")
-        print(os.exec("xmake build -g test"))
-        print(os.exec("xmake run -g test"))
+        exec_cmds(
+            "xmake f -m debug --test=y",
+            -- "xmake f -m debug",
+            "xmake build -g test",
+            "xmake run -g test"
+        )
     end)
 
 task("cpcm")
@@ -58,15 +83,12 @@ task("cpcm")
         usage = "xmake cpcm"
     }
     on_run(function()
-        local cmds =
-        {
+        local profile = "debug"
+        exec_cmds(
             "xmake f -c",
-            "xmake f -m debug ", --toolchain=llvm",
-            "xmake project -k compile_commands",
-        }
-        for _, c in pairs(cmds) do
-            print(os.exec(c))
-        end
+            format("xmake f -m %s ", profile), --toolchain=llvm",
+            "xmake project -k compile_commands"
+        )
     end)
 
 task("targets")
@@ -75,4 +97,11 @@ task("targets")
         for targetname, target in pairs(project.targets()) do
             print(target:targetfile())
         end
+    end)
+
+task("vscode")
+    set_menu{ }
+    on_run(function ()
+        import("script.vscode")
+        vscode.update_launch_profile(bin_dir)
     end)

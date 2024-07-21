@@ -5,13 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Editor LLDB",
+            "name": "Ed LLDB(dev)",
             "type": "lldb",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder}",
             "windows": {
                 "program": "${workspaceFolder}/bin/windows/debug/x64/hazel-editor-nut",
+            },
+            "preLaunchTask": "build editor"
+        },
+        {
+            "name": "Ed LLDB(release)",
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "windows": {
+                "program": "${workspaceFolder}/bin/windows/release/x64/hazel-editor-nut",
             },
             "preLaunchTask": "build editor"
         },
