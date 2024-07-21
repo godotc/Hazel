@@ -15,6 +15,11 @@ target("nut")
         if kind == "binary" then
             target:add("defines", "HAZEL_ENTRY_PROGRAM")
         end
+
+        -- if target:is_plat("windows") then
+        --     local runtimes =  is_mode("debug") and "MDd"  or "MD"
+        --     target:set("runtimes", runtimes)
+        -- end
     end)
 
 

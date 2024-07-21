@@ -35,11 +35,10 @@ struct HAZEL_API AppCommandLineArgs {
 
 class HAZEL_API App
 {
-    static App        *Application;
-    AppCommandLineArgs Args;
 
-    LayerStack m_LayerStack;
-    Window    *m_Window;
+    AppCommandLineArgs Args;
+    LayerStack         m_LayerStack;
+    Window            *m_Window;
 
     ImGuiLayer *m_ImGuiLayer;
     float       m_LastFrameTime = 0.f;
@@ -55,10 +54,16 @@ class HAZEL_API App
 
 
   public:
-    App(const std::string &name = "Hazel Engine", AppCommandLineArgs args = AppCommandLineArgs{});
     virtual ~App();
+    static inline App &Get()
+    {
+        static App *Application = new App;
+        return *Application;
+    }
 
-    static inline App &Get() { return *Application; }
+  protected:
+    App();
+    virtual void Init(const std::string &name = "Hazel Engine", AppCommandLineArgs args = AppCommandLineArgs{});
 
   public:
     void Run();
