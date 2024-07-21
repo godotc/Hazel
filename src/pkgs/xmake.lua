@@ -1,4 +1,3 @@
----@format disable
 target("imguizmo")
     set_kind("static")
     add_files("./imguizmo/*.cpp")
@@ -10,3 +9,11 @@ target_end()
 
 
 -- includes("vulkan_wrapper")
+
+target("glad")
+    set_kind("static")
+    add_files("./glad/src/glad.c")
+    add_headerfiles("./glad/include/**.h", {public=true})
+    add_includedirs("./glad/include", {public=true})
+target_end()
+
