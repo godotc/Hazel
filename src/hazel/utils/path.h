@@ -1,9 +1,14 @@
-//
-// Created by nono on 10/7/23.
-//
+/**
+ *  Author: @godot42
+ *  Create Time: 2023-11-17 23:45:29
+ *  Modified by: @godot42
+ *  Modified time: 2024-07-21 03:45:39
+ *  Description:
+ */
+
+
 
 #pragma once
-
 #include "__microshit_api_utils.h"
 
 
@@ -35,6 +40,14 @@ struct UTILS_API FPathImpl {
     {
         // HZ_PROFILE_FUNCTION();
         absolute_path = ProjectRoot() / the_path;
+        // absolute_path = absolute_path.lexically_normal();
+    }
+
+    explicit FPathImpl(const std::string &the_path)
+    {
+        // HZ_PROFILE_FUNCTION();
+        absolute_path = ProjectRoot() / the_path;
+        // absolute_path = absolute_path.lexically_normal();
     }
 
     operator const char *() const { return absolute_path.string().c_str(); }

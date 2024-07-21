@@ -126,28 +126,27 @@ const std::filesystem::path &ProjectRoot()
     static bool bInitialized = false;
     static path project_root;
 
-
-    if (!bInitialized)
-    {
-        path exe_path = get_runtime_exe_path();
-
-
-
-        if (exe_path.empty()) {
-            if (!exe_path.has_parent_path())
-#if _WIN32
-                if (!std::filesystem::is_directory(exe_path))
-#endif
-
-                {
-                    throw std::runtime_error("Failed to get runtime path");
-                }
-        }
-
-        path project_root_dir = find_directory_by_file_symbol(exe_path, GetProjectRootSymbol());
-        project_root          = std::filesystem::absolute(project_root_dir);
-        bInitialized          = true;
+    if (bInitialized) {
+        return project_root;
     }
+
+    path exe_path = get_runtime_exe_path();
+    printf("exe_path: %ls\n", exe_path.c_str());
+
+    if (exe_path.empty())
+    {
+        throw std::runtime_error("Failed to get runtime path");
+    }
+    if (std::filesystem::is_directory(exe_path))
+    {
+        throw std::runtime_error("TODO and watch it: why a directory it is?");
+    }
+
+    // TODO: current identify it by a file, maybe by some certain directory struct further more
+    path project_root_dir = find_directory_by_file_symbol(exe_path, GetProjectRootSymbol());
+    project_root          = std::filesystem::absolute(project_root_dir);
+    bInitialized          = true;
+
     return project_root;
 }
 
