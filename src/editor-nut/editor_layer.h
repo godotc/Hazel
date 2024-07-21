@@ -19,14 +19,14 @@ class EditorLayer : public hazel::Layer
 {
     Ref<Scene> m_ActiveScene;
 
-    // Pannel
+    // Panel
     SceneHierarchyPanel m_SceneHierarchyPanel;
     EditorCamera        m_EditorCamera;
 
-    OrthographicsCameraController m_CameraController{16 / 9.f, true};
+    OrthographicCameraController m_CameraController{16 / 9.f, true};
 
-    // PraticleSystem m_PracticleSystem;
-    // PraticleProps  m_PracticleProps;
+    // ParticleSystem m_PracticleSystem;
+    // ParticleProps  m_PracticleProps;
     int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
     bool               bFullscreen      = true;

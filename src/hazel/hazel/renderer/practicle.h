@@ -10,7 +10,7 @@
 
 
 
-struct PraticleProps {
+struct ParticleProps {
     glm::vec2 Position;
     glm::vec2 Velocity, VelocityVariation;
     glm::vec4 ColorBegin, ColorEnd;
@@ -18,9 +18,9 @@ struct PraticleProps {
     float     LifeTime = 1.f;
 };
 
-class HAZEL_API PraticleSystem
+class HAZEL_API ParticleSystem
 {
-    struct Praticle {
+    struct Particle {
         glm::vec2 Position;
         glm::vec2 Velocity;
         glm::vec4 ColorBegin, ColorEnd;
@@ -33,16 +33,16 @@ class HAZEL_API PraticleSystem
         bool bActive = false;
     };
 
-    std::vector<Praticle> m_PraticlePool;
+    std::vector<Particle> m_ParticlePool;
     uint32_t              m_PoolMax   = 999;
     int32_t               m_PoolIndex = 0;
 
 
   public:
-    explicit PraticleSystem(uint32_t max_praticles = 10000);
+    explicit ParticleSystem(uint32_t max_particles = 10000);
 
     void OnUpdate(hazel::Timestep ts);
-    void OnRender(hazel::OrthographicsCamera &camera);
+    void OnRender(hazel::OrthographicCamera &camera);
 
-    void Emit(const PraticleProps &props);
+    void Emit(const ParticleProps &props);
 };

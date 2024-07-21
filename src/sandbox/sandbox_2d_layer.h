@@ -43,7 +43,7 @@ class Sandbox2D : public hazel::Layer
 
     hazel::ShaderLibrary m_ShaderLibrary;
 
-    hazel::OrthographicsCameraController m_CameraController{16 / 9.f, true};
+    hazel::OrthographicCameraController m_CameraController{16 / 9.f, true};
 
     glm::vec4 m_ClearColor{0.0, 0.0, 0.0, 0.0};
     glm::vec3 m_QuadPosition = glm::vec3(1, 1, 0);
@@ -57,8 +57,8 @@ class Sandbox2D : public hazel::Layer
     hazel::Ref<hazel::SubTexture2D> m_Tree;
 
 
-    PraticleSystem m_PracticleSystem;
-    PraticleProps  m_PracticleProps;
+    ParticleSystem m_PracticleSystem;
+    ParticleProps  m_PracticleProps;
 
     hazel::Ref<hazel::Framebuffer> m_Framebuffer;
 

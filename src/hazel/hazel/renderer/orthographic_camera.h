@@ -13,10 +13,10 @@ namespace hazel {
 
 
 
-class HAZEL_API OrthographicsCamera
+class HAZEL_API OrthographicCamera
 {
   public:
-    OrthographicsCamera(float left, float right, float bottom, float top);
+    OrthographicCamera(float left, float right, float bottom, float top);
     void SetProjection(float left, float right, float bottom, float top);
 
   public:

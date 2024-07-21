@@ -11,13 +11,13 @@
 namespace hazel {
 
 class Shader;
-class OrthographicsCamera;
+class OrthographicCamera;
 
 class HAZEL_API Render
 {
   public:
     static void Init();
-    static void BeginScene(OrthographicsCamera &Camera);
+    static void BeginScene(OrthographicCamera &Camera);
     static void EndScene();
 
     static void OnWindowResized(uint32_t w, uint32_t h);

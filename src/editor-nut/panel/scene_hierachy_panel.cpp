@@ -86,7 +86,7 @@ void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_va
     imgui::PopStyleVar();
 
     imgui::Columns(1);
-    imgui::PopID(); // make each vec3 are different drag flaot here
+    imgui::PopID(); // make each vec3 are different drag float here
 }
 
 

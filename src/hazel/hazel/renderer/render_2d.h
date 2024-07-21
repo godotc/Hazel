@@ -43,7 +43,7 @@ class HAZEL_API Render2D
 
     static void BeginScene(const EditorCamera &camera);
     static void BeginScene(const Camera &camera, const glm::mat4 &transform);
-    static void BeginScene(const OrthographicsCamera &camera); // TOD: remove
+    static void BeginScene(const OrthographicCamera &camera); // TOD: remove
 
     static void StartBatch();
     static void EndScene();

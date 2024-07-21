@@ -8,50 +8,50 @@
 
 namespace hazel {
 
-const glm::mat4 &OrthographicsCamera::GetProjectionMatrix() const
+const glm::mat4 &OrthographicCamera::GetProjectionMatrix() const
 {
     return m_ProjectionMatrix;
 }
-void OrthographicsCamera::SetProjectionMatrix(const glm::mat4 &mProjectionMatrix)
+void OrthographicCamera::SetProjectionMatrix(const glm::mat4 &mProjectionMatrix)
 {
     m_ProjectionMatrix = mProjectionMatrix;
 }
-const glm::mat4 &OrthographicsCamera::GetViewMatrix() const
+const glm::mat4 &OrthographicCamera::GetViewMatrix() const
 {
     return m_ViewMatrix;
 }
-void OrthographicsCamera::SetViewMatrix(const glm::mat4 &mViewMatrix)
+void OrthographicCamera::SetViewMatrix(const glm::mat4 &mViewMatrix)
 {
     m_ViewMatrix = mViewMatrix;
 }
-const glm::mat4 &OrthographicsCamera::GetViewProjectionMatrix() const
+const glm::mat4 &OrthographicCamera::GetViewProjectionMatrix() const
 {
     return m_ViewProjectionMatrix;
 }
-void OrthographicsCamera::SetViewProjectionMatrix(const glm::mat4 &mViewProjectionMatrix)
+void OrthographicCamera::SetViewProjectionMatrix(const glm::mat4 &mViewProjectionMatrix)
 {
     m_ViewProjectionMatrix = mViewProjectionMatrix;
 }
-const glm::vec3 &OrthographicsCamera::GetPosition() const
+const glm::vec3 &OrthographicCamera::GetPosition() const
 {
     return m_Position;
 }
-void OrthographicsCamera::SetPosition(const glm::vec3 &mPosition)
+void OrthographicCamera::SetPosition(const glm::vec3 &mPosition)
 {
     m_Position = mPosition;
     RecalculateViewMatrix();
 }
-float OrthographicsCamera::GetRotation() const
+float OrthographicCamera::GetRotation() const
 {
     return m_Rotation;
 }
-void OrthographicsCamera::SetRotation(float mRotation)
+void OrthographicCamera::SetRotation(float mRotation)
 {
     m_Rotation = mRotation;
     RecalculateViewMatrix();
 }
 
-OrthographicsCamera::OrthographicsCamera(float left, float right, float bottom, float top)
+OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
     : m_ProjectionMatrix(glm::ortho(left, right, bottom, top, -1.f, 1.f)),
       m_ViewMatrix(1.f)
 {
@@ -59,7 +59,7 @@ OrthographicsCamera::OrthographicsCamera(float left, float right, float bottom, 
     m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
 
-void OrthographicsCamera::SetProjection(float left, float right, float bottom, float top)
+void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
 {
     HZ_PROFILE_FUNCTION();
     m_ProjectionMatrix     = glm::ortho(left, right, bottom, top, -1.f, 1.f);
@@ -67,7 +67,7 @@ void OrthographicsCamera::SetProjection(float left, float right, float bottom, f
 }
 
 
-void OrthographicsCamera::RecalculateViewMatrix()
+void OrthographicCamera::RecalculateViewMatrix()
 {
     HZ_PROFILE_FUNCTION();
     glm::mat4 transform =

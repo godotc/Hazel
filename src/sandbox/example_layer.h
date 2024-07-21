@@ -145,7 +145,7 @@ class ExampleLayer : public hazel::Layer
     Ref<ShaderLibrary> m_ShaderLibrary{new ShaderLibrary};
 
     Ref<Texture2D>                m_Texture, m_ArchTexture;
-    OrthographicsCameraController m_CameraController;
+    OrthographicCameraController m_CameraController;
 };
 
 

@@ -228,7 +228,7 @@ void Render2D::BeginScene(const Camera &camera, const glm::mat4 &transform)
 }
 
 
-void Render2D::BeginScene(const OrthographicsCamera &camera)
+void Render2D::BeginScene(const OrthographicCamera &camera)
 {
     HZ_PROFILE_FUNCTION();
 

@@ -20,14 +20,14 @@
 #include <random>
 class Random
 {
-    // it need a seed, but will same when seed are the saem
+    // it need a seed, but will same when seed are the same
     static std::mt19937 s_RandomNumberGenerator;
 
     // so use this waste performance to get the random seed
     // static std::random_device s_RandomDevice;
 
-    static std::uniform_int_distribution<int>    s_UnifromDistribution_Int;
-    static std::uniform_real_distribution<float> s_UnifromDistribution_Float;
+    static std::uniform_int_distribution<int>    s_UniformDistribution_Int;
+    static std::uniform_real_distribution<float> s_UniformDistribution_Float;
 
   public:
     /**
@@ -35,95 +35,95 @@ class Random
      * @usage: Random::Float() - 0.5f
      * @return float
      */
-    static float Float() { return s_UnifromDistribution_Float(s_RandomNumberGenerator); }
+    static float Float() { return s_UniformDistribution_Float(s_RandomNumberGenerator); }
 };
 
 // std::random_device                    Random::editor counts_RandomDevice{};
 std::mt19937                          Random::s_RandomNumberGenerator{std::random_device()()};
-std::uniform_real_distribution<float> Random::s_UnifromDistribution_Float{0.f, 1.f};
+std::uniform_real_distribution<float> Random::s_UniformDistribution_Float{0.f, 1.f};
 
 
-PraticleSystem::PraticleSystem(uint32_t max_praticles)
+ParticleSystem::ParticleSystem(uint32_t max_particles)
 {
-    m_PraticlePool.resize(max_praticles);
+    m_ParticlePool.resize(max_particles);
 }
 
 
-void PraticleSystem::OnUpdate(hazel::Timestep ts)
+void ParticleSystem::OnUpdate(hazel::Timestep ts)
 {
-    for (auto &practile : m_PraticlePool) {
-        if (!practile.bActive) {
+    for (auto &particle : m_ParticlePool) {
+        if (!particle.bActive) {
             continue;
         }
 
-        if (practile.LifeRemaining <= 0.f) {
-            practile.bActive = false;
+        if (particle.LifeRemaining <= 0.f) {
+            particle.bActive = false;
             continue;
         }
 
-        practile.LifeRemaining -= ts.GetSeconds();
+        particle.LifeRemaining -= ts.GetSeconds();
 
-        // printf("old  %f %f\n", practile.Position.x, practile.Position.y);
-        practile.Position += practile.Velocity * ts.GetSeconds();
-        // printf("new  %f %f\n", practile.Position.x, practile.Position.y);
+        // printf("old  %f %f\n", particle.Position.x, particle.Position.y);
+        particle.Position += particle.Velocity * ts.GetSeconds();
+        // printf("new  %f %f\n", particle.Position.x, particle.Position.y);
 
 
-        practile.Rotation += 0.01f * ts;
+        particle.Rotation += 0.01f * ts;
     }
 }
 
-void PraticleSystem::OnRender(hazel::OrthographicsCamera &camera)
+void ParticleSystem::OnRender(hazel::OrthographicCamera &camera)
 {
     hazel::Render2D::BeginScene(camera);
 
-    for (auto &practile : m_PraticlePool)
+    for (auto &particle : m_ParticlePool)
     {
-        if (!practile.bActive) {
+        if (!particle.bActive) {
             continue;
         }
 
-        float life = practile.LifeRemaining / practile.LifeTime;
+        float life = particle.LifeRemaining / particle.LifeTime;
 
-        glm::vec4 color = glm::mix(practile.ColorEnd, practile.ColorBegin, life);
-        float     size  = std::lerp(practile.SizeBegin, practile.SizeEnd, life);
-        glm::vec3 pos   = glm::vec3{practile.Position, 0.2f};
+        glm::vec4 color = glm::mix(particle.ColorEnd, particle.ColorBegin, life);
+        float     size  = std::lerp(particle.SizeBegin, particle.SizeEnd, life);
+        glm::vec3 pos   = glm::vec3{particle.Position, 0.2f};
 
 
         // printf("drew on %f %f\n", pos.x, pos.y);
-        hazel::Render2D::DrawRotateQuad(pos, {size, size}, glm::radians(practile.Rotation), color);
+        hazel::Render2D::DrawRotateQuad(pos, {size, size}, glm::radians(particle.Rotation), color);
     }
     hazel::Render2D::EndScene();
 }
 
-void PraticleSystem::Emit(const PraticleProps &props)
+void ParticleSystem::Emit(const ParticleProps &props)
 {
-    Praticle &praticle = m_PraticlePool[m_PoolIndex];
+    Particle &particle = m_ParticlePool[m_PoolIndex];
 
-    praticle.bActive = true;
+    particle.bActive = true;
 
-    praticle.Position = props.Position;
-    praticle.Rotation = Random::Float() * 2.f * glm::pi<float>();
+    particle.Position = props.Position;
+    particle.Rotation = Random::Float() * 2.f * glm::pi<float>();
 
-    praticle.Velocity = props.Velocity;
-
-
-    // printf("the random flaot %f\n", Random::Float());
-    // printf("old  %f %f\n", praticle.Velocity.x, praticle.Velocity.y);
-    praticle.Velocity.x += props.VelocityVariation.x * (Random::Float() - 0.5f);
-    praticle.Velocity.y += props.VelocityVariation.y * (Random::Float() - 0.5f);
-    // printf("new  %f %f\n", praticle.Velocity.x, praticle.Velocity.y);
-
-    praticle.ColorBegin = props.ColorBegin;
-    praticle.ColorEnd   = props.ColorEnd;
-
-    praticle.LifeTime      = props.LifeTime;
-    praticle.LifeRemaining = props.LifeTime;
-
-    praticle.SizeBegin = props.SizeBegin + props.SizeVariation * (Random::Float() - 0.5f);
-    praticle.SizeEnd   = props.SizeEnd;
-
-    m_PoolIndex = (m_PoolIndex + 1) % m_PraticlePool.size();
+    particle.Velocity = props.Velocity;
 
 
-    // printf("emit on %f %f\n", praticle.Position.x, praticle.Position.y);
+    // printf("the random float %f\n", Random::Float());
+    // printf("old  %f %f\n", particle.Velocity.x, particle.Velocity.y);
+    particle.Velocity.x += props.VelocityVariation.x * (Random::Float() - 0.5f);
+    particle.Velocity.y += props.VelocityVariation.y * (Random::Float() - 0.5f);
+    // printf("new  %f %f\n", particle.Velocity.x, particle.Velocity.y);
+
+    particle.ColorBegin = props.ColorBegin;
+    particle.ColorEnd   = props.ColorEnd;
+
+    particle.LifeTime      = props.LifeTime;
+    particle.LifeRemaining = props.LifeTime;
+
+    particle.SizeBegin = props.SizeBegin + props.SizeVariation * (Random::Float() - 0.5f);
+    particle.SizeEnd   = props.SizeEnd;
+
+    m_PoolIndex = (m_PoolIndex + 1) % m_ParticlePool.size();
+
+
+    // printf("emit on %f %f\n", particle.Position.x, particle.Position.y);
 }
