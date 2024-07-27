@@ -1,6 +1,8 @@
 ---@diagnostic disable: lowercase-global
 function exec_cmds(...)
-    for _, c in pairs(...) do
+    local cmds = { ... }
+    for _, c in pairs(cmds) do
+        print(c)
         print(os.exec(c))
     end
 end

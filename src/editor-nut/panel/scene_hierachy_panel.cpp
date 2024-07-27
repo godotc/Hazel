@@ -158,12 +158,13 @@ void SceneHierarchyPanel::OnImGuiRender()
 {
     if (ImGui::Begin("Scene Hierachy"))
     {
-        auto &entites = m_Context->m_Registry.storage<entt::entity>();
+        auto &entities = m_Context->m_Registry.storage<entt::entity>();
 
 #ifndef NDebug
-        int32_t size = entites.size();
+        // TODO: Why cannot to get the size of entities here?
+        int32_t size = entities.size();
 #endif
-        for (auto &entt : entites) {
+        for (auto &entt : entities) {
             if (auto entity = Entity{entt, m_Context.get()}) {
                 DrawEntityNode(entity);
             }

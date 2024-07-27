@@ -78,6 +78,7 @@ struct Render2DData {
     struct CameraData {
         glm::mat4 ViewProjection;
     } CameraBuffer;
+
     Ref<UniformBuffer> CameraUniformBuffer;
 
 } s_Data; // namespace hazel
@@ -193,6 +194,9 @@ void Render2D::Init()
     s_Data.TextureShader = Shader::Create(FPath("res/shader/texture.glsl"));
     // s_Data.TextureShader->Bind();
     // s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+    // the uniform buffers
+    s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Render2DData::CameraData), 0);
 } // namespace hazel
 
 void Render2D::Shutdown()
