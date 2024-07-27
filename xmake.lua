@@ -3,7 +3,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-21 01:48:13
  *  Modified by: @godot42
- *  Modified time: 2024-07-22 03:24:35
+ *  Modified time: 2024-07-28 03:48:38
  *  Description:
  */
  ]]
@@ -17,6 +17,8 @@ set_symbols("debug")
 
 set_project("hazel")
 set_languages("c++20")
+-- local bin_dir = "bin/$(plat)/$(arch)"
+-- set_targetdir(bin_dir)
 
 if is_mode("debug") then
     add_defines("__HZ_DEBUG")
@@ -44,11 +46,7 @@ end
 
 includes("./src")
 
-local function exec_cmds(...)
-    for _, c in pairs(...) do
-        print(os.exec(c))
-    end
-end
+
 
 
 on_config(function()
@@ -83,10 +81,13 @@ task("cpcm")
         usage = "xmake cpcm"
     }
     on_run(function()
+        local cmd  =import ("script.cmd")
+        -- print(cmd)
+
         local profile = "debug"
-        exec_cmds(
+        cmd.exec_cmds(
             "xmake f -c",
-            format("xmake f -m %s ", profile), --toolchain=llvm",
+            string.format("xmake f -m %s ", profile), --toolchain=llvm",
             "xmake project -k compile_commands"
         )
     end)
@@ -102,6 +103,26 @@ task("targets")
 task("vscode")
     set_menu{ }
     on_run(function ()
-        import("script.vscode")
-        vscode.update_launch_profile(bin_dir)
+        local cmd  =import ("script.cmd")
+
+        local project =import("core.project.project")
+        -- print(project)
+        for targetname, target in pairs(project.targets()) do
+            -- print(targetname)
+            -- print(target)
+            -- print(target:targetfile())
+            -- print(target:basename())
+            -- print(target:filename())
+            -- print(target:linkname())
+            -- print(target:targetdir())
+            -- print(target:kind())
+            -- return
+
+            -- local target_name = arg[1] or "__DEFAULT_VAR__"
+            -- local target_dir = arg[2] or "__DEFAULT_VAR__"
+            -- local target_base_name = arg[3] or "__DEFAULT_VAr__"
+            if target:kind() == "binary" then
+                cmd.run_native_lua("script/vscode.lua", target:name(), target:targetdir() , target:basename(), target:type())
+            end
+        end
     end)

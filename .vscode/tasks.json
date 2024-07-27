@@ -1,46 +1,100 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build editor",
-            "type": "shell",
-            "command": "xmake",
-            "args": [
-                "build",
-                "nut"
-            ],
-            "presentation": {
-                "echo": true,
-                "reveal": "never",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "build sandbox",
-            "type": "shell",
-            "command": "xmake",
-            "args": [
-                "build",
-                "sb"
-            ],
-            "presentation": {
-                "echo": true,
-                "reveal": "never",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            }
-        }
-    ]
+  "tasks":[{
+      "windows":{
+        "target":""
+      },
+      "args":["build","nut"],
+      "type":"shell",
+      "command":"xmake",
+      "label":"build nut",
+      "presentation":{
+        "focus":false,
+        "echo":true,
+        "reveal":"never",
+        "clear":false,
+        "panel":"shared",
+        "showReuseMessage":true
+      }
+    },{
+      "windows":{
+        "target":""
+      },
+      "args":["build","nut"],
+      "type":"shell",
+      "command":"xmake",
+      "label":"build nut",
+      "presentation":{
+        "focus":false,
+        "echo":true,
+        "reveal":"never",
+        "clear":false,
+        "panel":"shared",
+        "showReuseMessage":true
+      }
+    },{
+      "windows":{
+        "target":""
+      },
+      "args":["build","nut"],
+      "type":"shell",
+      "command":"xmake",
+      "label":"build nut",
+      "presentation":{
+        "focus":false,
+        "echo":true,
+        "reveal":"never",
+        "clear":false,
+        "panel":"shared",
+        "showReuseMessage":true
+      }
+    },{
+      "windows":{
+        "target":""
+      },
+      "args":["build","nut"],
+      "type":"shell",
+      "command":"xmake",
+      "label":"build nut",
+      "presentation":{
+        "focus":false,
+        "echo":true,
+        "reveal":"never",
+        "clear":false,
+        "panel":"shared",
+        "showReuseMessage":true
+      }
+    },{
+      "windows":{
+        "target":""
+      },
+      "args":["build","nut"],
+      "type":"shell",
+      "command":"xmake",
+      "label":"build nut",
+      "presentation":{
+        "focus":false,
+        "echo":true,
+        "reveal":"never",
+        "clear":false,
+        "panel":"shared",
+        "showReuseMessage":true
+      }
+    },{
+      "command":"xmake",
+      "type":"shell",
+      "args":["build","nut"],
+      "windows":{
+        "target":""
+      },
+      "label":"build nut",
+      "presentation":{
+        "focus":false,
+        "echo":true,
+        "reveal":"never",
+        "clear":false,
+        "panel":"shared",
+        "showReuseMessage":true
+      }
+    }],
+  "version":"2.0.0"
 }
