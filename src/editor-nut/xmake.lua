@@ -11,7 +11,7 @@ target("nut")
 
     on_config(function(target)
         local kind = target:get("kind")
-        print(format("--[%s] type: %s", target:name(), kind))
+        print(string.format("--[%s] type: %s", target:name(), kind))
         if kind == "binary" then
             target:add("defines", "HAZEL_ENTRY_PROGRAM")
         end

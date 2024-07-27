@@ -3,7 +3,7 @@
  *  Author: @godot42
  *  Create Time: 2024-03-11 22:31:15
  *  Modified by: @godot42
- *  Modified time: 2024-07-21 23:14:54
+ *  Modified time: 2024-07-26 00:10:53
  *  Description:
  */
  ]]
@@ -12,7 +12,6 @@ add_requires("glfw", {
     configs = { -- debug = true,
     }
 })
--- add_requires("glad", { configs = { debug = true, pic = ture } })
 
 add_requires("imgui docking", {
     system = false,
@@ -27,11 +26,8 @@ add_requires("imgui docking", {
 add_requires("vulkansdk", {
     configs = {
         -- runtimes = is_mode("debug") and "MDd" or "MD",
-        -- runtimes = "MDd",
-        -- vc_runtimes = "MDd",
-
-        shared = true,
-
+        -- shared = true,
+        debug=false,
         utils = is_mode("debug") and {
             "vulkan-1",
             "shaderc_sharedd",
@@ -55,8 +51,8 @@ add_requires("vulkansdk", {
 
 ---@format disable
 target("hazel")
-    set_kind("shared")
-    -- set_kind("static")
+    -- set_kind("shared")
+    set_kind("static")
 
 
     -- add_deps("vkwrapper")
@@ -88,26 +84,10 @@ target("hazel")
 
     add_packages("vulkansdk", { public = true })
 
-
--- if is_plat("windows") then
---     if is_mode("debug") then
---         set_runtimes("MDd")
---     else
---         set_runtimes("MD")
---     end
--- end
     on_config(function(target)
         local kind = target:get("kind")
-        print(format("--[%s] type: %s", target:name(), kind ))
-
-        -- local plat = target:is_plat("window") and "windows" or "linux"
-
-        -- Why the vulkan require the MD not MT ?
-        -- And the vulkan still cannot link to my shared lib , and then I must set it as "static"
-        -- if target:is_plat("windows") then
-        --     local runtimes = is_mode("debug") and "MDd" or "MD"
-        --     target:set("runtimes", runtimes)
-        -- end
+        local plat = target:is_plat("windows") and "windows" or "other"
+        print(string.format("--[%s] type: %s, platform: %s", target:name(), kind , plat))
 
         if kind == "shared" then
             if target:is_plat("windows") then

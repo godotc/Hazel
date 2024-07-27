@@ -31,7 +31,27 @@
         "target_name",
         "set_basename",
         "add_deps",
-        "target_end"
+        "target_end",
+        "is_mode",
+        "set_pcxxheader",
+        "is_plat",
+        "add_links",
+        "on_config",
+        "import",
+        "json",
+        "set_symbols",
+        "set_languages",
+        "set_project",
+        "add_cxflags",
+        "set_runtimes",
+        "includes",
+        "set_group",
+        "task",
+        "set_menu",
+        "on_run",
+        "project",
+        "set_bindir",
+        "set_targetdir"
     ],
     "Lua.diagnostics.disable": [
         "undefined-field"

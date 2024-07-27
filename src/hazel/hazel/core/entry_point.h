@@ -1,9 +1,16 @@
 #pragma once
 
+#include "app.h"
 #include "hazel.h"
 #include "hazel/core/app.h"
 
+
+// static variable in shared library
+
+
 #ifdef HAZEL_ENTRY_PROGRAM
+
+
 
 extern hazel::App *hazel::CreateApplication(AppCommandLineArgs args);
 

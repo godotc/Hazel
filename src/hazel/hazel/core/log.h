@@ -35,8 +35,8 @@ class HAZEL_API Log
     ~Log();
 
 
-    static std::shared_ptr<spdlog::logger> core_logger;
-    static std::shared_ptr<spdlog::logger> client_logger;
+    std::shared_ptr<spdlog::logger> core_logger;
+    std::shared_ptr<spdlog::logger> client_logger;
 };
 
 } // namespace hazel

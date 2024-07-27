@@ -29,20 +29,15 @@
 namespace hazel {
 
 
-// App *App::Application = nullptr;
+App *App::g_Application = nullptr;
 
-App::App()
-{
-}
-
-void App ::Init(const std::string &name, AppCommandLineArgs args)
+App::App(const std::string &name, AppCommandLineArgs args)
 {
     HZ_PROFILE_FUNCTION();
 
     HZ_INFO("App construct");
-    static bool bInit = false;
-    HZ_CORE_ASSERT(!bInit, "App double init");
-    bInit = true;
+    HZ_CORE_ASSERT(!g_Application, "Already a application instance");
+    g_Application = this;
 
     m_Window = Window::Create(WindowProps(name));
 

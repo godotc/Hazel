@@ -6,8 +6,6 @@
 
 namespace hazel {
 
-std::shared_ptr<spdlog::logger> Log::core_logger;
-std::shared_ptr<spdlog::logger> Log::client_logger;
 
 
 Log::Log()
