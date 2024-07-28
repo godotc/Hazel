@@ -240,39 +240,10 @@ void EditorLayer::OnImGuiRender()
         }
 
         MenuBar();
-
+        Settings();
+        RenderStats();
 
         m_SceneHierarchyPanel.OnImGuiRender();
-
-
-        if (ImGui::Begin("Render2D stats")) {
-            auto stat = hazel::Render2D::GetStatics();
-            ImGui::Text("Draw Calls  : %d", stat.DrawCalls);
-            ImGui::Text("Quad Count  : %d", stat.QuadCount);
-            ImGui::Text("Vertex Count: %d", stat.GetTotalVertexCount());
-            ImGui::Text("Index Count : %d", stat.GetTotalIndexCount());
-            auto [x, y] = hazel::Input::GetMousePos();
-            ImGui::Text("Mouse Pos : %d,%d", (int)x, (int)y);
-            ImGui::End();
-        }
-        if (ImGui::Begin("Settings")) {
-            auto pos = m_EditorCamera.GetPosition();
-            ImGui::Text("Postion: %f, %f, %f", pos.x, pos.y, pos.z);
-            ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
-            // auto id = m_ArchTexture->GetTextureID();
-            // ImGui::Image(reinterpret_cast<void *>(id), ImVec2{64, 64});
-            ImGui::InputInt("Attachment Id", &m_ViewportColorAttachmentId);
-
-            const char *name = "None";
-            if (m_HoveredEntity) {
-                name = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
-            }
-            ImGui::Text("Hovered Entity: %s", name);
-
-            FontSwitcher();
-        }
-        ImGui::End();
-
 
         ViewPort();
 
@@ -414,7 +385,7 @@ void EditorLayer::ViewPort()
         }
 
         uint64_t framebuffer_colorattachment = m_Framebuffer->GetColorAttachmentID(m_ViewportColorAttachmentId);
-        ImGui::Image(reinterpret_cast<void *>(framebuffer_colorattachment),
+        ImGui::Image((void *)(framebuffer_colorattachment),
                      ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0} // flip the image
         );
 
@@ -462,6 +433,57 @@ void EditorLayer::FontSwitcher()
             }
         }
         ImGui::EndCombo();
+    }
+}
+
+
+
+void EditorLayer::Settings()
+{
+    static bool bOpen        = false;
+    // static bool bWantToClose = false;
+    if (!ImGui::Begin("Settings", &bOpen))
+    {
+        ImGui::End();
+        return;
+    }
+
+    auto pos = m_EditorCamera.GetPosition();
+    ImGui::Text("Postion: %f, %f, %f", pos.x, pos.y, pos.z);
+    ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_ClearColor));
+    // auto id = m_ArchTexture->GetTextureID();
+    // ImGui::Image(reinterpret_cast<void *>(id), ImVec2{64, 64});
+    ImGui::InputInt("Attachment Id", &m_ViewportColorAttachmentId);
+
+    const char *name = "None";
+    if (m_HoveredEntity) {
+        name = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
+    }
+    ImGui::Text("Hovered Entity: %s", name);
+
+    FontSwitcher();
+
+    // if (ImGui::Button("close this")) {
+    //     bOpen = false;
+    // }
+
+    ImGui::End();
+}
+
+void EditorLayer::RenderStats()
+{
+    static bool bOpen = true;
+    if (ImGui::Begin("Render2D stats", &bOpen)) {
+        auto stat = hazel::Render2D::GetStatics();
+        ImGui::Text("Draw Calls  : %d", stat.DrawCalls);
+        ImGui::Text("Quad Count  : %d", stat.QuadCount);
+        ImGui::Text("Vertex Count: %d", stat.GetTotalVertexCount());
+        ImGui::Text("Index Count : %d", stat.GetTotalIndexCount());
+        auto [x, y] = hazel::Input::GetMousePos();
+        ImGui::Text("Mouse Pos : %d,%d", (int)x, (int)y);
+    }
+    if (bOpen) {
+        ImGui::End();
     }
 }
 

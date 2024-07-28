@@ -68,6 +68,10 @@ class EditorLayer : public hazel::Layer
     void MenuBar();
     void ViewPort();
     void FontSwitcher();
+
+    void Settings();
+    void RenderStats();
+
     // Must call in viewport draw process(in the same window)
     void Gizmos();
 
