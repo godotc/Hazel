@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <mutex>
 #include <stdexcept>
+#include <winnt.h>
 
 #if __linux__
     #include "unistd.h"
@@ -26,17 +27,20 @@ const std::string &GetProjectRootSymbol() { return project_root_symbol; }
 path get_runtime_exe_path()
 {
     // just not support the non-english path
-    std::string path_str(4096, '\0');
 #if _WIN32
-    int len = GetModuleFileName(NULL, path_str.data(), path_str.size());
+    std::wstring path_str(4096, '\0');
+    int          len = GetModuleFileName(NULL, (LPWSTR)path_str.data(), path_str.size());
     if (len <= 0)
         return {};
+    return path_str;
 #elif __linux__
-    ssize_t n = readlink("/proc/self/exe", path_str.data(), path_str.size());
+    std::string path_str(4096, '\0');
+    ssize_t     n = readlink("/proc/self/exe", path_str.data(), path_str.size());
     if (n < 0)
         return {};
 #elif __APPLE__
-    int pid = GetCurrentProcessId();
+    std::string path_str(4096, '\0');
+    int         pid = GetCurrentProcessId();
     if (proc_pidpath(pid, path_str, path_str.size()) <= 0)
         return {};
 #endif

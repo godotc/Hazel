@@ -1,6 +1,12 @@
 ---@diagnostic disable: undefined-global
 
-add_requires("fmt 11.0.1", { system = false, configs={ header_only=true} })
+add_requires("fmt 11.0.1", {
+	system = false,
+	configs= {
+		header_only=true,
+		cxxflags = "/utf-8"
+	}
+})
 add_requires("glm",{  configs={ header_only=true, cxx_standard="20"} })
 add_requires("spdlog", { system = false, configs = { fmt_eternal = true } })
 add_requires("stb", { configs = { shared = true, debug = true } })

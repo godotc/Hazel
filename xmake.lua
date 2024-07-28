@@ -32,6 +32,8 @@ elseif is_plat("windows") then
     add_defines("NOMINMAX")
     add_cxflags("/Zc:preprocessor")
     add_cxflags("/EHs")
+	add_defines("UNICODE", "_UNICODE")
+	add_cxflags("/utf-8")
     -- add_defines("_MSVC_LANG=202002L")
 end
 
