@@ -62,13 +62,14 @@ void EditorLayer::OnAttach()
     spec.Height      = 600;
     m_Framebuffer    = hazel::Framebuffer::Create(spec);
 
+    m_ActiveScene = hazel::CreateRef<hazel::Scene>();
+
     // m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     // m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
     // m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
     m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
 
-    m_ActiveScene = hazel::CreateRef<hazel::Scene>();
 
     auto commandlines = App::Get().GetCommandLineArgs();
     if (commandlines.count > 1) {
