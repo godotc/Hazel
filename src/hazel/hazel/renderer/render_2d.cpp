@@ -172,7 +172,6 @@ void Render2D::Init()
     // white texture
     {
         s_Data.WhileTexture = Texture2D::Create(1, 1);
-
         // R G B A 8bit x 4
         // f == 16 == 2^5
         // 5 * 8 or 4 * 8 orz
@@ -197,6 +196,7 @@ void Render2D::Init()
 
     // the uniform buffers
     s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Render2DData::CameraData), 0);
+
 } // namespace hazel
 
 void Render2D::Shutdown()
@@ -204,18 +204,6 @@ void Render2D::Shutdown()
     HZ_PROFILE_FUNCTION();
 
     delete[] s_Data.QuadVertexBufferHead;
-}
-
-void Render2D::BeginScene(const EditorCamera &camera)
-{
-    HZ_PROFILE_FUNCTION();
-
-    const glm::mat4 view_projection = camera.GetViewProjection();
-    // just set camera once for one scene process
-    s_Data.CameraBuffer.ViewProjection = std::move(view_projection);
-    s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Render2DData::CameraData));
-
-    StartBatch();
 }
 
 void Render2D::BeginScene(const Camera &camera, const glm::mat4 &transform)
@@ -231,7 +219,21 @@ void Render2D::BeginScene(const Camera &camera, const glm::mat4 &transform)
     StartBatch();
 }
 
+void Render2D::BeginScene(const EditorCamera &camera)
+{
+    HZ_PROFILE_FUNCTION();
 
+    const glm::mat4 view_projection = camera.GetViewProjection();
+    // just set camera once for one scene process
+    s_Data.CameraBuffer.ViewProjection = std::move(view_projection);
+    s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Render2DData::CameraData));
+
+    StartBatch();
+}
+
+
+
+[[deprecated]]
 void Render2D::BeginScene(const OrthographicCamera &camera)
 {
     HZ_PROFILE_FUNCTION();

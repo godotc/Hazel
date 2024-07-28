@@ -3,7 +3,7 @@
  *  Author: @godot42
  *  Create Time: 2024-03-11 22:31:15
  *  Modified by: @godot42
- *  Modified time: 2024-07-28 17:21:07
+ *  Modified time: 2024-07-28 17:46:42
  *  Description:
  */
  ]]
@@ -61,10 +61,14 @@ target("hazel")
     add_files("utils/**.cpp")
     add_files("math/**.cpp")
     add_files("platform/opengl/**.cpp")
+    add_files("platform/glfw/**.cpp")
 
     -- TODO: Sperator the windows and linux platfrom files
-    add_files("platform/windows/**.cpp")
-    add_files("platform/linux/**.cpp")
+    if is_plat("windows") then
+        add_files("platform/windows/**.cpp")
+    elseif is_plat("linux") then
+        add_files("platform/linux/**.cpp")
+    end
 
     if is_plat("windows") then
         add_links("Comdlg32")

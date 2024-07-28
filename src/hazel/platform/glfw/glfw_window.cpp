@@ -1,6 +1,6 @@
 #include "hz_pch.h"
 
-#include "linux_window.h"
+#include "glfw_window.h"
 
 
 //
@@ -22,20 +22,20 @@ static bool bGLFWInitialized = false;
 
 
 
-Window *Window::Create(const WindowProps &props) { return new LinuxWindow(props); }
+Window *Window::Create(const WindowProps &props) { return new PlatGLFWWindow(props); }
 
 
-LinuxWindow::LinuxWindow(const WindowProps &props)
+PlatGLFWWindow::PlatGLFWWindow(const WindowProps &props)
 {
     Init(props);
 }
-LinuxWindow::~LinuxWindow()
+PlatGLFWWindow::~PlatGLFWWindow()
 {
     ShutDown();
 }
 
 
-void LinuxWindow::Init(const WindowProps &props)
+void PlatGLFWWindow::Init(const WindowProps &props)
 {
 
     HZ_PROFILE_FUNCTION();
@@ -57,9 +57,9 @@ void LinuxWindow::Init(const WindowProps &props)
     }
 
     {
-        HZ_PROFILE_SCOPE("Create/Init GLFW Contex");
+        HZ_PROFILE_SCOPE("Create/Init GLFW Context");
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
-        // m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, "helo", nullptr, nullptr);
+        // m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, "hello", nullptr, nullptr);
         glfwMakeContextCurrent(m_Window);
 
         Window::m_Context = new hazel::OpenGLContext(m_Window);
@@ -75,7 +75,7 @@ void LinuxWindow::Init(const WindowProps &props)
     SetVSync(true);
 }
 
-void LinuxWindow::ShutDown()
+void PlatGLFWWindow::ShutDown()
 {
     HZ_PROFILE_FUNCTION();
 
@@ -83,7 +83,7 @@ void LinuxWindow::ShutDown()
     glfwDestroyWindow(m_Window);
 }
 
-void LinuxWindow::OnUpdate()
+void PlatGLFWWindow::OnUpdate()
 {
     HZ_PROFILE_FUNCTION();
 
@@ -91,7 +91,7 @@ void LinuxWindow::OnUpdate()
     m_Context->SwapBuffers();
 }
 
-void LinuxWindow::SetVSync(bool bEnable)
+void PlatGLFWWindow::SetVSync(bool bEnable)
 {
     HZ_PROFILE_FUNCTION();
 
@@ -99,15 +99,15 @@ void LinuxWindow::SetVSync(bool bEnable)
     m_Data.bVSync = bEnable;
 }
 
-bool LinuxWindow::IsVSync() const
+bool PlatGLFWWindow::IsVSync() const
 {
     return m_Data.bVSync;
 }
 
-unsigned int LinuxWindow::GetHeight() const { return m_Data.Height; }
+unsigned int PlatGLFWWindow::GetHeight() const { return m_Data.Height; }
 
 
-void LinuxWindow::initCallbacks()
+void PlatGLFWWindow::initCallbacks()
 {
     HZ_PROFILE_FUNCTION();
 
@@ -180,9 +180,9 @@ void LinuxWindow::initCallbacks()
         }
     });
 
-    glfwSetScrollCallback(m_Window, [](GLFWwindow *win, double xoffset, double yoffset) {
+    glfwSetScrollCallback(m_Window, [](GLFWwindow *win, double x_offset, double y_offset) {
         if (WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(win))) {
-            MouseScrolledEvent ev((float)xoffset, (float)yoffset);
+            MouseScrolledEvent ev((float)x_offset, (float)y_offset);
             data->EventCallback(ev);
         }
     });

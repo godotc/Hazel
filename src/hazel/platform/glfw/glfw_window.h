@@ -4,17 +4,16 @@
 #include "hazel/core/base.h"
 
 #include "hazel/core/window.h"
-#include <any>
 
 struct GLFWwindow;
 
 namespace hazel {
 
-class LinuxWindow : public Window
+class PlatGLFWWindow : public Window
 {
   public:
-    explicit LinuxWindow(const WindowProps &props);
-    ~LinuxWindow() override;
+    explicit PlatGLFWWindow(const WindowProps &props);
+    ~PlatGLFWWindow() override;
 
   public:
     void OnUpdate() override;

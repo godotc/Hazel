@@ -14,13 +14,12 @@
 
 #include "hazel/core/app.h"
 #include "hazel/core/log.h"
-#include "platform/linux/linux_window.h"
+#include "platform/glfw/glfw_window.h"
 #include "utils/path.h"
-#include <cstddef>
+
 #include <filesystem>
 #include <map>
 #include <nb30.h>
-#include <unordered_map>
 
 #include <ImGuizmo.h>
 
@@ -36,7 +35,7 @@ void ImGuiLayer::OnAttach()
 {
     HZ_PROFILE_FUNCTION();
 
-    HZ_CORE_TRACE("{} Attacting...", GetName());
+    HZ_CORE_TRACE("{} Attaching...", GetName());
 
     IMGUI_CHECKVERSION();
     HZ_CORE_INFO("Imgui: v{}", IMGUI_VERSION);
@@ -51,8 +50,7 @@ void ImGuiLayer::OnAttach()
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-#if HAZEL_ENABLE_VIEWPORTS
+#if HAZEL_ENABLE_VIEWPORT
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
@@ -84,7 +82,7 @@ void ImGuiLayer::OnAttach()
         style.Colors[ImGuiCol_WindowBg].w = 1.f;
     }
 
-    if (auto *window = dynamic_cast<LinuxWindow *>(&App::Get().GetWindow())) {
+    if (auto *window = dynamic_cast<PlatGLFWWindow *>(&App::Get().GetWindow())) {
         if (auto *native_window = any_cast<GLFWwindow *>(window->GetNativeWindow())) {
             bool bSuccess = ImGui_ImplGlfw_InitForOpenGL(native_window, true);
             HZ_CORE_ASSERT(bSuccess, "imgui glfw backend initialize failed");

@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "CHECKVERSION",
         "colorattachment",
         "commandlines",
         "dockable",
@@ -10,9 +11,12 @@
         "Framebuffer",
         "Fullscreen",
         "FUNCSIG",
+        "Gamepad",
+        "glversion",
         "Guizmo",
         "hwnd",
         "IMGUIZMO",
+        "Integerv",
         "lpstr",
         "nono",
         "OPENFILENAMEA",
@@ -22,7 +26,8 @@
         "SPIRV",
         "subtexture",
         "Texcoord",
-        "Timestep"
+        "Timestep",
+        "Viewports"
     ],
     "Lua.diagnostics.globals": [
         "add_requires",
