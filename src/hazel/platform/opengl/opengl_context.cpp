@@ -11,6 +11,7 @@
 #include "GLFW/glfw3.h"
 #include "hazel/core/base.h"
 #include "hazel/core/log.h"
+#include <sstream>
 
 
 namespace hazel {
@@ -76,51 +77,61 @@ static void MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severi
         return;
     }
 
-    using std::cout, std::endl;
-    cout << "---------------------opengl-callback-start------------" << endl;
-    cout << "source: " << source << endl;
-    cout << "message: " << message << endl;
-    cout << "type: ";
+    std::stringstream ss;
+    ss << '\n';
+
+    ss << "---------------------opengl-callback-start------------" << '\n';
+    ss << "source: " << source << '\n';
+    ss << "message: " << message << '\n';
+    ss << "type: ";
     switch (type) {
         case GL_DEBUG_TYPE_ERROR:
-            cout << "ERROR";
+            ss << "ERROR";
             break;
         case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            cout << "DEPRECATED_BEHAVIOR";
+            ss << "DEPRECATED_BEHAVIOR";
             break;
         case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            cout << "UNDEFINED_BEHAVIOR";
+            ss << "UNDEFINED_BEHAVIOR";
             break;
         case GL_DEBUG_TYPE_PORTABILITY:
-            cout << "PORTABILITY";
+            ss << "PORTABILITY";
             break;
         case GL_DEBUG_TYPE_PERFORMANCE:
-            cout << "PERFORMANCE";
+            ss << "PERFORMANCE";
             break;
         case GL_DEBUG_TYPE_OTHER:
-            cout << "OTHER";
+            ss << "OTHER";
             break;
     }
-    cout << endl;
+    ss << '\n';
 
-    cout << "id: " << id << endl;
-    cout << "severity: ";
+    ss << "id: " << id << '\n';
+    ss << "severity: ";
     switch (severity) {
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            cout << "NOTIFICATION";
+            ss << "NOTIFICATION";
             break;
         case GL_DEBUG_SEVERITY_LOW:
-            cout << "LOW";
+            ss << "LOW";
             break;
         case GL_DEBUG_SEVERITY_MEDIUM:
-            cout << "MEDIUM";
+            ss << "MEDIUM";
             break;
         case GL_DEBUG_SEVERITY_HIGH:
-            cout << "HIGH";
+            ss << "HIGH";
             break;
     }
-    cout << endl;
-    cout << "---------------------opengl-callback-end--------------" << endl;
+    ss << '\n';
+    ss << "---------------------opengl-callback-end--------------" << '\n';
+
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:
+            HZ_CORE_ERROR(ss.str());
+            break;
+        default:
+            HZ_CORE_INFO(ss.str());
+    }
 }
 
 } // namespace hazel

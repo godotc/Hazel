@@ -1,6 +1,3 @@
-[submodule "pkgs/imguizmo"]
-	path = pkgs/imguizmo
-	url = git@github.com:CedricGuillemet/ImGuizmo.git
 [submodule "src/pkgs/imguizmo"]
 	path = src/pkgs/imguizmo
 	url = git@github.com:CedricGuillemet/ImGuizmo.git
