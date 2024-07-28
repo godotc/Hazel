@@ -171,17 +171,9 @@ void SceneHierarchyPanel::OnImGuiRender()
             }
         };
 
-
-        // for (auto &entt : m_Context->m_Registry.view<entt::entity>()) {
-        //     if (auto entity = Entity{entt, m_Context.get()}) {
-        //         DrawEntityNode(entity);
-        //     }
-        // };
-
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
             SetSelection({});
         }
-
 
         // right click on black space
         if (imgui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {

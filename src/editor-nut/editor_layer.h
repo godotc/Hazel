@@ -9,6 +9,7 @@
 #include "hazel/renderer/practicle.h"
 #include "hazel/scene/editor_camera.h"
 #include "hazel/scene/scene.h"
+#include "imgui_internal.h"
 #include "panel/scene_hierachy_panel.h"
 
 
@@ -45,9 +46,6 @@ class EditorLayer : public hazel::Layer
     bool             bViewPortHovering = false;
 
     Entity m_HoveredEntity;
-
-    // Entities
-    // Ref<Texture2D> m_FaceTexture, m_ArchTexture, m_BlockTexture;
 
     int m_ViewportColorAttachmentId = 0;
 

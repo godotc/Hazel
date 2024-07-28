@@ -19,9 +19,9 @@ layout(std140, binding=0) uniform Camera{
 struct Transform{...fields...};
 uniform Transform u_RendererUniforms;
 */
-layout(push_constant) uniform Transform{
-    mat4 Transform;
-} u_RendererUniforms;
+// layout(push_constant) uniform Transform{
+//     mat4 Transform;
+// } u_RendererUniforms;
 
 struct VertexOutput{
     vec4 Color;
@@ -42,7 +42,7 @@ void main(){
 #if OPENGL
 #endif
     gl_Position = u_ViewProjection *
-                  u_RendererUniforms.Transform *
+                //   u_RendererUniforms.Transform *
                   vec4(a_Position, 1.f);
 }
 

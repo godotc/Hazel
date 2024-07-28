@@ -24,8 +24,10 @@ void Render::Submit(const Ref<Shader> &shader, Ref<VertexArray> &vertex_array, c
 {
     shader->Bind();
 
-    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Transform", transform);
+    // std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+    // std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Transform", transform);
+    shader->SetMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+    shader->SetMat4("u_Transform", transform);
     vertex_array->Bind();
     RenderCommand::DrawIndex(vertex_array);
 }

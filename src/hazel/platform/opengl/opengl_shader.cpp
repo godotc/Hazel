@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2023-11-17 23:45:29
  *  Modified by: @godot42
- *  Modified time: 2024-07-21 04:03:24
+ *  Modified time: 2024-07-28 19:16:08
  *  Description:
  */
 
@@ -26,7 +26,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "opengl_shader.h"
 #include "utils/path.h"
-#include "utils/string_util.h"
 
 
 #include <cstdint>
@@ -35,15 +34,23 @@
 #include <fstream>
 #include <ios>
 
+#include <map>
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_cross.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
+#include <unordered_map>
 #include <vector>
 
 
 
 namespace hazel {
 
+static const char *eol_flag =
+#if _WIN32
+    "\r\n";
+#elif __linux__
+    "\n";
+#endif
 
 namespace utils {
 static GLenum ShaderTypeFromString(const std::string &type)
@@ -57,7 +64,7 @@ static GLenum ShaderTypeFromString(const std::string &type)
     return 0;
 }
 
-static shaderc_shader_kind GLShaderStageToShaderC(GLenum Stage)
+static shaderc_shader_kind GLShaderStageToShaderRcType(GLenum Stage)
 {
     switch (Stage) {
         case GL_VERTEX_SHADER:
@@ -84,9 +91,9 @@ static const char *GLShaderStageToString(GLenum stage)
 
 static std::string           cache_relative_path = "res/cache/shader/opengl";
 static std::filesystem::path GetCacheDirectory() { return FPath(cache_relative_path).absolute_path; }
-static void                  CreateCacheDirectoryIfNeeded()
-{
 
+static void CreateCacheDirectoryIfNeeded()
+{
     auto cache_dir = GetCacheDirectory();
     HZ_INFO("the shader cached dir is {}", cache_dir.string());
 
@@ -107,6 +114,7 @@ static void                  CreateCacheDirectoryIfNeeded()
         std::filesystem::create_directories(cache_dir);
     }
 }
+
 static const char *GLShaderStage_CachedOpenGL_FileExtension(GLenum stage)
 {
     switch (stage)
@@ -146,15 +154,22 @@ OpenGLShader::OpenGLShader(const std::string &shader_file_path)
     m_ShaderID                 = 0;
     std::string source         = ReadFile(shader_file_path);
     auto        shader_sources = PreProcess(source);
+    // HZ_CORE_ERROR("{}:\n{}", utils::GLShaderStageToString(GL_VERTEX_SHADER), shader_sources[GL_VERTEX_SHADER]);
+    // HZ_CORE_INFO("{}:\n{}", utils::GLShaderStageToString(GL_FRAGMENT_SHADER), shader_sources[GL_FRAGMENT_SHADER]);
+
+    m_FilePath = shader_file_path;
 
     {
         Timer timer;
         CompileOrGet_VulkanBinaries(shader_sources);
+        CompileOrGet_GLBinaries();
         CreateProgram();
         HZ_CORE_WARN("Shader creation took {0} ms", timer.ElapsedMillis());
     }
-    m_FilePath = shader_file_path;
-    m_Name     = std::filesystem::path(shader_file_path).stem().string();
+
+    // derive the shader name from the filename
+    m_Name = std::filesystem::path(shader_file_path).stem().string();
+    HZ_CORE_INFO("Shader name: {}", m_Name);
     HZ_CORE_ASSERT(!m_Name.empty(), "Cannot derive the shader name from shader file.");
 }
 
@@ -162,13 +177,22 @@ OpenGLShader::OpenGLShader(const std::string &name, const std::string &vert_src,
 {
     HZ_PROFILE_FUNCTION();
 
+
     m_ShaderID = 0;
-    CompileOrGet_VulkanBinaries({
+    m_Name     = name;
+
+    std::unordered_map<GLenum, std::string> sources = {
         {  GL_VERTEX_SHADER, vert_src},
         {GL_FRAGMENT_SHADER, frag_src}
-    });
+    };
+
+    CompileOrGet_VulkanBinaries(sources);
+    CompileOrGet_GLBinaries();
     CreateProgram();
-    m_Name = name;
+}
+
+OpenGLShader::~OpenGLShader()
+{
 }
 
 void OpenGLShader::Bind() const
@@ -252,12 +276,6 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
     size_t       pos            = source.find(type_token, 0);
 
 
-    static const char *eol_flag =
-#if _WIN32
-        "\r\n";
-#elif __linux__
-        "\n";
-#endif
 
     while (pos != std::string ::npos)
     {
@@ -273,12 +291,14 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 
         // get the shader content range
         size_t next_line_pos = source.find_first_not_of(eol_flag, eol);
-        pos                  = source.find(type_token, next_line_pos);
 
-        auto codes = source.substr(next_line_pos, pos - (next_line_pos == std::string ::npos ? source.size() - 1 : next_line_pos));
+        pos          = source.find(type_token, next_line_pos);
+        size_t count = (next_line_pos == std::string ::npos ? source.size() - 1 : next_line_pos);
+
+        auto codes = source.substr(next_line_pos, pos - count);
 
         auto [_, Ok] = shader_sources.insert({(unsigned int)shader_type, codes});
-        //        HZ_CORE_INFO("{} \n {}", _->first, _->second);
+
         HZ_CORE_ASSERT(Ok, "Failed to insert this shader source");
     }
 
@@ -307,7 +327,8 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
                                          utils::GLShaderStage_CachedVulkan_FileExtension(stage));
 
         std::ifstream f(cached_path, std::ios::in | std::ios::binary);
-        if (f.is_open()) {
+        if (!f.fail())
+        {
             f.seekg(0, std::ios::end);
             auto size = f.tellg();
             f.seekg(0, std::ios::beg);
@@ -319,7 +340,7 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
         else {
             shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
                 source,
-                utils::GLShaderStageToShaderC(stage),
+                utils::GLShaderStageToShaderRcType(stage),
                 m_FilePath.string().c_str(),
                 options);
 
@@ -346,7 +367,7 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
     }
 }
 
-void OpenGLShader::CompileOrGet_GLBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources)
+void OpenGLShader::CompileOrGet_GLBinaries()
 {
     auto &shader_data = m_OpenGL_SPIRV;
 
@@ -372,7 +393,7 @@ void OpenGLShader::CompileOrGet_GLBinaries(const std::unordered_map<unsigned int
                                                  utils::GLShaderStage_CachedOpenGL_FileExtension(stage));
 
         std::ifstream in(cached_filepath, std::ios::in | std::ios::binary);
-        if (in.is_open())
+        if (!in.fail())
         {
             in.seekg(0, std::ios::end);
             auto size = in.tellg();
@@ -389,10 +410,12 @@ void OpenGLShader::CompileOrGet_GLBinaries(const std::unordered_map<unsigned int
             m_OpenGL_SourceCode[stage] = glsl_compiler.compile();
 
             auto &source = m_OpenGL_SourceCode[stage];
+            // HZ_CORE_ERROR(source);
+            HZ_CORE_ERROR(m_FilePath.string());
 
             shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
                 source,
-                utils::GLShaderStageToShaderC(stage),
+                utils::GLShaderStageToShaderRcType(stage),
                 m_FilePath.string().c_str());
 
             if (result.GetCompilationStatus() != shaderc_compilation_status_success)
@@ -424,7 +447,8 @@ void OpenGLShader::CreateProgram()
     {
         GLuint shader_id = shader_ids.emplace_back(glCreateShader(stage));
         // binary from SPIR-V
-        glShaderBinary(1, &shader_id,
+        glShaderBinary(1,
+                       &shader_id,
                        GL_SHADER_BINARY_FORMAT_SPIR_V,
                        spirv.data(),
                        spirv.size() * sizeof(uint32_t));
@@ -436,6 +460,8 @@ void OpenGLShader::CreateProgram()
 
     GLint bLinked;
     glGetProgramiv(program, GL_LINK_STATUS, &bLinked);
+
+    // error handle
     if (bLinked == GL_FALSE)
     {
         GLint max_len;
@@ -453,6 +479,7 @@ void OpenGLShader::CreateProgram()
         }
     }
 
+    // already linked
     for (auto id : shader_ids)
     {
         glDetachShader(program, id);
@@ -469,8 +496,8 @@ void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t> &shader_dat
     spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 
     HZ_CORE_TRACE("OpenGLShader:Reflect  - {} {}", utils::GLShaderStageToString(stage), m_FilePath.string());
-    HZ_CORE_TRACE("\t {} uniform buffers", resources.uniform_buffers.size());
-    HZ_CORE_TRACE("\t {} resources", resources.sampled_images.size());
+    HZ_CORE_TRACE("\t {} uniform buffers ", resources.uniform_buffers.size());
+    HZ_CORE_TRACE("\t {} resources ", resources.sampled_images.size());
 
     HZ_CORE_TRACE("Uniform buffers:");
     for (const auto &resource : resources.uniform_buffers)

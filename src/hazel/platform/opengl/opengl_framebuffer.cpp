@@ -199,16 +199,16 @@ void OpenGLFrameBuffer::UpdateAll()
     glCreateFramebuffers(1, &m_FramebufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 
-    bool bMultiSampe = m_Specification.Samples > 1;
+    bool bMultiSample = m_Specification.Samples > 1;
 
     // color attachments, different layers by the shaders's out location 0,1,2,3,4
     if (!m_ColorAttachmentSpecs.empty())
     {
         m_ColorAttachments.resize(m_ColorAttachmentSpecs.size());
-        utils::CreateTextures(bMultiSampe, m_ColorAttachments.data(), m_ColorAttachments.size());
+        utils::CreateTextures(bMultiSample, m_ColorAttachments.data(), m_ColorAttachments.size());
         for (int i = 0; i < m_ColorAttachments.size(); ++i)
         {
-            utils::BindTexture(bMultiSampe, m_ColorAttachments[i]);
+            utils::BindTexture(bMultiSample, m_ColorAttachments[i]);
             switch (m_ColorAttachmentSpecs[i].TextureFormat)
             {
                 case framebuffer::ETextureFormat::RGBA8:
@@ -237,8 +237,8 @@ void OpenGLFrameBuffer::UpdateAll()
     // depth attachments
     if (m_DepthAttachmentSpec.TextureFormat != framebuffer::ETextureFormat::None)
     {
-        utils::CreateTextures(bMultiSampe, &m_DepthAttachment, 1);
-        utils::BindTexture(bMultiSampe, m_DepthAttachment);
+        utils::CreateTextures(bMultiSample, &m_DepthAttachment, 1);
+        utils::BindTexture(bMultiSample, m_DepthAttachment);
         switch (m_DepthAttachmentSpec.TextureFormat) {
             case framebuffer::ETextureFormat::DEPTH24_STENCIL8:
             {

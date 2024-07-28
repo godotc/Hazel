@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2023-11-17 23:45:29
  *  Modified by: @godot42
- *  Modified time: 2024-03-27 01:58:19
+ *  Modified time: 2024-07-28 18:53:52
  *  Description:
  */
 
@@ -36,7 +36,7 @@ class OpenGLShader : public Shader
   public:
     OpenGLShader(const std::string &shader_file_path);
     OpenGLShader(const std::string &name, const std::string &vert_src, const std::string &frag_src);
-    ~OpenGLShader() override {}
+    ~OpenGLShader() override;
 
     void Bind() const override;
     void Unbind() const override;
@@ -52,7 +52,7 @@ class OpenGLShader : public Shader
     void SetMat4(const std::string &name, const glm::mat4 &matrix) override;
 
 
-  public:
+  private:
     void UploadUniformFloat(const std::string &name, const float value);
     void UploadUniformFloat2(const std::string &name, const glm::vec2 &values);
     void UploadUniformFloat3(const std::string &name, const glm::vec3 &values);
@@ -69,7 +69,7 @@ class OpenGLShader : public Shader
 
     void Compile();
     void CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources);
-    void CompileOrGet_GLBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources);
+    void CompileOrGet_GLBinaries();
     void CreateProgram();
     void Reflect(GLenum stage, const std::vector<uint32_t> &shader_data);
 };
