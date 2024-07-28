@@ -1,53 +1,48 @@
 {
-  "configurations": [
-    {
-      "cwd": "${workspaceFolder}",
-      "type": "lldb",
-      "preLaunchTask": "build nut",
-      "request": "launch",
-      "name": "[nut] LLDB DEBUG",
-      "windows": {
-        "program": "${workspaceFolder}/build\\windows\\x64/debug/hazel-editor-nut"
+  "configurations":[{
+      "name":"[nut] LLDB DEBUG",
+      "request":"launch",
+      "windows":{
+        "program":"${workspaceFolder}/build\\windows\\x64/debug/hazel-editor-nut"
       },
-      "args": []
-    },
-    {
-      "cwd": "${workspaceFolder}",
-      "type": "lldb",
-      "args": [],
-      "request": "launch",
-      "name": "[nut] LLDB RELEASE",
-      "windows": {
-        "program": "${workspaceFolder}/build\\windows\\x64/release/hazel-editor-nut"
+      "type":"lldb",
+      "args":[],
+      "preLaunchTask":"build nut",
+      "cwd":"${workspaceFolder}"
+    },{
+      "name":"[nut] LLDB RELEASE",
+      "request":"launch",
+      "windows":{
+        "program":"${workspaceFolder}/build\\windows\\x64/release/hazel-editor-nut"
       },
-      "preLaunchTask": "build nut"
-    },
-    {
-      "type": "gdb",
-      "request": "launch",
-      "name": "[nut] GDB DEBUG",
-      "arguments": "",
-      "valuesFormatting": "prettyPrinters",
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build nut",
-      "internalConsoleOptions": "openOnSessionStart",
-      "windows": {
-        "target": "${workspaceFolder}/build\\windows\\x64/debug/hazel-editor-nut"
-      }
-    },
-    {
-      "type": "gdb",
-      "request": "launch",
-      "name": "[nut] GDB RELEASE",
-      "arguments": "",
-      "valuesFormatting": "prettyPrinters",
-      "cwd": "${workspaceFolder}",
-      "windows": {
-        "target": "${workspaceFolder}/build\\windows\\x64/relase/hazel-editor-nut"
+      "type":"lldb",
+      "args":[],
+      "preLaunchTask":"build nut",
+      "cwd":"${workspaceFolder}"
+    },{
+      "preLaunchTask":"build nut",
+      "request":"launch",
+      "internalConsoleOptions":"openOnSessionStart",
+      "valuesFormatting":"prettyPrinters",
+      "name":"[nut] GDB DEBUG",
+      "windows":{
+        "target":"${workspaceFolder}/build\\windows\\x64/debug/hazel-editor-nut"
       },
-      "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "build nut"
-    }
-  ],
-  "version": "0.2.0"
+      "type":"gdb",
+      "arguments":"",
+      "cwd":"${workspaceFolder}"
+    },{
+      "preLaunchTask":"build nut",
+      "request":"launch",
+      "internalConsoleOptions":"openOnSessionStart",
+      "valuesFormatting":"prettyPrinters",
+      "name":"[nut] GDB RELEASE",
+      "windows":{
+        "target":"${workspaceFolder}/build\\windows\\x64/relase/hazel-editor-nut"
+      },
+      "type":"gdb",
+      "arguments":"",
+      "cwd":"${workspaceFolder}"
+    }],
+  "version":"0.2.0"
 }

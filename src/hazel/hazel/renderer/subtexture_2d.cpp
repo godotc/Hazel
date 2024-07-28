@@ -11,27 +11,27 @@ namespace hazel {
 SubTexture2D::SubTexture2D(const Ref<Texture2D> &texture, const glm::vec2 &min, const glm::vec2 &max)
 {
     // I make the sequence wrong !
-    m_Textrue      = texture;
+    Tm_Texture     = texture;
     m_TexCoords[0] = {min.x, min.y};
     m_TexCoords[1] = {max.x, min.y};
     m_TexCoords[2] = {max.x, max.y};
     m_TexCoords[3] = {min.x, max.y};
 
     // ++____i;
-    // HZ_CORE_INFO("Subtexure create, the ref of master texture path: {}, and {}", m_Textrue->GetTextureID(), ____i);
+    // HZ_CORE_INFO("Subtexture create, the ref of master texture path: {}, and {}", m_Texture->GetTextureID(), ____i);
 }
 
 SubTexture2D::~SubTexture2D()
 {
 
     // --____i;
-    // HZ_CORE_INFO("Subtexure destruction, the ref of master texture path: {}, and {}", m_Textrue->GetTextureID(), ____i);
+    // HZ_CORE_INFO("Subtexture destruction, the ref of master texture path: {}, and {}", m_Texture->GetTextureID(), ____i);
 }
 
 /**
  * @brief
  *
- *  @notice: due the vertical flip loadding texture
+ *  @notice: due the vertical flip loading texture
  *  like a 12x11  sheet
  *  left-bot is (0,0)   right-top is (11,10):
  *      y
@@ -43,8 +43,8 @@ SubTexture2D::~SubTexture2D()
  *
  * @param texture parent_texture
  * @param coords the (n,m) of sub cell
- * @param block_szie each block size, like (16*16) (256*256) the detemine the bot-left  of the nth x and mth y block
- * @param sprite_size actual the top right: bot-left (16,16) then add (sprite_size.x, srpite_size.y)
+ * @param blocksize each block size, like (16*16) (256*256) the determine the bot-left  of the nth x and mth y block
+ * @param sprite_size actual the top right: bot-left (16,16) then add (sprite_size.x, sprite_size.y)
  * @return Ref<SubTexture2D>
  */
 Ref<SubTexture2D> SubTexture2D::CreateFromCoords(const Ref<Texture2D> &texture, const glm::vec2 &coords, const glm::vec2 &block_size, const glm::vec2 &sprite_size)
@@ -62,7 +62,7 @@ Ref<SubTexture2D> SubTexture2D::CreateFromCoords(const Ref<Texture2D> &texture, 
 
 
 /**
- * @briepaste imagef
+ * @brief
  * @param margin some sheet will left a margin with some px as edge of each block,
  *  BUT I think use packed better!
  *  Cause' it's too hard to draw a item with 2 or more block, but within its margin -.-
@@ -79,7 +79,7 @@ Ref<SubTexture2D> SubTexture2D::CreateFromCoords(const Ref<Texture2D> &texture, 
     float right_top_x = left_bot_x + (sprite_size.x + margin);
     float right_top_y = left_bot_y + (sprite_size.y + margin);
 
-    //  to remove the mrgin on the rightest col or topest row
+    //  to remove the margin on the rightest col or most top row
     if (coords.x == (int)(texture->GetWidth() / block_size.x - 1)) {
         right_top_x -= margin;
     }

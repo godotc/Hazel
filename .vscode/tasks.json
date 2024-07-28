@@ -1,100 +1,20 @@
 {
   "tasks":[{
+      "presentation":{
+        "panel":"shared",
+        "focus":false,
+        "clear":false,
+        "reveal":"always",
+        "showReuseMessage":true,
+        "echo":true
+      },
       "windows":{
         "target":""
       },
-      "args":["build","nut"],
       "type":"shell",
-      "command":"xmake",
       "label":"build nut",
-      "presentation":{
-        "focus":false,
-        "echo":true,
-        "reveal":"never",
-        "clear":false,
-        "panel":"shared",
-        "showReuseMessage":true
-      }
-    },{
-      "windows":{
-        "target":""
-      },
-      "args":["build","nut"],
-      "type":"shell",
       "command":"xmake",
-      "label":"build nut",
-      "presentation":{
-        "focus":false,
-        "echo":true,
-        "reveal":"never",
-        "clear":false,
-        "panel":"shared",
-        "showReuseMessage":true
-      }
-    },{
-      "windows":{
-        "target":""
-      },
-      "args":["build","nut"],
-      "type":"shell",
-      "command":"xmake",
-      "label":"build nut",
-      "presentation":{
-        "focus":false,
-        "echo":true,
-        "reveal":"never",
-        "clear":false,
-        "panel":"shared",
-        "showReuseMessage":true
-      }
-    },{
-      "windows":{
-        "target":""
-      },
-      "args":["build","nut"],
-      "type":"shell",
-      "command":"xmake",
-      "label":"build nut",
-      "presentation":{
-        "focus":false,
-        "echo":true,
-        "reveal":"never",
-        "clear":false,
-        "panel":"shared",
-        "showReuseMessage":true
-      }
-    },{
-      "windows":{
-        "target":""
-      },
-      "args":["build","nut"],
-      "type":"shell",
-      "command":"xmake",
-      "label":"build nut",
-      "presentation":{
-        "focus":false,
-        "echo":true,
-        "reveal":"never",
-        "clear":false,
-        "panel":"shared",
-        "showReuseMessage":true
-      }
-    },{
-      "command":"xmake",
-      "type":"shell",
-      "args":["build","nut"],
-      "windows":{
-        "target":""
-      },
-      "label":"build nut",
-      "presentation":{
-        "focus":false,
-        "echo":true,
-        "reveal":"never",
-        "clear":false,
-        "panel":"shared",
-        "showReuseMessage":true
-      }
+      "args":["build","nut"]
     }],
   "version":"2.0.0"
 }

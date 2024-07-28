@@ -3,7 +3,7 @@
  *  Author: @godot42
  *  Create Time: 2024-03-11 22:31:15
  *  Modified by: @godot42
- *  Modified time: 2024-07-26 00:10:53
+ *  Modified time: 2024-07-28 17:21:07
  *  Description:
  */
  ]]
@@ -27,7 +27,7 @@ add_requires("vulkansdk", {
     configs = {
         -- runtimes = is_mode("debug") and "MDd" or "MD",
         -- shared = true,
-        debug=false,
+        debug = false,
         utils = is_mode("debug") and {
             "vulkan-1",
             "shaderc_sharedd",
@@ -41,13 +41,7 @@ add_requires("vulkansdk", {
         }
     }
 })
--- add_packages("vulkansdk",{public=true})
--- if is_plat("windows") then
---     add_links("libucrt.lib")
---     add_links("libcpmt.lib")
--- end
--- add_requires("shaderc")
--- add_requires("volk")
+
 
 ---@format disable
 target("hazel")
@@ -55,10 +49,8 @@ target("hazel")
     set_kind("static")
 
 
-    -- add_deps("vkwrapper")
     add_deps("imguizmo")
     add_deps("glad")
-    -- add_cxflags("/DYNAMICBASE")
 
     add_includedirs("./", { public = true })
     add_headerfiles("**.h")
@@ -80,14 +72,13 @@ target("hazel")
 
     add_packages("glfw", { public = true })
     add_packages("imgui", {public=true})
-
-
     add_packages("vulkansdk", { public = true })
 
     on_config(function(target)
         local kind = target:get("kind")
         local plat = target:is_plat("windows") and "windows" or "other"
         print(string.format("--[%s] type: %s, platform: %s", target:name(), kind , plat))
+
 
         if kind == "shared" then
             if target:is_plat("windows") then

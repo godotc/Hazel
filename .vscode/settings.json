@@ -20,6 +20,8 @@
         "spdlog",
         "SPIR",
         "SPIRV",
+        "subtexture",
+        "Texcoord",
         "Timestep"
     ],
     "Lua.diagnostics.globals": [

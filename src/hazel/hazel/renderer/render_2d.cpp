@@ -442,7 +442,7 @@ void Render2D::DrawQuad(const glm::vec3 &pos, const glm::vec2 &size, const Ref<S
 
     constexpr size_t     quad_vertex_count = 4;
     const auto          &color             = tint;
-    const glm::vec2     *texture_coords    = subtexture->GetTexccord();
+    const glm::vec2     *texture_coords    = subtexture->GetTexcoord();
     const Ref<Texture2D> texture           = subtexture->GetTexture();
     const float          rotation          = 0.f;
 
@@ -566,7 +566,7 @@ void Render2D::DrawRotateQuad(const glm::vec3 &pos, const glm::vec2 &size, float
 
     constexpr size_t     quad_vertex_count = 4;
     const auto          &color             = tint;
-    const glm::vec2     *texture_coords    = subtexture->GetTexccord();
+    const glm::vec2     *texture_coords    = subtexture->GetTexcoord();
     const Ref<Texture2D> texture           = subtexture->GetTexture();
 
     if (s_Data.QuadIndexCount >= Render2DData::MaxIndices)

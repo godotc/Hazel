@@ -171,12 +171,9 @@ local function update_task_profile(target_name)
             "build",
             "",
         },
-        windows = {
-            target = "",
-        },
         presentation = {
             echo = true,
-            reveal = "never",
+            reveal = "always",
             focus = false,
             panel = "shared",
             showReuseMessage = true,
@@ -192,6 +189,7 @@ local function update_task_profile(target_name)
         if v.label == tbl.label then
             v = tbl;
             print("replace task: " .. tbl.label)
+            bReplaced = true;
         end
     end
     if not bReplaced then

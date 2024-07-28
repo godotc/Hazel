@@ -11,14 +11,6 @@
 #include "hazel/event/event.h"
 #include "hazel/event/key_event.h"
 
-
-#include "hazel/renderer/buffer.h"
-#include "hazel/renderer/shader.h"
-#include "hazel/renderer/vertex_array.h"
-
-#include "hazel/core/timestep.h"
-#include "hazel/renderer/orthographic_camera.h"
-
 namespace hazel {
 
 struct HAZEL_API AppCommandLineArgs {
