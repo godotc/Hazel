@@ -25,8 +25,8 @@ class EditorLayer : public hazel::Layer
 
     OrthographicCameraController m_CameraController{16 / 9.f, true};
 
-    // ParticleSystem m_PracticleSystem;
-    // ParticleProps  m_PracticleProps;
+    // ParticleSystem m_PracticeSystem;
+    // ParticleProps  m_PracticeProps;
     int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
     bool               bFullscreen      = true;

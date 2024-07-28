@@ -3,7 +3,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-21 01:48:13
  *  Modified by: @godot42
- *  Modified time: 2024-07-28 03:48:38
+ *  Modified time: 2024-07-28 16:01:33
  *  Description:
  */
  ]]
@@ -49,19 +49,19 @@ includes("./src")
 
 
 
-on_config(function()
-    print("-- Loading manual testting...")
-    for _, file in ipairs(os.files("./test")) do
-        local name = path.basename(file)
-        target_name = "test." .. name
-        print(target_name)
-        target(target_name)
-        set_group("tst")
-        set_kind("binary")
-        add_files(file)
-        target_end()
-    end
-end)
+-- on_config(function()
+--     print("-- Loading manual testting...")
+--     for _, file in ipairs(os.files("./test")) do
+--         local name = path.basename(file)
+--         target_name = "test." .. name
+--         print(target_name)
+--         target(target_name)
+--         set_group("tst")
+--         set_kind("binary")
+--         add_files(file)
+--         target_end()
+--     end
+-- end)
 
 
 ---@format disable

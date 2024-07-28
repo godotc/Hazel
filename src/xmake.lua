@@ -20,7 +20,7 @@ add_packages("entt", { public = true })
 add_requires("yaml-cpp",{
     configs={
         debug = is_mode("debug"),
-        cxxflags= is_plat("windows") and "/FS",
+        cxxflags = is_plat("windows") and "/FS",
     }
 })
 add_packages("yaml-cpp", { public = true })
@@ -30,5 +30,5 @@ includes("pkgs")
 includes(
     "hazel"
     ,"editor-nut"
-    -- ,"sandbox"
+-- ,"sandbox"
 )

@@ -2,7 +2,6 @@
 
 
 #include "__microshit_api_hazel.h"
-#include "fmt/format.h"
 #include "hazel/event/event.h"
 #include <string>
 
@@ -41,7 +40,7 @@ class HAZEL_API KeyPressedEvent : public KeyEvent
 class HAZEL_API KeyReleasedEvent : public KeyEvent
 {
   public:
-    explicit KeyReleasedEvent(int keycode) : KeyEvent(keycode){};
+    explicit KeyReleasedEvent(int keycode) : KeyEvent(keycode) {};
 
     [[nodiscard]] std::string to_string() const override { return fmt::format("KeyReleasedEvent: {} ", m_KeyCode); }
 

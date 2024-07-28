@@ -26,8 +26,9 @@ namespace imgui = ImGui;
 
 
 #pragma region
+
 // NOTICE!!: make sure each Vec3Control has different label
-void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_value = 0.f, float column_width = 100.f)
+void draw_vec3_Control(const std::string &label, glm::vec3 &values, float reset_value = 0.f, float column_width = 100.f)
 {
     imgui::PushID(label.c_str());
 
@@ -91,7 +92,7 @@ void DrawVec3Control(const std::string &label, glm::vec3 &values, float reset_va
 
 
 template <class T, class UIFunction>
-void DrawComponent(const std::string &name, Entity entity, UIFunction ui_func)
+void draw_component(const std::string &name, Entity entity, UIFunction ui_func)
 {
 
     const auto tree_node_flags = ImGuiTreeNodeFlags_DefaultOpen |
@@ -103,7 +104,7 @@ void DrawComponent(const std::string &name, Entity entity, UIFunction ui_func)
     if (entity.HasComponent<T>())
     {
         auto  &component                = entity.GetComponent<T>();
-        ImVec2 content_region_avaliable = imgui::GetContentRegionAvail();
+        ImVec2 content_region_available = imgui::GetContentRegionAvail();
 
         imgui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
         float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.f;
@@ -113,7 +114,7 @@ void DrawComponent(const std::string &name, Entity entity, UIFunction ui_func)
 
         imgui::PopStyleVar();
 
-        imgui::SameLine(content_region_avaliable.x - line_height * 0.5f);
+        imgui::SameLine(content_region_available.x - line_height * 0.5f);
 
         if (imgui::Button("+", ImVec2{line_height, line_height})) {
             imgui::OpenPopup("ComponentSettings");
@@ -156,7 +157,7 @@ void SceneHierarchyPanel::SetContext(const Ref<Scene> &scene)
 
 void SceneHierarchyPanel::OnImGuiRender()
 {
-    if (ImGui::Begin("Scene Hierachy"))
+    if (ImGui::Begin("Scene Hierarchy"))
     {
         auto &entities = m_Context->m_Registry.storage<entt::entity>();
 
@@ -169,6 +170,13 @@ void SceneHierarchyPanel::OnImGuiRender()
                 DrawEntityNode(entity);
             }
         };
+
+
+        // for (auto &entt : m_Context->m_Registry.view<entt::entity>()) {
+        //     if (auto entity = Entity{entt, m_Context.get()}) {
+        //         DrawEntityNode(entity);
+        //     }
+        // };
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
             SetSelection({});
@@ -267,21 +275,21 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     imgui::PopItemWidth();
 
 
-    DrawComponent<TransformComponent>("Transform ", entity, [](auto &tc) {
-        DrawVec3Control("Translation", tc.Translation);
+    draw_component<TransformComponent>("Transform ", entity, [](auto &tc) {
+        draw_vec3_Control("Translation", tc.Translation);
         glm::vec3 rotation = glm::degrees(tc.Rotation);
-        DrawVec3Control(" Rotation", rotation);
+        draw_vec3_Control(" Rotation", rotation);
         tc.Rotation = glm::radians(rotation);
-        DrawVec3Control(" Scale", tc.Scale);
+        draw_vec3_Control(" Scale", tc.Scale);
     });
 
 
-    DrawComponent<CameraComponent>("Camera Component", entity, [](auto &component) {
+    draw_component<CameraComponent>("Camera Component", entity, [](auto &component) {
         auto &camera = component.Camera;
 
-        // TODO & FIXME: change to true will clean all other camera's bPrimeary value
+        // TODO & FIXME: change to true will clean all other camera's bPrimary value
         imgui::Checkbox("Primary", &component.bPrimary);
-        imgui::Checkbox("FixedAspecRatio", &component.bFixedAspectRatio);
+        imgui::Checkbox("FixedAspectRatio", &component.bFixedAspectRatio);
 
 
         auto old_projection_type = camera.GetProjectionType();
@@ -345,7 +353,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     });
 
 
-    DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto &component) {
+    draw_component<SpriteRendererComponent>("Sprite Renderer", entity, [](auto &component) {
         imgui::ColorEdit4("Color", glm::value_ptr(component.Color));
     });
 }

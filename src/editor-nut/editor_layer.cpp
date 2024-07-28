@@ -105,7 +105,7 @@ void EditorLayer::OnAttach()
         {
             HZ_CORE_INFO("{}", __FUNCSIG__);
         }
-        void OnDestory() {}
+        void OnDestroy() {}
         void OnUpdate(Timestep ts)
         {
             // TODO: Disable this on:
@@ -264,7 +264,7 @@ void EditorLayer::OnImGuiRender()
             if (m_HoveredEntity) {
                 name = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
             }
-            ImGui::Text("Hoverd Entiy: %s", name);
+            ImGui::Text("Hovered Entity: %s", name);
 
             FontSwitcher();
 
@@ -293,7 +293,7 @@ void EditorLayer::UpdateWindowFlags()
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 1.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-        // for main docspace as root
+        // for main dockspace as root
         m_WindowFlags |= ImGuiWindowFlags_NoTitleBar |
                          ImGuiWindowFlags_NoCollapse |
                          ImGuiWindowFlags_NoResize |
@@ -315,7 +315,7 @@ void EditorLayer::UpdateWindowFlags()
 
     // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
     // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-    // all active windows docked into it will lose their parent and become undocked.
+    // all active windows docked into it will lose their parent and become unlocked.
     // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
     // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
     if (!bPadding)

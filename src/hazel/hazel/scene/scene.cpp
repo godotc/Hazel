@@ -38,8 +38,8 @@ void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
 
     auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
     for (entt::entity entity : group) {
-        auto [tranf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-        Render2D::DrawSprite(tranf.GetTransform(), color, int(entity));
+        auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+        Render2D::DrawSprite(transf.GetTransform(), color, int(entity));
     }
 
     Render2D::EndScene();
@@ -63,14 +63,14 @@ void Scene::OnUpdateRuntime(Timestep ts)
 
     // render 2d scene
     Camera   *main_camera = nullptr;
-    glm::mat4 transfrom;
+    glm::mat4 transform;
     {
         auto view = m_Registry.view<TransformComponent, CameraComponent>();
         for (auto ent : view) {
-            auto [tranf, cam] = view.get(ent);
+            auto [transf, cam] = view.get(ent);
             if (cam.bPrimary) {
                 main_camera = &cam.Camera;
-                transfrom   = tranf.GetTransform();
+                transform   = transf.GetTransform();
                 break;
             }
         }
@@ -80,12 +80,12 @@ void Scene::OnUpdateRuntime(Timestep ts)
 
     if (main_camera)
     {
-        Render2D::BeginScene(*main_camera, transfrom);
+        Render2D::BeginScene(*main_camera, transform);
 
         auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto entity : group) {
-            auto [tranf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Render2D::DrawQuad(tranf.GetTransform(), 1.f, color);
+            auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+            Render2D::DrawQuad(transf.GetTransform(), 1.f, color);
         }
 
         Render2D::EndScene();
