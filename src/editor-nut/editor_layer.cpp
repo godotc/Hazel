@@ -67,9 +67,8 @@ void EditorLayer::OnAttach()
     // m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     // m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
     // m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
-    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-    m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
 
+    m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
 
     auto commandlines = App::Get().GetCommandLineArgs();
     if (commandlines.count > 1) {
@@ -128,6 +127,8 @@ void EditorLayer::OnAttach()
 
     m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 #endif
+
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnDetach()
@@ -169,6 +170,7 @@ void EditorLayer::OnUpdate(Timestep ts)
         m_Framebuffer->ClearAttachment(1, -1);
     }
 
+    // draw scene in editor
     m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
     // Mouse hover/picking preps
@@ -211,12 +213,12 @@ void EditorLayer::OnImGuiRender()
 
     ImGui::Begin("MainWindow", NULL, m_WindowFlags);
     {
-        if (!bPadding) {
-            ImGui::PopStyleVar();
-        }
 
         if (bFullscreen) {
             ImGui::PopStyleVar(2);
+        }
+        if (!bPadding) {
+            ImGui::PopStyleVar();
         }
 
         // Submit the DockSpace
@@ -268,9 +270,8 @@ void EditorLayer::OnImGuiRender()
             ImGui::Text("Hovered Entity: %s", name);
 
             FontSwitcher();
-
-            ImGui::End();
         }
+        ImGui::End();
 
 
         ViewPort();
@@ -609,6 +610,8 @@ bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
             }
             break;
         }
+        default:
+            break;
     }
     return false;
 }
