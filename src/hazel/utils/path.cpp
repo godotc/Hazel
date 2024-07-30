@@ -1,14 +1,21 @@
-//
+/**
+ *  Author: @godot42
+ *  Create Time: 2024-07-28 20:32:18
+ *  Modified by: @godot42
+ *  Modified time: 2024-07-30 15:08:57
+ *  Description:
+ */
+
+
+
 // Created by nono on 10/7/23.
-//
 
 
 #include "path.h"
+
 #include <cstdio>
 #include <filesystem>
-#include <mutex>
 #include <stdexcept>
-#include <winnt.h>
 
 #if __linux__
     #include "unistd.h"
@@ -23,16 +30,20 @@ std::string        project_root_symbol = ".project-root-symbol";
 void               SetProjectRootSymbol(std::string symbol) { project_root_symbol = symbol; }
 const std::string &GetProjectRootSymbol() { return project_root_symbol; }
 
+using std::filesystem::path;
 
-path get_runtime_exe_path()
+
+std::filesystem::path get_runtime_exe_path()
 {
     // just not support the non-english path
 #if _WIN32
+    // TODO: let's see what more  microshit problem will be
     std::wstring path_str(4096, '\0');
     int          len = GetModuleFileName(NULL, (LPWSTR)path_str.data(), path_str.size());
     if (len <= 0)
         return {};
     return path_str;
+
 #elif __linux__
     std::string path_str(4096, '\0');
     ssize_t     n = readlink("/proc/self/exe", path_str.data(), path_str.size());
