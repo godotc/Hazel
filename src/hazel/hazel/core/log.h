@@ -1,8 +1,8 @@
 #pragma once
 
-#include "base.h"
 
 #include <spdlog/spdlog.h>
+#include "__microshit_api_hazel.h"
 
 
 

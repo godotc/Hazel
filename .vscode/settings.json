@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "ARRAYSIZE",
         "CHECKVERSION",
         "colorattachment",
         "commandlines",
@@ -20,6 +21,7 @@
         "lpstr",
         "nono",
         "OPENFILENAMEA",
+        "Rescan",
         "shaderc",
         "spdlog",
         "SPIR",

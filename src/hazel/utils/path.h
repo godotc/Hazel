@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2023-11-17 23:45:29
  *  Modified by: @godot42
- *  Modified time: 2024-07-30 15:08:59
+ *  Modified time: 2024-07-30 18:45:44
  *  Description:
  */
 
@@ -13,6 +13,7 @@
 
 
 #include <filesystem>
+#include <string_view>
 
 
 #ifndef UTILS_API
@@ -25,6 +26,9 @@ namespace utils {
 
 using stdpath = std::filesystem::path;
 
+
+
+extern std::string project_root_symbol;
 void               SetProjectRootSymbol(std::string symbol);
 const std::string &GetProjectRootSymbol();
 stdpath            get_runtime_exe_path();
@@ -55,6 +59,13 @@ struct UTILS_API FPathImpl {
     [[nodiscard]] operator std::string() const { return absolute_path.string(); }
     //    const std::string &string() const { return absolute_path; }
 
+    [[nodiscard]] operator std::filesystem::path() const { return absolute_path; }
+
+    [[nodiscard]] stdpath operator/(std::string_view other)
+    {
+        return this->absolute_path / other;
+    }
+
     stdpath absolute_path;
 };
 }; // namespace impl
@@ -64,14 +75,13 @@ struct UTILS_API FPathImpl {
 struct UTILS_API Files {
     static std::string GetFileNameWithoutExtension(const std::string &path);
 
-    using file_filter = bool(const std::string &);
 
-    template <class Predicate>
-    static void ForeachFileInFolder(std::filesystem::path path, file_filter file_filter, Predicate &&predicate)
+    template <class FileFilter, class Predicate>
+    static void ForeachFileInFolder(std::filesystem::path path, FileFilter file_filter, Predicate &&predicate)
     {
         for (const auto texture : std::filesystem::directory_iterator(path))
         {
-            const auto &file_path = texture.path().string();
+            const auto &file_path = texture.path();
 
             if (file_filter(file_path))
             {

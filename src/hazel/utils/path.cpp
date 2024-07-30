@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  *  Modified by: @godot42
- *  Modified time: 2024-07-30 15:08:57
+ *  Modified time: 2024-07-30 16:50:25
  *  Description:
  */
 
@@ -13,6 +13,7 @@
 
 #include "path.h"
 
+#include <cassert>
 #include <cstdio>
 #include <filesystem>
 #include <stdexcept>
@@ -26,9 +27,12 @@
 
 namespace utils {
 
-std::string        project_root_symbol = ".project-root-symbol";
+std::string        project_root_symbol = std::string(".project-root-symbol");
 void               SetProjectRootSymbol(std::string symbol) { project_root_symbol = symbol; }
-const std::string &GetProjectRootSymbol() { return project_root_symbol; }
+const std::string &GetProjectRootSymbol()
+{
+    return project_root_symbol;
+}
 
 using std::filesystem::path;
 
@@ -72,15 +76,32 @@ static bool is_dir_contain_file_symbol(const std::filesystem::path &the_path, st
 
 static bool recursive_iterate_parent(const path &init_pos, std::string &target_symbol, path &out_dir)
 {
-    printf("Recursive parent once\n");
-    path directory = init_pos;
-    while (directory.has_parent_path()
-#if __linux__
-           && directory.filename() != "/"
-#endif
-    )
+    static int nth       = 1;
+    path       directory = init_pos;
+    while (true)
     {
+        // printf("parent path: %s\n", directory.parent_path().string().c_str());
+        // printf("root path: %s\n", directory.root_path().string().c_str());
+        // printf("root directory: %s\n", directory.root_directory().string().c_str());
+        // printf("root name: %s\n", directory.root_name().string().c_str());
+
+        if (!directory.has_parent_path()) {
+            break;
+        }
+#if __linux__
+        if (directory.filename() != "/") {
+            break;
+        }
+#elif _WIN32
+        if (directory == directory.root_path()) {
+            break;
+        }
+#endif
+
+        printf("Recursive parent %d times\n", nth++);
         directory = directory.parent_path();
+        printf("current directory: %s\n", directory.string().c_str());
+
         if (is_dir_contain_file_symbol(directory, target_symbol)) {
             out_dir = directory;
             return true;
@@ -90,13 +111,13 @@ static bool recursive_iterate_parent(const path &init_pos, std::string &target_s
 }
 
 
+static int  nth = 1;
 static bool recursive_iterate_children(const path &init_pos, std::string &target_symbol, path &out_dir)
 {
-    printf("Recursive children once\n");
+    printf("Recursive children %d times\n", nth++);
     if (!std::filesystem::is_directory(init_pos)) {
         return false;
     }
-
 
     for (auto &entry : std::filesystem::directory_iterator(init_pos))
     {
@@ -158,7 +179,10 @@ const std::filesystem::path &ProjectRoot()
     }
 
     // TODO: current identify it by a file, maybe by some certain directory struct further more
-    path project_root_dir = find_directory_by_file_symbol(exe_path, GetProjectRootSymbol());
+    auto target_symbol = GetProjectRootSymbol();
+    assert(!target_symbol.empty());
+    printf("target symbol: %s\n", target_symbol.c_str());
+    path project_root_dir = find_directory_by_file_symbol(exe_path, target_symbol);
     project_root          = std::filesystem::absolute(project_root_dir);
     bInitialized          = true;
 

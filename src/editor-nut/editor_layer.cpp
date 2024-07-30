@@ -1,8 +1,15 @@
+/**
+ *  Author: @godot42
+ *  Create Time: 2024-07-28 20:32:18
+ *  Modified by: @godot42
+ *  Modified time: 2024-07-30 18:50:05
+ *  Description:
+ */
+
+//
 #include "hz_pch.h"
 //
 
-#include "hazel/core/mouse_button.h"
-#include "hazel/scene/editor_camera.h"
 
 #include "glm/fwd.hpp"
 
@@ -28,6 +35,9 @@
 #include "hazel/renderer/framebuffer.h"
 #include "hazel/scene/component.h"
 
+#include <cmath>
+#include <cstdio>
+#include <filesystem>
 #include <imgui.h>
 
 #include "ImGuizmo.h"
@@ -36,6 +46,7 @@
 #include <objidlbase.h>
 #include <string>
 #include <sysinfoapi.h>
+#include <vector>
 
 
 
@@ -435,12 +446,98 @@ void EditorLayer::FontSwitcher()
         ImGui::EndCombo();
     }
 }
+/* TODO: the ImGui could not load font between begin_frame and end_frame
+void EditorLayer::FontSwitcher()
+{
+    auto *imgui_layer = App::Get().GetImGuiLayer();
+    auto  manager     = App::Get().GetImGuiLayer()->GetFontManager();
+
+    static auto scan_fonts = []() {
+        struct FontResources {
+            std::vector<std::filesystem::path> font_paths;
+            std::string                        packed_string;
+        } font_resources;
+
+        utils::Files::ForeachFileInFolder(
+            FPath("res/font/").absolute_path,
+            [](auto &path) -> bool {
+                return path.string().ends_with(".ttf");
+            },
+            [&font_resources](auto &path) -> void {
+                font_resources.font_paths.push_back(path.string());
+                font_resources.packed_string += (path.stem().string() + '\0');
+            });
+
+        font_resources.packed_string += ("ImGuiDefault\0");
+        font_resources.font_paths.push_back("None");
+        return font_resources;
+    };
+
+
+    static auto font_resources = scan_fonts();
+    static int  font_idx       = font_resources.font_paths.size() - 1;
+
+    static auto font_size_options = []() {
+        struct {
+            std::vector<std::string> pxs;
+            std::string              packed_string;
+
+            float get_px(int idx) const
+            {
+                std::string_view sv = pxs[idx];
+                while (sv.back() > '9' && sv.back() < '0') {
+                    sv.remove_suffix(1);
+                }
+                return std::stof(std::string(sv));
+            }
+        } ret;
+
+        float start = 8.0f;
+        for (float i = 0; i < 15; i++) {
+            auto opt = fmt::format("{}px", (start + i * 0.5f));
+            ret.pxs.push_back(opt);
+            ret.packed_string += (opt + '\0');
+        }
+        return ret;
+    }();
+
+
+
+    static int font_size_idx = 0;
+    if (ImGui::Combo("font", &font_idx, font_resources.packed_string.c_str(), font_resources.font_paths.size())) {
+        manager.ChangeFont({
+            .name   = font_resources.font_paths[font_idx].stem().string(),
+            .size   = 16.0f,
+            .source = font_resources.font_paths[font_idx],
+        });
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Combo("font size", &font_size_idx, font_size_options.packed_string.c_str(), font_size_options.pxs.size())) {
+        printf("Selected size: %s\n", font_size_options.pxs[font_size_idx].c_str());
+
+        manager.ChangeFont(FontSpec{
+            .name   = font_resources.font_paths[font_idx].stem().string(),
+            .size   = font_size_options.get_px(font_size_idx),
+            .source = font_resources.font_paths[font_idx],
+        });
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Rescan Fonts"))
+    {
+        font_resources = scan_fonts();
+    }
+}
+*/
 
 
 
 void EditorLayer::Settings()
 {
-    static bool bOpen        = false;
+    static bool bOpen = false;
     // static bool bWantToClose = false;
     if (!ImGui::Begin("Settings", &bOpen))
     {

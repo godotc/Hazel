@@ -64,15 +64,26 @@ void ImGuiLayer::OnAttach()
     utils::Files::ForeachFileInFolder(
         FPath("res/font/").absolute_path,
         [](auto &path) -> bool {
-            return path.ends_with(".ttf");
+            return path.string().ends_with(".ttf");
         },
         [&io, &m_Fonts = (this->m_Fonts)](auto &path) -> void {
-            ImFont     *font = io.Fonts->AddFontFromFileTTF(path.c_str(), 18.f);
-            std::string name = utils::Files::GetFileNameWithoutExtension(path);
+            ImFont     *font = io.Fonts->AddFontFromFileTTF(path.string().c_str(), 18.f);
+            std::string name = utils::Files::GetFileNameWithoutExtension(path.string());
             m_Fonts.insert({name, font});
         });
 
     io.FontDefault = m_Fonts.find("ImGui_Default")->second;
+
+    // store the default
+    // TODO: from deserialized config file
+    // m_FontManager.m_Fonts.push({
+    //     .name   = "ImGui_Default",
+    //     .size   = -1.0f,
+    //     .source = "wtf",
+    //     .font   = io.FontDefault,
+    // });
+
+
 
     ImGui::StyleColorsDark();
     SetDarkThemeColors();
