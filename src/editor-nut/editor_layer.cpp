@@ -254,6 +254,7 @@ void EditorLayer::OnImGuiRender()
         Settings();
         RenderStats();
 
+        m_ContentBrowserPanel.OnImGuiRender();
         m_SceneHierarchyPanel.OnImGuiRender();
 
         ViewPort();

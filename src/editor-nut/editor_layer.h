@@ -6,11 +6,10 @@
 
 #include "glm/ext/vector_float2.hpp"
 #include "hazel/event/key_event.h"
-#include "hazel/renderer/practicle.h"
 #include "hazel/scene/editor_camera.h"
 #include "hazel/scene/scene.h"
-#include "imgui_internal.h"
 #include "panel/scene_hierachy_panel.h"
+#include "panel/content_browser_panel.h"
 
 
 
@@ -22,6 +21,7 @@ class EditorLayer : public hazel::Layer
 
     // Panel
     SceneHierarchyPanel m_SceneHierarchyPanel;
+    ContentBrowserPanel m_ContentBrowserPanel;
     EditorCamera        m_EditorCamera;
 
     OrthographicCameraController m_CameraController{16 / 9.f, true};
