@@ -4,13 +4,28 @@ require("script.utils")
 
 
 local function read_json_file(file_path)
+    local json_data = {}
     local file, err = io.open(file_path, "r")
-    if not file then
-        error("Cannot open file " .. file_path .. ": " .. err)
+    if file then
+        local json_str = file:read("*all")
+        file:close()
+        json_data = json.decode(json_str)
+    else
+        print("[WARN] " .. err)
+        json_data.version = "2.0.0"
     end
-    local json_str = file:read("*all")
-    file:close()
-    return json_str
+
+    -- print(json_str)
+    -- local pattern = "%s-//[^\r\n]*" -- Matches comments starting with // and ending with a newline character
+    -- json_str = string.gsub(json_str, pattern, "")
+    -- print(json_str)
+
+    -- Parse JSON string into a Lua table
+    -- print(json_data)
+    -- print(Utils.Dump(json_data))
+
+
+    return json_data or {}
 end
 
 
@@ -75,9 +90,6 @@ local function gen_gdb_configurations(configs)
         windows = {
             target = "",
         },
-        -- linux = {
-        --     target = ""
-        -- },
         valuesFormatting = "prettyPrinters",
         internalConsoleOptions = "openOnSessionStart",
         preLaunchTask = "build " .. configs.target_name,
@@ -106,16 +118,7 @@ end
 local function update_launch_profile(target_name, target_dir, target_base_name)
     local file_path = ".vscode/launch.json"
     -- Read JSON file
-    local json_str = read_json_file(file_path)
-    -- print(json_str)
-    -- local pattern = "%s-//[^\r\n]*" -- Matches comments starting with // and ending with a newline character
-    -- json_str = string.gsub(json_str, pattern, "")
-    -- print(json_str)
-
-    -- Parse JSON string into a Lua table
-    local json_data = json.decode(json_str)
-    -- print(json_data)
-    -- print(Utils.Dump(json_data))
+    local json_data = read_json_file(file_path)
 
     local configs = {
         target_name = target_name,
@@ -124,11 +127,12 @@ local function update_launch_profile(target_name, target_dir, target_base_name)
     }
 
     assert(json_data, " decode raw file failed!")
-    -- json_data  = json_data or {}
+    json_data.configurations = json_data.configurations or {}
 
     -- Utils.DumpPrint(generates)
 
     local function addd_or_replace_configurations(configurations, new_configuration)
+        configurations = configurations or {}
         for _, v in ipairs(configurations) do
             if v.name == new_configuration.name then
                 v = new_configuration
@@ -159,8 +163,7 @@ end
 
 local function update_task_profile(target_name)
     local file_path = ".vscode/tasks.json"
-    local json_str = read_json_file(file_path)
-    local json_data = json.decode(json_str)
+    local json_data = read_json_file(file_path)
     assert(json_data, " decode raw file failed!")
 
     local tbl = {
@@ -185,6 +188,7 @@ local function update_task_profile(target_name)
 
     local bReplaced = false
 
+    json_data.tasks = json_data.tasks or {}
     for _, v in ipairs(json_data.tasks) do
         if v.label == tbl.label then
             v = tbl;

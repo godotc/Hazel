@@ -13,7 +13,7 @@ compile_commands.json
 # Vscode
 # .vscode
 .vscode/launch.json
-.vscode/task.json
+.vscode/tasks.json
 
 # Binaries
 bin
