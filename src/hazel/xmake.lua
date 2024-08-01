@@ -13,14 +13,14 @@ add_requires("glfw", {
     }
 })
 
-add_requires("imgui docking", {
-    system = false,
-    configs = {
-        debug = true,
-        opengl3 = true,
-        glfw = true,
-    },
-})
+-- add_requires("imgui docking", {
+--     system = false,
+--     configs = {
+--         debug = true,
+--         opengl3 = true,
+--         glfw = true,
+--     },
+-- })
 
 
 add_requires("vulkansdk", {
@@ -51,6 +51,7 @@ target("hazel")
 
     add_deps("imguizmo")
     add_deps("glad")
+    add_deps("imgui-docking")
 
     add_includedirs("./", { public = true })
     add_headerfiles("**.h")
@@ -75,7 +76,7 @@ target("hazel")
     end
 
     add_packages("glfw", { public = true })
-    add_packages("imgui", {public=true})
+    -- add_packages("imgui", {public=true})
     add_packages("vulkansdk", { public = true })
 
     on_config(function(target)
