@@ -10,16 +10,19 @@
 
 #include "__microshit_api_hazel.h"
 #include "hazel/core/layer.h"
+#include "hazel/core/log.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
+#include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <imgui.h>
 //
 #include <ImGuizmo.h>
+#include <memory>
 #include <optional>
-#include <queue>
-#include <unordered_map>
-#include <utility>
 
 
 
@@ -31,16 +34,22 @@ extern HAZEL_API ImGuiContext *g_ImguiContext;
 
 
 struct FontSpec {
-    std::string           name;
-    float                 size;
-    std::filesystem::path source;
-    ImFont               *font;
 
-    bool operator==(const FontSpec &other) const
-    {
-        return name == other.name && size == other.size && source == other.source && font == other.font;
-    }
+    struct FontData {
+        void    *font_data;
+        uint32_t font_data_size;
+        FontData(void *font_data, uint32_t font_data_size) : font_data(font_data), font_data_size(font_data_size) {}
+        ~FontData() { IM_FREE(font_data); }
+    };
+
+    std::string               name;
+    float                     pixel_size;
+    std::filesystem::path     file_path;
+    std::shared_ptr<FontData> font_data;
+
+    bool operator==(const FontSpec &other) const { return name == other.name && pixel_size == other.pixel_size && file_path == other.file_path && font_data == other.font_data; }
 };
+
 
 
 template <class T>
@@ -84,28 +93,74 @@ class LRUCache
 
 struct ImGuiLayer;
 
-struct FontManager {
-    friend class ImGuiLayer;
-    LRUCache<FontSpec> m_Fonts = LRUCache<FontSpec>(5);
+// struct FontManager {
+//     friend class ImGuiLayer;
 
-    const FontSpec &GetCurrentFontSpec() const { return m_Fonts.top(); }
+//     std::optional<FontSpec> m_PendingFont = std::nullopt;
+//     LRUCache<FontSpec>      m_Fonts       = LRUCache<FontSpec>(5);
 
-    // TODO right ref
-    void ChangeFont(FontSpec &&fontSpec)
-    {
-        auto &io = ImGui::GetIO();
+//     const FontSpec &GetCurrentFontSpec() const { return m_Fonts.top(); }
 
-        auto font = m_Fonts.find(fontSpec);
-        if (font.has_value()) {
-            io.FontDefault = font->font;
-            return;
-        }
 
-        io.FontDefault = io.Fonts->AddFontFromFileTTF(fontSpec.source.string().c_str(), fontSpec.size);
-        fontSpec.font  = io.FontDefault;
-        m_Fonts.push(fontSpec);
-    }
-};
+//     FontManager() = default;
+
+//     // disable copy
+//     FontManager(const FontManager &other)            = delete;
+//     FontManager &operator=(const FontManager &other) = delete;
+//     FontManager(FontManager &&other)                 = delete;
+
+//     // TODO right ref
+//     void ChangeFont(const FontSpec &font_spec)
+//     {
+//         auto &io = ImGui::GetIO();
+
+//         auto font = m_Fonts.find(font_spec);
+//         if (font.has_value()) {
+//             m_PendingFont.emplace(font.value());
+//             return;
+//         }
+
+//         m_PendingFont.emplace(font_spec);
+//         // HZ_CORE_ERROR("{}", m_PendingFont->name);
+//         assert(m_PendingFont.has_value());
+//     }
+
+//     void RealChangeFont()
+//     {
+//         // return if there is no pending font changing
+//         if (!m_PendingFont.has_value()) {
+//             return;
+//         }
+//         auto &io = ImGui::GetIO();
+
+
+//         auto font_spec = m_PendingFont.value();
+
+//         // load font from file if there is no font data
+//         if (!font_spec.font_data)
+//         {
+//             size_t size;
+//             auto   data         = ImFileLoadToMemory(font_spec.file_path.string().c_str(), "rb", &size);
+//             font_spec.font_data = std::make_shared<FontSpec::FontData>(data, size);
+//             m_Fonts.push(font_spec);
+//         }
+
+//         ImFontConfig config;
+//         config.FontDataOwnedByAtlas = false;
+//         ImFont *font                = io.Fonts->AddFontFromMemoryTTF(font_spec.font_data->font_data,
+//                                                                      font_spec.font_data->font_data_size,
+//                                                                      font_spec.pixel_size,
+//                                                                      &config);
+
+//         // ImFontAtlas
+//         // io.Fonts->Build();
+//         // ImGui_ImplOpenGL3_DestroyFontsTexture();
+//         ImGui_ImplOpenGL3_CreateFontsTexture();
+//         // ImGui::GetCurrentContext()->Font->ContainerAtlas->Build();
+//         ImGui::SetCurrentFont(font);
+//         m_PendingFont.reset();
+//     }
+// };
 
 
 class HAZEL_API ImGuiLayer : public Layer
@@ -118,10 +173,11 @@ class HAZEL_API ImGuiLayer : public Layer
     ImGuiLayer();
 
   public:
-    virtual void OnAttach() override;
-    virtual void OnDetach() override;
-    virtual void OnImGuiRender() override {};
-    void         OnEvent(Event &event) override;
+    void OnAttach() override;
+    void OnDetach() override;
+    void OnUpdate(Timestep timestep) override;
+    void OnImGuiRender() override {};
+    void OnEvent(Event &event) override;
 
     void Begin();
     void End();

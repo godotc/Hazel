@@ -70,8 +70,8 @@ void App::Run()
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime   = time;
 
-        if (!bMinimized) {
-
+        if (!bMinimized)
+        {
             {
                 HZ_PROFILE_SCOPE("LayerStack: All Layers OnUpdate");
                 for (Layer *layer : m_LayerStack.GetLayers()) {

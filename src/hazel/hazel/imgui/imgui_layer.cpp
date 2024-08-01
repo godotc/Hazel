@@ -59,6 +59,7 @@ void ImGuiLayer::OnAttach()
     io.DisplaySize = ImVec2(1, 1);
 
 
+    // io.Fonts->AddFontDefault();
 
     m_Fonts.insert({"ImGui_Default", io.FontDefault});
     utils::Files::ForeachFileInFolder(
@@ -76,11 +77,13 @@ void ImGuiLayer::OnAttach()
 
     // store the default
     // TODO: from deserialized config file
+    // auto default_font = io.FontDefault
     // m_FontManager.m_Fonts.push({
-    //     .name   = "ImGui_Default",
-    //     .size   = -1.0f,
-    //     .source = "wtf",
-    //     .font   = io.FontDefault,
+    //     .name      = default_font->ConfigData->Name == nullptr ? default_font->ConfigData->Name : "ImGui_Default",
+    //     .size      = default_font->ConfigData->SizePixels ? default_font->ConfigData->SizePixels : 18.f,
+    //     .file_path = "wtf",
+    //     .font_data = std::make_shared<FontSpec::FontData>(default_font->ConfigData->FontData,
+    //                                                       default_font->ConfigData->FontDataSize),
     // });
 
 
@@ -125,6 +128,11 @@ void ImGuiLayer::OnDetach()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+void ImGuiLayer::OnUpdate(Timestep timestep)
+{
+    // m_FontManager.RealChangeFont();
 }
 
 void ImGuiLayer::Begin()

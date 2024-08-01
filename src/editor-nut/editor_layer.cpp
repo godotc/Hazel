@@ -447,12 +447,13 @@ void EditorLayer::FontSwitcher()
         ImGui::EndCombo();
     }
 }
+
+
 /* TODO: the ImGui could not load font between begin_frame and end_frame
 void EditorLayer::FontSwitcher()
 {
     auto *imgui_layer = App::Get().GetImGuiLayer();
     auto  manager     = App::Get().GetImGuiLayer()->GetFontManager();
-
     static auto scan_fonts = []() {
         struct FontResources {
             std::vector<std::filesystem::path> font_paths;
@@ -507,9 +508,9 @@ void EditorLayer::FontSwitcher()
     static int font_size_idx = 0;
     if (ImGui::Combo("font", &font_idx, font_resources.packed_string.c_str(), font_resources.font_paths.size())) {
         manager.ChangeFont({
-            .name   = font_resources.font_paths[font_idx].stem().string(),
-            .size   = 16.0f,
-            .source = font_resources.font_paths[font_idx],
+            .name      = font_resources.font_paths[font_idx].stem().string(),
+            .pixel_size      = 16.0f,
+            .file_path = font_resources.font_paths[font_idx],
         });
     }
 
@@ -519,9 +520,9 @@ void EditorLayer::FontSwitcher()
         printf("Selected size: %s\n", font_size_options.pxs[font_size_idx].c_str());
 
         manager.ChangeFont(FontSpec{
-            .name   = font_resources.font_paths[font_idx].stem().string(),
-            .size   = font_size_options.get_px(font_size_idx),
-            .source = font_resources.font_paths[font_idx],
+            .name      = font_resources.font_paths[font_idx].stem().string(),
+            .pixel_size      = font_size_options.get_px(font_size_idx),
+            .file_path = font_resources.font_paths[font_idx],
         });
     }
 

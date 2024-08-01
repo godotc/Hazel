@@ -4,9 +4,9 @@
 target("glad")
     set_kind("static")
     -- if is_mode("release") then
-        set_symbols("hidden")
-        set_optimize("fastest")
-        set_strip("all")
+        -- set_symbols("hidden")
+        -- set_optimize("fastest")
+        -- set_strip("all")
     -- end
     add_files("./glad/src/glad.c")
     add_headerfiles("./glad/include/**.h", {public=true})
@@ -19,9 +19,9 @@ target("imgui-docking")
     -- set_kind("shared")
 
     -- if is_mode("release") then
-        set_symbols("hidden")
-        set_optimize("fastest")
-        set_strip("all")
+        -- set_symbols("hidden")
+        -- set_optimize("fastest")
+        -- set_strip("all")
     -- end
 
     add_files("./imgui-docking/*.cpp", "./imgui-docking/misc/cpp/*.cpp")
@@ -90,9 +90,9 @@ target("imguizmo")
     set_kind("static")
 
     -- if is_mode("release") then
-        set_symbols("hidden")
-        set_optimize("fastest")
-        set_strip("all")
+        -- set_symbols("hidden")
+        -- set_optimize("fastest")
+        -- set_strip("all")
     -- end
 
     add_files("./imguizmo/*.cpp")
