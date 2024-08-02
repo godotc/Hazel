@@ -17,19 +17,24 @@ class Timer
     std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimePoint;
 
   public:
-    explicit Timer()
+    Timer()
     {
-        m_StartTimePoint = std::chrono::high_resolution_clock::now();
+        m_StartTimePoint = {std::move(std::chrono::high_resolution_clock::now())};
     }
-    // TODO: Test the return values...
-    float Elapsed()
+
+    // NOTICE: time_since_epoch will return the time since 1970-01-01 00:00:00
+
+    long long Elapsed()
     {
-        return std::chrono::duration_cast<std::chrono::nanoseconds>(m_StartTimePoint.time_since_epoch()).count();
+        auto now = std::chrono::high_resolution_clock::now();
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(now - m_StartTimePoint).count();
     }
 
     long long ElapsedMillis()
     {
-        return std::chrono::duration_cast<std::chrono::milliseconds>(m_StartTimePoint.time_since_epoch()).count();
+        auto now = std::chrono::high_resolution_clock::now();
+        return std::chrono::duration_cast<std::chrono::milliseconds>(now - m_StartTimePoint).count();
+        // return std::chrono::duration_cast<std::chrono::milliseconds>(m_StartTimePoint.time_since_epoch()).count();
     }
 };
 } // namespace hazel
