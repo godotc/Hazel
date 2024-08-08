@@ -18,6 +18,7 @@
         "hwnd",
         "IMGUIZMO",
         "Integerv",
+        "libclang",
         "lpstr",
         "nono",
         "OPENFILENAMEA",
