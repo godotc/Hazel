@@ -19,6 +19,7 @@
         "IMGUIZMO",
         "Integerv",
         "libclang",
+        "LLDB",
         "lpstr",
         "nono",
         "OPENFILENAMEA",

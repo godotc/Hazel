@@ -15,12 +15,23 @@ xmake project -k compile_commands
 > install the xmake: https://xmake.io/#/guide/installation
 > Install any compiler(gcc, clang, msvc)
 
-```
+``` sh
 git clone git@github.com:godotc/Hazel.git
+git submodule update --init
 cd Hazel
-xmake f -m debug 
-xmake build
+xmake build nut
 xmake run nut
 ```
+## Generate the compile_commands for `clangd` indexing 
+```sh
+xmake cfg
+```
 
-if you want to debug it, could look the configureations under .vscode as refernces. Also could use other IDE to attach to process or execute the binary.
+
+## Generate the debug artifacts for debugging
+
+which will generate the LLDB and GDP profile  for debugging in vscode
+```sh
+xmake vscode
+```
+
