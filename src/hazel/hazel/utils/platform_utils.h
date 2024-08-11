@@ -10,6 +10,7 @@
 #pragma once
 
 #include "__microshit_api_hazel.h"
+#include <filesystem>
 #include <string>
 namespace hazel {
 
@@ -18,9 +19,9 @@ class HAZEL_API FileDialogs
 
   public:
     // @return the filepath, cancel when empty string
-    static std::string OpenFile(const char *filter);
+    static std::string OpenFile(const char *filter, std::filesystem::path initial_path = std::filesystem::current_path());
     // @return the filepath, cancel when empty string
-    static std::string SaveFile(const char *filter);
+    static std::string SaveFile(const char *filter, std::filesystem::path initial_path = std::filesystem::current_path());
 };
 
 

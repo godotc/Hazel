@@ -6,6 +6,7 @@
 
 #include <any>
 #include <commdlg.h>
+#include <filesystem>
 #include <glfw/glfw3.h>
 #include <minwinbase.h>
 #include <string>
@@ -15,7 +16,7 @@
 
 namespace hazel {
 
-std::string FileDialogs::OpenFile(const char *filter)
+std::string FileDialogs::OpenFile(const char *filter, std::filesystem::path initial_path)
 {
     OPENFILENAMEA ofn;
     CHAR          file_size[260] = {0};
@@ -29,13 +30,14 @@ std::string FileDialogs::OpenFile(const char *filter)
     ofn.lpstrFilter  = filter;
     ofn.nFilterIndex = 1;
     ofn.Flags        = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+    // ofn.lpstrInitialDir = initial_path.string().c_str(); // TODO
     if (GetOpenFileNameA(&ofn) == TRUE) {
         return ofn.lpstrFile;
     }
     return {};
 }
 
-std::string FileDialogs::SaveFile(const char *filter)
+std::string FileDialogs::SaveFile(const char *filter, std::filesystem::path initial_path)
 {
     OPENFILENAMEA ofn;
     CHAR          file_size[260] = {0};
@@ -49,6 +51,7 @@ std::string FileDialogs::SaveFile(const char *filter)
     ofn.lpstrFilter  = filter;
     ofn.nFilterIndex = 1;
     ofn.Flags        = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+    // ofn.lpstrInitialDir = initial_path.string().c_str(); // TODO
     if (GetSaveFileNameA(&ofn) == TRUE) {
         return ofn.lpstrFile;
     }
