@@ -8,8 +8,8 @@
 #include "hazel/event/key_event.h"
 #include "hazel/scene/editor_camera.h"
 #include "hazel/scene/scene.h"
-#include "panel/scene_hierachy_panel.h"
 #include "panel/content_browser_panel.h"
+#include "panel/scene_hierachy_panel.h"
 
 
 
@@ -61,6 +61,10 @@ class EditorLayer : public hazel::Layer
 
     void OnEvent(hazel::Event &event) override;
 
+
+    // update it when have project
+    static std::filesystem::path DefaultAssetsDirectory();
+
   private:
 
     // --- GUI renderer
@@ -82,6 +86,8 @@ class EditorLayer : public hazel::Layer
     // ---
     void NewScene();
     void OpenScene();
+    void OpenScene(const std::filesystem::path &path);
+    void OpenSceneImpl(const std::string &path);
     void SaveAs();
 };
 

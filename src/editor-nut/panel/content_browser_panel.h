@@ -6,7 +6,10 @@
  *  Description:
  */
 
+#pragma once
 
+#include "hazel/core/base.h"
+#include "hazel/renderer/texture.h"
 #include <filesystem>
 
 
@@ -17,6 +20,10 @@ namespace hazel {
 class ContentBrowserPanel
 {
     std::filesystem::path m_CurrentDirectory;
+
+    Ref<Texture2D> m_DirectoryIcon;
+    Ref<Texture2D> m_FileIcon;
+    Ref<Texture2D> m_WhiteTexture;
 
   public:
     ContentBrowserPanel();

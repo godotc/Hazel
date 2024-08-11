@@ -217,6 +217,12 @@ void EditorLayer::OnEvent(hazel::Event &event)
     dispatcher.Dispatch<MouseButtonPressedEvent>(HZ_BIND_EVENT(this, &EditorLayer::OnMouseButtonPressed));
 }
 
+std::filesystem::path EditorLayer::DefaultAssetsDirectory()
+{
+    static std::filesystem::path s_AssetsDirectory = FPath("res");
+    return s_AssetsDirectory;
+}
+
 
 void EditorLayer::OnImGuiRender()
 {
@@ -400,6 +406,37 @@ void EditorLayer::ViewPort()
         ImGui::Image((void *)(framebuffer_colorattachment),
                      ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0} // flip the image
         );
+
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            // from content browser's item
+            if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+            {
+                if (payload->Data) {
+                    const wchar_t        *path = (const wchar_t *)payload->Data;
+                    std::filesystem::path p(path);
+                    HZ_CORE_INFO("{} : {}", p.is_absolute() ? "absolute" : "relative", p.string());
+
+                    auto filename = p.filename().string();
+
+                    if (filename.ends_with(".hazel"))
+                    {
+                        if (p.is_relative()) {
+                            OpenScene(EditorLayer::DefaultAssetsDirectory() / p);
+                        }
+                        else {
+                            OpenScene(p);
+                        }
+                    }
+                }
+                else {
+                    HZ_CORE_WARN("No data in payload");
+                }
+            }
+
+            ImGui::EndDragDropTarget();
+        }
 
 
         Gizmos();
@@ -749,12 +786,23 @@ void EditorLayer::OpenScene()
     auto path = FileDialogs::OpenFile("Hazel Scene (*.hazel)\0*.hazel\0"
                                       "Hazel Scene (*.yaml)\0*.yaml\0");
     if (!path.empty()) {
-        m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
-        m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-        SceneSerializer Serialize(m_ActiveScene);
-        Serialize.Deserialize(path);
+        OpenSceneImpl(path);
     }
+}
+
+void EditorLayer::OpenScene(const std::filesystem::path &path)
+{
+    HZ_CORE_ASSERT(!path.empty());
+    OpenSceneImpl(path.string());
+}
+
+void EditorLayer::OpenSceneImpl(const std::string &path)
+{
+    m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
+    m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    SceneSerializer Serialize(m_ActiveScene);
+    Serialize.Deserialize(path);
 }
 
 void EditorLayer::SaveAs()
@@ -769,5 +817,6 @@ void EditorLayer::SaveAs()
         Serialize.Serialize(path);
     }
 }
+
 
 } // namespace hazel
