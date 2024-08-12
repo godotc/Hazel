@@ -5,7 +5,9 @@
 #include "hazel.h"
 
 #include "glm/ext/vector_float2.hpp"
+#include "hazel/core/base.h"
 #include "hazel/event/key_event.h"
+#include "hazel/renderer/texture.h"
 #include "hazel/scene/editor_camera.h"
 #include "hazel/scene/scene.h"
 #include "panel/content_browser_panel.h"
@@ -17,7 +19,16 @@ namespace hazel {
 
 class EditorLayer : public hazel::Layer
 {
-    Ref<Scene> m_ActiveScene;
+  public:
+    enum class ESceneState
+    {
+        Stop = 0,
+        Play
+    };
+
+  private:
+    Ref<Scene>  m_ActiveScene;
+    ESceneState m_SceneState = ESceneState::Stop;
 
     // Panel
     SceneHierarchyPanel m_SceneHierarchyPanel;
@@ -49,6 +60,10 @@ class EditorLayer : public hazel::Layer
 
     int m_ViewportColorAttachmentId = 0;
 
+    // Ed resources
+    Ref<Texture2D> m_IconPlay;
+    Ref<Texture2D> m_IconStop;
+
   public:
     EditorLayer();
     ~EditorLayer();
@@ -67,11 +82,13 @@ class EditorLayer : public hazel::Layer
 
   private:
 
+
     // --- GUI renderer
     void UpdateWindowFlags();
     void MenuBar();
     void ViewPort();
     void FontSwitcher();
+    void UI_Toolbar();
 
     void Settings();
     void RenderStats();
@@ -89,6 +106,10 @@ class EditorLayer : public hazel::Layer
     void OpenScene(const std::filesystem::path &path);
     void OpenSceneImpl(const std::string &path);
     void SaveAs();
+
+
+    void OnScenePlay();
+    void OnSceneStop();
 };
 
 

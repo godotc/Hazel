@@ -35,7 +35,6 @@
 #include "hazel/renderer/framebuffer.h"
 #include "hazel/scene/component.h"
 
-#include <cmath>
 #include <cstdio>
 #include <filesystem>
 #include <imgui.h>
@@ -67,6 +66,10 @@ EditorLayer::~EditorLayer()
 
 void EditorLayer::OnAttach()
 {
+    m_IconPlay = Texture2D::Create(FPath("res/texture/editor/play.png"));
+    m_IconStop = Texture2D::Create(FPath("res/texture/editor/stop.png"));
+
+
     hazel::FramebufferSpec spec;
     spec.Attachments = {framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::RED_INTEGER, framebuffer::ETextureFormat::Depth};
     spec.Width       = 800;
@@ -163,11 +166,6 @@ void EditorLayer::OnUpdate(Timestep ts)
         m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
     }
 
-    // TODO: the camera's event is block by imgui_layer, but keyboard event still handled by here
-    if (bViewPortFocusing) {
-        m_CameraController.OnUpdate(ts);
-    }
-    m_EditorCamera.OnUpdate(ts);
 
     hazel::Render2D::ResetStats();
 
@@ -182,7 +180,25 @@ void EditorLayer::OnUpdate(Timestep ts)
     }
 
     // draw scene in editor
-    m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+    switch (m_SceneState) {
+
+        case ESceneState::Stop:
+        {
+            // TODO: the camera's event is block by imgui_layer, but keyboard event still handled by here
+            if (bViewPortFocusing) {
+                m_CameraController.OnUpdate(ts);
+            }
+            m_EditorCamera.OnUpdate(ts);
+
+            m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+            break;
+        }
+        case ESceneState::Play:
+        {
+            m_ActiveScene->OnUpdateRuntime(ts);
+            break;
+        }
+    }
 
     // Mouse hover/picking preps
     {
@@ -257,6 +273,7 @@ void EditorLayer::OnImGuiRender()
         }
 
         MenuBar();
+        UI_Toolbar();
         Settings();
         RenderStats();
 
@@ -264,6 +281,7 @@ void EditorLayer::OnImGuiRender()
         m_SceneHierarchyPanel.OnImGuiRender();
 
         ViewPort();
+
 
         ImGui::End();
     }
@@ -483,6 +501,45 @@ void EditorLayer::FontSwitcher()
         }
         ImGui::EndCombo();
     }
+}
+
+void EditorLayer::UI_Toolbar()
+{
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+
+    auto &colors = ImGui::GetStyle().Colors;
+    ImGui::PushStyleColor(ImGuiCol_Button, {0, 0, 0, 0});
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colors[ImGuiCol_ButtonHovered]);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, colors[ImGuiCol_ButtonActive]);
+
+    if (!ImGui::Begin("##toolbar", nullptr,
+                      ImGuiWindowFlags_NoTitleBar |
+                          ImGuiWindowFlags_NoDecoration |
+                          ImGuiWindowFlags_NoScrollbar |
+                          ImGuiWindowFlags_NoScrollWithMouse)) {
+        ImGui::End();
+    }
+
+    auto  icon = m_SceneState == ESceneState::Stop ? m_IconPlay : m_IconStop;
+    float size = ImGui::GetWindowHeight() * 0.6f;
+    // ImGui::PushStyleColor(ImGuiCol_Button, {1, 1, 1, 1});
+    ImGui::SameLine(ImGui::GetWindowContentRegionMax().x * 0.5f - size * 0.5f); // align center
+    if (ImGui::ImageButton((ImTextureID)icon->GetTextureID(), {size, size}, {0, 1}, {1, 0}, 0)) {
+        if (m_SceneState == ESceneState::Stop) {
+            OnScenePlay();
+        }
+        else if (m_SceneState == ESceneState::Play) {
+            OnSceneStop();
+        }
+    }
+
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(3);
+
+
+    ImGui::End();
 }
 
 
@@ -816,6 +873,16 @@ void EditorLayer::SaveAs()
         SceneSerializer Serialize(m_ActiveScene);
         Serialize.Serialize(path);
     }
+}
+
+void EditorLayer::OnScenePlay()
+{
+    m_SceneState = ESceneState::Play;
+}
+
+void EditorLayer::OnSceneStop()
+{
+    m_SceneState = ESceneState::Stop;
 }
 
 
