@@ -1,12 +1,12 @@
 #type vertex
 #version 450 core
 
-layout (location =0) in vec3 a_Position;
-layout (location =1) in vec4 a_Color;
-layout (location =2) in vec2 a_TexCoord;
-layout (location =3) in float a_TexIndex;
-layout (location =4) in float a_TilingFactor;
-layout (location =5) in int a_EntityId;
+layout (location = 0) in vec3 a_Position;
+layout (location = 1) in vec4 a_Color;
+layout (location = 2) in vec2 a_TexCoord;
+layout (location = 3) in float a_TexIndex;
+layout (location = 4) in float a_TilingFactor;
+layout (location = 5) in int a_EntityId;
 
 
 // constant in each scene(Cmaera location and Perspec)
@@ -23,24 +23,26 @@ uniform Transform u_RendererUniforms;
 //     mat4 Transform;
 // } u_RendererUniforms;
 
-struct VertexOutput{
-    vec4 Color;
-    vec2 TexCoord;
-    float TexIndex;
+struct VertexOutput
+{
+    vec4  Color;
+    vec2  TexCoord;
     float TilingFactor;
 };
-layout( location =0) out VertexOutput Output;
-layout( location =4) out flat int v_EntityId;
+layout( location = 0) out VertexOutput Output;
+
+// flat: means no need to interpolate
+layout( location = 3) out flat float v_TexIndex;
+layout( location = 4) out flat int v_EntityId;
 
 void main(){
     Output.Color = a_Color;
     Output.TexCoord = a_TexCoord;
-    Output.TexIndex = a_TexIndex;
     Output.TilingFactor = a_TilingFactor;
+
+    v_TexIndex = a_TexIndex;
     v_EntityId = a_EntityId;
 
-#if OPENGL
-#endif
     gl_Position = u_ViewProjection *
                 //   u_RendererUniforms.Transform *
                   vec4(a_Position, 1.f);
@@ -51,13 +53,14 @@ void main(){
 #type fragment
 #version 450 core
 
-struct VertexOutput{
-    vec4 Color;
-    vec2 TexCoord;
-    float TexIndex;
+struct VertexOutput
+{
+    vec4  Color;
+    vec2  TexCoord;
     float TilingFactor;
 };
 layout( location =0) in VertexOutput Input;
+layout( location =3) in flat float v_TexIndex;
 layout( location =4) in flat int v_EntityId;
 
 layout(binding = 0) uniform sampler2D u_Textures[32];
@@ -77,8 +80,11 @@ layout (location=1) out int color2;//-1 + id +1
 // #define MULTI_MACRO(...) EXPAND_ARGS(__VA_ARGS__)
 
 void main(){
+    color = Input.Color; // I dont't know WTF must I use the Input.Color at here,
+                        // Or it will be compile error by SPRIV "VertexOutput.Color is not declare in previous stage"
+
     vec4 the_texture;
-    switch (int(Input.TexIndex)){
+    switch (int(v_TexIndex)){
         //     // MULTI_MACRO(0,1,2,3,4,5,6);
         CASE(0);
         CASE(1);
@@ -115,6 +121,6 @@ void main(){
         // CASE(32);
     }
 
-    color =  the_texture * Input.Color;
+    color *=  the_texture;
     color2 = v_EntityId;
 }
