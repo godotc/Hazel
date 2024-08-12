@@ -52,7 +52,7 @@ void ContentBrowserPanel::OnImGuiRender()
                     m_CurrentDirectory = m_CurrentDirectory.parent_path();
                 }
             }
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle + 1)) {
+            if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Middle + 1)) {
                 if (m_CurrentDirectory.has_parent_path()) {
                     m_CurrentDirectory = m_CurrentDirectory.parent_path();
                 }

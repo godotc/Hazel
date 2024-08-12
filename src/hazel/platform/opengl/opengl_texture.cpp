@@ -26,6 +26,7 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
     }
 
     HZ_CORE_ASSERT(data, "Failed to load image!");
+    HZ_CORE_INFO("{}, w: {}, h: {}, nChannel: {}", m_Path, w, h, nChannel);
 
     m_Width  = w;
     m_Height = h;
@@ -33,7 +34,7 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
     m_InternalFormat = nChannel == 3 ? GL_RGB8 : GL_RGBA8;
     m_DataFormat     = nChannel == 3 ? GL_RGB : GL_RGBA;
 
-    HZ_CORE_ASSERT(m_InternalFormat & m_DataFormat, "NO supported image format");
+    HZ_CORE_ASSERT(m_InternalFormat & m_DataFormat, "NOT supported image format");
 
     glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
     glTextureStorage2D(m_TextureID, 1, m_InternalFormat, m_Width, m_Height);

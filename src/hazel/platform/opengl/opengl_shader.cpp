@@ -162,11 +162,12 @@ OpenGLShader::OpenGLShader(const std::string &shader_file_path)
     {
         Timer timer;
         CompileOrGet_VulkanBinaries(shader_sources);
+
         CompileOrGet_GLBinaries();
         CreateProgram();
+        // Sleep(3000);
         HZ_CORE_WARN("Shader creation took {0} ms", timer.ElapsedMillis());
     }
-
     // derive the shader name from the filename
     m_Name = std::filesystem::path(shader_file_path).stem().string();
     HZ_CORE_INFO("Shader name: {}", m_Name);
@@ -408,6 +409,9 @@ void OpenGLShader::CompileOrGet_GLBinaries()
         {
             spirv_cross::CompilerGLSL glsl_compiler(spirv_binary);
             m_OpenGL_SourceCode[stage] = glsl_compiler.compile();
+
+            // HZ_CORE_INFO("????????????????????????\n{}", m_OpenGL_SourceCode[stage]);
+
 
             auto &source = m_OpenGL_SourceCode[stage];
             // HZ_CORE_ERROR(source);
