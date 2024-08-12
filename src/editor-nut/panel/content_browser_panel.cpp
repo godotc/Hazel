@@ -8,6 +8,7 @@
 
 #include "content_browser_panel.h"
 #include "hazel/core/base.h"
+#include "hazel/renderer/render_2d.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "utils/path.h"
@@ -43,9 +44,15 @@ void ContentBrowserPanel::OnImGuiRender()
     }
 
     // top bar
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     {
         if (m_CurrentDirectory != EditorLayer::DefaultAssetsDirectory()) {
             if (ImGui::Button("<- Back")) {
+                if (m_CurrentDirectory.has_parent_path()) {
+                    m_CurrentDirectory = m_CurrentDirectory.parent_path();
+                }
+            }
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle + 1)) {
                 if (m_CurrentDirectory.has_parent_path()) {
                     m_CurrentDirectory = m_CurrentDirectory.parent_path();
                 }
@@ -62,6 +69,8 @@ void ContentBrowserPanel::OnImGuiRender()
         ImGui::Image((ImTextureID)m_WhiteTexture->GetTextureID(), {ImGui::GetContentRegionAvail().x, 1});
         // ImGui::PopStyleVar();
     }
+    ImGui::PopStyleVar();
+
 
     static float padding        = 12.0f;
     static float thumbnail_size = 94.0f;
@@ -83,8 +92,6 @@ void ContentBrowserPanel::OnImGuiRender()
 
         // ImGui::PushID(path.string().c_str());
         ImGui::PushID(filename_str.c_str());
-
-
 
         Ref<Texture2D> icon = entry.is_directory() ? m_DirectoryIcon : m_FileIcon;
 
@@ -130,6 +137,8 @@ void ContentBrowserPanel::OnImGuiRender()
 
     ImGui::DragFloat("Thumbnail Size", &thumbnail_size, 0.1f, 16.0f, 256.0f);
     ImGui::DragFloat("Padding", &padding, 0.1f, 0.0f, 64.0f);
+
+
 
     ImGui::End();
 }

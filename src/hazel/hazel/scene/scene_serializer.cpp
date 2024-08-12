@@ -112,7 +112,7 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
         out << YAML::Key << "TagComponent";
         out << YAML::BeginMap;
         {
-            out << YAML::Key << "Tag" << YAML::Value << comp.Tag;
+            out << YAML::Key << "Tag" << YAML::Value << comp.Tag.c_str();
         }
         out << YAML::EndMap;
     }

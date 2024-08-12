@@ -1,4 +1,5 @@
 #include "file.h"
+#include <filesystem>
 
 namespace utils {
 
@@ -36,5 +37,12 @@ std::optional<std::vector<char>> File::read_all(const std::string &filepath)
 
     return std::move(buffer);
 }
+
+bool File::is_image(const std::filesystem::path &filepath)
+{
+    auto ext = filepath.filename().extension();
+    return ext == ".png" || ext == ".jpg" || ext == ".jpeg";
+}
+
 
 } // namespace utils

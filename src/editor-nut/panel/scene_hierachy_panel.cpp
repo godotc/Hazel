@@ -16,7 +16,10 @@
 #include "scene_hierachy_panel.h"
 #include <string>
 
+#include "editor_layer.h"
 #include "hazel/scene/component.h"
+#include "utils/file.h"
+#include "utils/path.h"
 
 
 
@@ -345,8 +348,25 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     });
 
 
-    draw_component<SpriteRendererComponent>("Sprite Renderer", entity, [](auto &component) {
+    draw_component<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent &component) {
         imgui::ColorEdit4("Color", glm::value_ptr(component.Color));
+        imgui::DragFloat("Tiling Factor", &component.TilingFactor, 0.01f, 0.0f, 100.0f);
+
+        ImGui::ImageButton(component.Texture ? (ImTextureID)component.Texture->GetTextureID() : nullptr, {64, 64}, {0, 1}, {1, 0});
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                const wchar_t *path_str = (const wchar_t *)payload->Data;
+                auto           path     = EditorLayer::DefaultAssetsDirectory() / path_str;
+                if (utils::File::is_image(path)) {
+                    component.Texture = Texture2D::Create(path.string());
+                }
+                else {
+                    HZ_CORE_WARN("File {} is not an image", path.string());
+                }
+            }
+            ImGui::EndDragDropTarget();
+        }
     });
 }
 

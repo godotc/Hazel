@@ -25,6 +25,8 @@ class HAZEL_API Texture
     virtual void Unbind() const                = 0;
 
     virtual bool operator==(const Texture &other) const = 0;
+
+    bool bValid = false;
 };
 
 

@@ -292,7 +292,12 @@ void Render2D::Flush()
 
 void Render2D::DrawSprite(const glm::mat4 &transf, const SpriteRendererComponent &src, int entity_id)
 {
-    DrawQuad(transf, src.Color, entity_id);
+    if (src.Texture) {
+        DrawQuad(transf, src.Texture, src.TilingFactor, src.Color, entity_id);
+    }
+    else {
+        DrawQuad(transf, src.Color, entity_id);
+    }
 }
 
 

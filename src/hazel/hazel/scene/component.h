@@ -1,7 +1,9 @@
 #pragma once
 
 #include "glm/ext/quaternion_float.hpp"
+#include "hazel/core/base.h"
 #include "hazel/core/timestep.h"
+#include "hazel/renderer/texture.h"
 #include "hazel/scene/scriptable_entity.h"
 #include "scene_camera.h"
 #include <string>
@@ -45,8 +47,9 @@ struct TransformComponent {
 
 
 struct SpriteRendererComponent {
-    glm::vec4 Color{1, 1, 1, 1};
-
+    glm::vec4      Color{1, 1, 1, 1};
+    Ref<Texture2D> Texture;
+    float          TilingFactor = 1.0f;
 
     SpriteRendererComponent() {}
     SpriteRendererComponent(const SpriteRendererComponent &) = default;
@@ -59,7 +62,7 @@ struct SpriteRendererComponent {
 
 struct CameraComponent {
     SceneCamera Camera;
-    bool        bPrimary          = true; // TODO: mvoe to scene
+    bool        bPrimary          = true; // TODO: move to scene
     bool        bFixedAspectRatio = false;
 
     CameraComponent()                        = default;
@@ -72,14 +75,14 @@ struct NativeScriptComponent {
     using InstantiateScript = ScriptableEntity *();
     InstantiateScript *InstantiateScriptFunc;
 
-    using DestoryScript = void(NativeScriptComponent *);
-    DestoryScript *DestoryScriptFunc;
+    using DestroyScript = void(NativeScriptComponent *);
+    DestroyScript *DestroyScriptFunc;
 
     template <class T>
     void Bind()
     {
         InstantiateScriptFunc = []() { return static_cast<ScriptableEntity *>(new T()); };
-        DestoryScriptFunc     = [](NativeScriptComponent *nsc) { delete nsc->Instance; nsc->Instance= nullptr; };
+        DestroyScriptFunc     = [](NativeScriptComponent *nsc) { delete nsc->Instance; nsc->Instance= nullptr; };
     }
 };
 
