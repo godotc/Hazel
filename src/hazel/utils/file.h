@@ -21,5 +21,7 @@ struct File {
      * @throws None
      */
     static std::optional<std::vector<char>> read_all(const std::string &filepath);
+
+    static bool is_image(const std::filesystem::path &filepath);
 };
 } // namespace utils

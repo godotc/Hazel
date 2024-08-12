@@ -28,7 +28,7 @@ ContentBrowserPanel::ContentBrowserPanel()
 {
     m_CurrentDirectory = EditorLayer::DefaultAssetsDirectory() / m_CurrentDirectory;
 
-    m_DirectoryIcon             = Texture2D::Create(FPath("res/texture/editor/directory.png"));
+    m_DirectoryIcon             = Texture2D::Create(FPath("res/texture/editor/folder2.png"));
     m_FileIcon                  = Texture2D::Create(FPath("res/texture/editor/file.png"));
     m_WhiteTexture              = Texture2D::Create(1, 1);
     uint32_t white_texture_data = 0xffffffff;

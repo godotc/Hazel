@@ -37,6 +37,8 @@ elseif is_plat("windows") then
     -- add_defines("_MSVC_LANG=202002L")
 end
 
+add_cxflags("-Wno-int-to-void-pointer-cast")
+
 -- Why the vulkan require the MD not MT ?
 -- And the vulkan still cannot link to my shared lib , and then I must set it as "static"
 if is_plat("windows") then

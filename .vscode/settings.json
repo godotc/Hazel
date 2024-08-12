@@ -4,6 +4,7 @@
         "CHECKVERSION",
         "colorattachment",
         "commandlines",
+        "DIRECTX",
         "dockable",
         "Dockspace",
         "Drawlist",
@@ -23,11 +24,13 @@
         "lpstr",
         "nono",
         "OPENFILENAMEA",
+        "Parameteri",
         "Rescan",
         "shaderc",
         "spdlog",
         "SPIR",
         "SPIRV",
+        "stbi",
         "subtexture",
         "Texcoord",
         "Timestep",
@@ -92,5 +95,11 @@
         ".vscode",
         ".vscode-insiders",
         "./src/pkgs/*/**"
-    ]
+    ],
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "src/pkgs/imgui-docking/examples/**": true
+    }
 }
