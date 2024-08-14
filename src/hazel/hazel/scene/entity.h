@@ -41,7 +41,7 @@ class HAZEL_API Entity
     {
         HZ_CORE_ASSERT(!HasComponent<ComponentType>(), "Entity already has that component!");
         auto &comp = m_Scene->m_Registry.emplace<ComponentType>(m_EntityHandle, std::forward<Args>(args)...);
-        m_Scene->OnComponentAdd<ComponentType>(*this, comp);
+        m_Scene->OnComponentAdded<ComponentType>(*this, comp);
         return comp;
     }
 

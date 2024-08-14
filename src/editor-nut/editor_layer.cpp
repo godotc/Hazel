@@ -861,7 +861,7 @@ void EditorLayer::OpenSceneImpl(const std::string &path)
         return;
     }
     Ref<Scene>      new_scene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
-    SceneSerializer Serialize(m_ActiveScene);
+    SceneSerializer Serialize(new_scene);
 
     if (Serialize.Deserialize(path))
     {
@@ -887,11 +887,13 @@ void EditorLayer::SaveAs()
 void EditorLayer::OnScenePlay()
 {
     m_SceneState = ESceneState::Play;
+    m_ActiveScene->OnRuntimeStart();
 }
 
 void EditorLayer::OnSceneStop()
 {
     m_SceneState = ESceneState::Stop;
+    m_ActiveScene->OnRuntimeStop();
 }
 
 
