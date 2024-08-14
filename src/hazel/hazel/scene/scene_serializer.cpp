@@ -217,11 +217,15 @@ void SceneSerializer::SerializeRuntime(const std::string &filepath)
 
 bool SceneSerializer::Deserialize(const std::string &filepath)
 {
-    std::ifstream     f(filepath);
-    std::stringstream strstream;
-    strstream << f.rdbuf();
+    YAML::Node data;
 
-    YAML::Node data = YAML::Load(strstream.str());
+    try {
+        data = YAML::Load(filepath);
+    }
+    catch (YAML::ParserException e) {
+        HZ_CORE_ERROR("Failed to parse YAML file {}: error: {}", filepath, e.what());
+        return false;
+    }
     if (!data["Scene"]) {
         return false;
     }

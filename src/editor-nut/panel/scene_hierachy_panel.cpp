@@ -359,7 +359,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 const wchar_t *path_str = (const wchar_t *)payload->Data;
                 auto           path     = EditorLayer::DefaultAssetsDirectory() / path_str;
                 if (utils::File::is_image(path)) {
-                    component.Texture = Texture2D::Create(path.string());
+                    auto texture = Texture2D::Create(path.string());
+                    if (texture->IsLoaded()) {
+                        component.Texture = texture;
+                    }
+                    else {
+                        HZ_CORE_WARN("Failed to load texture {}", path.string());
+                    }
                 }
                 else {
                     HZ_CORE_WARN("File {} is not an image", path.string());

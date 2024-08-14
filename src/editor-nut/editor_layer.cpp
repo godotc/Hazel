@@ -850,16 +850,25 @@ void EditorLayer::OpenScene()
 void EditorLayer::OpenScene(const std::filesystem::path &path)
 {
     HZ_CORE_ASSERT(!path.empty());
+
     OpenSceneImpl(path.string());
 }
 
 void EditorLayer::OpenSceneImpl(const std::string &path)
 {
-    m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
-    m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    if (!path.ends_with(".hazel")) {
+        HZ_WARN("Could not load {0}, unsupported file type", path);
+        return;
+    }
+    Ref<Scene>      new_scene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
     SceneSerializer Serialize(m_ActiveScene);
-    Serialize.Deserialize(path);
+
+    if (Serialize.Deserialize(path))
+    {
+        m_ActiveScene = new_scene;
+        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    }
 }
 
 void EditorLayer::SaveAs()
