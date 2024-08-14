@@ -12,6 +12,9 @@ namespace hazel {
 
 class HAZEL_API Texture
 {
+  protected:
+    bool m_IsLoaded = false;
+
   public:
     virtual ~Texture() = default;
 
@@ -26,8 +29,9 @@ class HAZEL_API Texture
 
     virtual bool operator==(const Texture &other) const = 0;
 
-    bool bValid = false;
+    [[nodiscard]] bool IsLoaded() const { return m_IsLoaded; }
 };
+
 
 
 class HAZEL_API Texture2D : public Texture

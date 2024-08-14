@@ -25,15 +25,18 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
         data = stbi_load(path.c_str(), &w, &h, &nChannel, 0);
     }
 
-    HZ_CORE_ASSERT(data, "Failed to load image!");
-    HZ_CORE_INFO("{}, w: {}, h: {}, nChannel: {}", m_Path, w, h, nChannel);
+    if (!data) {
+        HZ_CORE_WARN("Failed to load image: {}", path);
+        return;
+    }
 
+    HZ_CORE_INFO("{}, w: {}, h: {}, nChannel: {}", m_Path, w, h, nChannel);
+    m_IsLoaded =true;
     m_Width  = w;
     m_Height = h;
 
     m_InternalFormat = nChannel == 3 ? GL_RGB8 : GL_RGBA8;
     m_DataFormat     = nChannel == 3 ? GL_RGB : GL_RGBA;
-
     HZ_CORE_ASSERT(m_InternalFormat & m_DataFormat, "NOT supported image format");
 
     glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);

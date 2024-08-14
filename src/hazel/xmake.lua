@@ -42,6 +42,8 @@ add_requires("vulkansdk", {
     }
 })
 
+add_requires("box2d")
+
 
 ---@format disable
 target("hazel")
@@ -76,8 +78,8 @@ target("hazel")
     end
 
     add_packages("glfw", { public = true })
-    -- add_packages("imgui", {public=true})
     add_packages("vulkansdk", { public = true })
+    add_packages("box2d")
 
     on_config(function(target)
         local kind = target:get("kind")
