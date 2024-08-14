@@ -8,6 +8,7 @@
 
 
 
+struct b2World;
 namespace hazel {
 
 class Entity;
@@ -28,34 +29,39 @@ class HAZEL_API Scene
 
     entt::registry m_Registry;
     uint32_t       m_ViewportWidth = 0, m_ViewportHeight = 0;
+    b2World       *m_PhysicsWorld = nullptr;
 
 
   public:
     Scene();
     virtual ~Scene() = default;
 
-    void   OnUpdateEditor(Timestep ts, EditorCamera &camera);
-    void   OnUpdateRuntime(Timestep ts);
-    void   OnViewportResize(uint32_t w, uint32_t h);
-    Entity GetPrimaryCameraEntity();
+    void OnRuntimeStart();
+    void OnRuntimeStop();
+
+    void OnUpdateEditor(Timestep ts, EditorCamera &camera);
+    void OnUpdateRuntime(Timestep ts);
+    void OnViewportResize(uint32_t w, uint32_t h);
 
   public:
+    Entity GetPrimaryCameraEntity();
+
     Entity CreateEntity(const std::string &name);
     void   DestroyEntity(Entity entity);
 
   private:
     template <class T>
-    void OnComponentAdd(Entity entity, T &component);
+    void OnComponentAdded(Entity entity, T &component);
     template <>
-    void OnComponentAdd<TransformComponent>(Entity entity, TransformComponent &component);
+    void OnComponentAdded<TransformComponent>(Entity entity, TransformComponent &component);
     template <>
-    void OnComponentAdd<CameraComponent>(Entity entity, CameraComponent &component);
+    void OnComponentAdded<CameraComponent>(Entity entity, CameraComponent &component);
     template <>
-    void OnComponentAdd<TagComponent>(Entity entity, TagComponent &component);
+    void OnComponentAdded<TagComponent>(Entity entity, TagComponent &component);
     template <>
-    void OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendererComponent &component);
+    void OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent &component);
     template <>
-    void OnComponentAdd<NativeScriptComponent>(Entity entity, NativeScriptComponent &component);
+    void OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent &component);
 };
 
 
