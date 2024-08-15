@@ -510,9 +510,9 @@ void EditorLayer::UI_Toolbar()
     ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 
     auto &colors = ImGui::GetStyle().Colors;
-    ImGui::PushStyleColor(ImGuiCol_Button, {0, 0, 0, 0});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colors[ImGuiCol_ButtonHovered]);
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, colors[ImGuiCol_ButtonActive]);
+    ImGui::PushStyleColor(ImGuiCol_Button, {0.5, 0.5, 0.5, 0.3});
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0.8, 0.6, 0.6, 0.5});
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0.6, 0.6, 0.6, 0.5});
 
     if (!ImGui::Begin("##toolbar", nullptr,
                       ImGuiWindowFlags_NoTitleBar |
