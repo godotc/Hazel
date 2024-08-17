@@ -4,10 +4,11 @@
 #include "hazel/core/base.h"
 #include "hazel/core/uuid.h"
 #include "hazel/renderer/texture.h"
-#include "scene.h"
 #include "scene_camera.h"
 #include <string>
 
+// TODO: remove this and move all OnComponentAdded to cpp
+#include "scene.h"
 
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -114,24 +115,6 @@ struct CameraComponent : public Component<CameraComponent> {
     }
 };
 
-struct NativeScriptComponent : public Component<NativeScriptComponent> {
-    ScriptableEntity *Instance = nullptr;
-
-    using InstantiateScript = ScriptableEntity *();
-    InstantiateScript *InstantiateScriptFunc;
-
-    using DestroyScript = void(NativeScriptComponent *);
-    DestroyScript *DestroyScriptFunc;
-
-    template <class T>
-    void Bind()
-    {
-        InstantiateScriptFunc = []() { return static_cast<ScriptableEntity *>(new T()); };
-        DestroyScriptFunc     = [](NativeScriptComponent *nsc) { delete nsc->Instance; nsc->Instance= nullptr; };
-    }
-
-    void OnComponentAddedImpl(const Scene *scene) override {}
-};
 
 
 struct Rigidbody2DComponent : public Component<Rigidbody2DComponent> {
@@ -171,5 +154,23 @@ struct BoxCollider2DComponent : public Component<BoxCollider2DComponent> {
     void OnComponentAddedImpl(const Scene *scene) override {}
 };
 
+struct NativeScriptComponent : public Component<NativeScriptComponent> {
+    ScriptableEntity *Instance = nullptr;
+
+    using InstantiateScript = ScriptableEntity *();
+    InstantiateScript *InstantiateScriptFunc;
+
+    using DestroyScript = void(NativeScriptComponent *);
+    DestroyScript *DestroyScriptFunc;
+
+    template <class T>
+    void Bind()
+    {
+        InstantiateScriptFunc = []() { return static_cast<ScriptableEntity *>(new T()); };
+        DestroyScriptFunc     = [](NativeScriptComponent *nsc) { delete nsc->Instance; nsc->Instance= nullptr; };
+    }
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
+};
 
 } // namespace hazel

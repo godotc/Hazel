@@ -843,6 +843,8 @@ void EditorLayer::NewScene()
 
 void EditorLayer::OpenScene()
 {
+
+
     auto path = FileDialogs::OpenFile("Hazel Scene (*.hazel)\0*.hazel\0"
                                       "Hazel Scene (*.yaml)\0*.yaml\0");
     if (!path.empty()) {
@@ -859,6 +861,12 @@ void EditorLayer::OpenScene(const std::filesystem::path &path)
 
 void EditorLayer::OpenSceneImpl(const std::string &path)
 {
+    // TODO: why? what if I want to add a runtime actor?
+    if (m_SceneState == ESceneState::Play) {
+        OnSceneStop();
+    }
+
+
     if (!path.ends_with(".hazel")) {
         HZ_WARN("Could not load {0}, unsupported file type", path);
         return;
@@ -868,9 +876,11 @@ void EditorLayer::OpenSceneImpl(const std::string &path)
 
     if (Serialize.Deserialize(path))
     {
-        m_ActiveScene = new_scene;
-        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_EditorScene = new_scene;
+        m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+        m_ActiveScene = m_EditorScene;
     }
 }
 
@@ -889,11 +899,8 @@ void EditorLayer::SaveAs()
 
 void EditorLayer::OnScenePlay()
 {
-    m_SceneState = ESceneState::Play;
-    // TODO: cache the editor time's entity and component
-    //       don'e let runtime affect it
-    // SceneSerializer serializer(m_ActiveScene);
-    // m_SceneCache = serializer.SerializeToMemory();
+    m_SceneState  = ESceneState::Play;
+    m_ActiveScene = Scene::Copy(m_EditorScene);
     m_ActiveScene->OnRuntimeStart();
 }
 
@@ -902,11 +909,15 @@ void EditorLayer::OnSceneStop()
     // TODO: pre-stop and post-stop
     m_SceneState = ESceneState::Stop;
     m_ActiveScene->OnRuntimeStop();
-    // TODO: cache the editor time's entity and component
-    //       don'e let runtime affect it
-    // SceneSerializer serializer(m_ActiveScene);
-    // serializer.DeserializeFromMemory(m_SceneCache);
+
+    // m_RuntimeScene = nullptr; // destroy by assign
+    m_ActiveScene = m_EditorScene;
 }
+
+void EditorLayer::DuplicateEntity(Entity entity) {
+  
+}
+
 
 
 } // namespace hazel

@@ -9,6 +9,7 @@
 #include "hazel/event/key_event.h"
 #include "hazel/renderer/texture.h"
 #include "hazel/scene/editor_camera.h"
+#include "hazel/scene/entity.h"
 #include "hazel/scene/scene.h"
 #include "panel/content_browser_panel.h"
 #include "panel/scene_hierachy_panel.h"
@@ -28,6 +29,7 @@ class EditorLayer : public hazel::Layer
   private:
     // Scene
     Ref<Scene>  m_ActiveScene;
+    Ref<Scene>  m_EditorScene;
     ESceneState m_SceneState = ESceneState::Stop;
 
     // Panel
@@ -110,6 +112,10 @@ class EditorLayer : public hazel::Layer
 
     void OnScenePlay();
     void OnSceneStop();
+
+
+    // ---
+    void DuplicateEntity(Entity entity);
 };
 
 

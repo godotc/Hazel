@@ -1,7 +1,15 @@
+/**
+ * @ Author: godot42
+ * @ Create Time: 2024-08-17 21:30:46
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-08-18 03:24:56
+ * @ Description:
+ */
+
+
+
 #pragma once
 #include "__microshit_api_hazel.h"
-
-#include "entt/entity/fwd.hpp"
 #include "hazel/core/timestep.h"
 #include "hazel/core/uuid.h"
 #include "hazel/scene/editor_camera.h"
@@ -41,6 +49,8 @@ class HAZEL_API Scene
   public:
     Scene();
     virtual ~Scene() = default;
+
+    static Ref<Scene> Copy(Ref<Scene> scene);
 
     void OnRuntimeStart();
     void OnRuntimeStop();

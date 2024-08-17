@@ -1,6 +1,16 @@
+/**
+ * @ Author: godot42
+ * @ Create Time: 2024-08-15 22:17:08
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-08-18 03:27:45
+ * @ Description:
+ */
+
+
 
 #include "scene.h"
-#include "entt/entity/fwd.hpp"
+#include "hazel/core/uuid.h"
+
 #include "hazel/core/base.h"
 #include "hazel/renderer/camera.h"
 #include "hazel/renderer/render_2d.h"
@@ -17,8 +27,10 @@
 #include "hazel/scene/scriptable_entity.h"
 
 
-namespace hazel {
 
+namespace hazel {
+template <class Component>
+static void copy_component(entt::registry &dst, const entt::registry &src, const std::unordered_map<UUID, entt::entity> &entt_map);
 
 static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::EBodyType body_type)
 {
@@ -64,6 +76,57 @@ void Scene::DestroyEntity(Entity entity)
 
 Scene::Scene()
 {
+}
+
+template <class Component>
+static void copy_component(entt::registry &dst, const entt::registry &src, const std::unordered_map<UUID, entt::entity> &entt_map)
+{
+    for (auto e : src.view<Component>())
+    {
+        UUID uuid = src.get<IDComponent>(e).ID;
+        HZ_CORE_ASSERT(entt_map.contains(uuid));
+        auto dst_entt_id = entt_map.at(uuid);
+
+        auto &src_component = src.get<Component>(e);
+        dst.emplace_or_replace<Component>(dst_entt_id, src_component);
+    }
+}
+
+Ref<Scene> Scene::Copy(Ref<Scene> scene)
+{
+    auto new_scene = CreateRef<Scene>();
+
+    new_scene->m_ViewportHeight = scene->m_ViewportHeight;
+    new_scene->m_ViewportWidth  = scene->m_ViewportWidth;
+
+    std::unordered_map<UUID, entt::entity> entt_map;
+
+    const auto &src_scene_registry = scene->m_Registry;
+    auto       &dst_scene_registry = new_scene->m_Registry;
+
+    // create entities in new scene
+    auto id_view = src_scene_registry.view<IDComponent>();
+    for (auto e : id_view)
+    {
+        UUID        uuid = src_scene_registry.get<IDComponent>(e).ID;
+        const auto &name = src_scene_registry.get<TagComponent>(e).Tag;
+
+        auto entity = new_scene->CreateEntityWithUUID(uuid, name);
+        entt_map.insert({uuid, entity});
+        // entt_map[uuid] = entity;
+    }
+
+    // except id and tag component
+    // TODO: static reflection typelist
+    copy_component<TransformComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<SpriteRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<CameraComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<Rigidbody2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<BoxCollider2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<NativeScriptComponent>(dst_scene_registry, src_scene_registry, entt_map);
+
+
+    return new_scene;
 }
 
 void Scene::OnRuntimeStart()
