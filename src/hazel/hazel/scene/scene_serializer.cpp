@@ -379,16 +379,16 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 rb2d.bFixedRotation = rigid_body_2d_component["bFixedRotation"].as<bool>();
             }
 
-            auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
-            if (boxCollider2DComponent)
+            auto box_collider_2d_component = entity["BoxCollider2DComponent"];
+            if (box_collider_2d_component)
             {
                 auto &bc2d                = deserialized_entity.AddComponent<BoxCollider2DComponent>();
-                bc2d.Offset               = boxCollider2DComponent["Offset"].as<glm::vec2>();
-                bc2d.Size                 = boxCollider2DComponent["Size"].as<glm::vec2>();
-                bc2d.Density              = boxCollider2DComponent["Density"].as<float>();
-                bc2d.Friction             = boxCollider2DComponent["Friction"].as<float>();
-                bc2d.Restitution          = boxCollider2DComponent["Restitution"].as<float>();
-                bc2d.RestitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
+                bc2d.Offset               = box_collider_2d_component["Offset"].as<glm::vec2>();
+                bc2d.Size                 = box_collider_2d_component["Size"].as<glm::vec2>();
+                bc2d.Density              = box_collider_2d_component["Density"].as<float>();
+                bc2d.Friction             = box_collider_2d_component["Friction"].as<float>();
+                bc2d.Restitution          = box_collider_2d_component["Restitution"].as<float>();
+                bc2d.RestitutionThreshold = box_collider_2d_component["RestitutionThreshold"].as<float>();
             }
         }
     }

@@ -35,10 +35,12 @@ void draw_vec3_Control(const std::string &label, glm::vec3 &values, float reset_
 {
     imgui::PushID(label.c_str());
 
-
     imgui::Columns(2);
+
     imgui::SetColumnWidth(0, column_width);
-    imgui::Text(label.c_str());
+    // imgui::PushTextWrapPos(0.f);
+    imgui::Text("%s", label.c_str());
+    // imgui::PopTextWrapPos();
     imgui::NextColumn();
 
     imgui::PushMultiItemsWidths(3, imgui::CalcItemWidth());
@@ -191,7 +193,9 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 
 
-    if (ImGui::Begin("Properties")) {
+    static bool bPropertiesWindowOpened = true;
+    ImGui::Begin("Properties", &bPropertiesWindowOpened, ImGuiWindowFlags_DockNodeHost | ImGuiWindowFlags_NoCollapse);
+    if (bPropertiesWindowOpened) {
         if (m_Selection) {
             DrawComponents(m_Selection);
         }

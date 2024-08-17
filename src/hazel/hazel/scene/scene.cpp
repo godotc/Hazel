@@ -20,9 +20,9 @@
 namespace hazel {
 
 
-static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::EBodyType bodyType)
+static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::EBodyType body_type)
 {
-    switch (bodyType)
+    switch (body_type)
     {
         case Rigidbody2DComponent::EBodyType::Static:
             return b2_staticBody;
@@ -63,7 +63,8 @@ void Scene::OnRuntimeStart()
     m_PhysicsWorld = new b2World({0.0f, -9.8f});
 
     auto view = m_Registry.view<Rigidbody2DComponent>();
-    for (auto e : view) {
+    for (auto e : view)
+    {
         Entity entity{e, this};
         auto  &transf = entity.GetComponent<TransformComponent>();
         auto  &rb2d   = entity.GetComponent<Rigidbody2DComponent>();
@@ -91,7 +92,8 @@ void Scene::OnRuntimeStart()
             fixture_def.restitution          = bc2d.Restitution;
             fixture_def.restitutionThreshold = bc2d.RestitutionThreshold;
 
-            body->CreateFixture(&fixture_def);
+            b2Fixture *fixture  = body->CreateFixture(&fixture_def);
+            bc2d.RuntimeFixture = fixture;
         }
     }
 }
@@ -133,8 +135,8 @@ void Scene::OnUpdateRuntime(Timestep ts)
 
     // Physics
     {
-        const int32_t velocity_iterations = 6;
-        const int32_t position_iterations = 2;
+        static const int32_t velocity_iterations = 6;
+        static const int32_t position_iterations = 2;
         m_PhysicsWorld->Step(ts, velocity_iterations, position_iterations);
 
         auto view = m_Registry.view<Rigidbody2DComponent>();
@@ -145,11 +147,20 @@ void Scene::OnUpdateRuntime(Timestep ts)
             auto &transform = entity.GetComponent<TransformComponent>();
             auto &rb2d      = entity.GetComponent<Rigidbody2DComponent>();
 
-            b2Body     *body        = (b2Body *)rb2d.RuntimeBody;
-            const auto &position    = body->GetPosition();
+            const b2Body *body      = (b2Body *)rb2d.RuntimeBody;
+            const auto   &position  = body->GetPosition();
             transform.Translation.x = position.x;
             transform.Translation.y = position.y;
             transform.Rotation.z    = body->GetAngle();
+
+            if (entity.HasComponent<BoxCollider2DComponent>()) {
+                BoxCollider2DComponent &bc2d    = entity.GetComponent<BoxCollider2DComponent>();
+                const b2Fixture        *fixture = (b2Fixture *)bc2d.RuntimeFixture;
+                bc2d.Density                    = fixture->GetDensity();
+                bc2d.Friction                   = fixture->GetFriction();
+                bc2d.Restitution                = fixture->GetRestitution();
+                bc2d.RestitutionThreshold       = fixture->GetRestitutionThreshold();
+            }
         }
     }
 

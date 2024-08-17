@@ -246,46 +246,44 @@ void EditorLayer::OnImGuiRender()
     UpdateWindowFlags();
 
     ImGui::Begin("MainWindow", NULL, m_WindowFlags);
-    {
 
-        if (bFullscreen) {
-            ImGui::PopStyleVar(2);
-        }
-        if (!bPadding) {
-            ImGui::PopStyleVar();
-        }
-
-        // Submit the DockSpace
-        ImGuiIO &io = ImGui::GetIO();
-
-        ImGuiStyle &style = ImGui::GetStyle();
-        {
-            float min_windows_width = style.WindowMinSize.x;
-            style.WindowMinSize.x   = 320.f;
-            style.WindowMinSize.x   = min_windows_width;
-        }
-
-        //  make this window dockspace
-        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-        {
-            ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), m_DockspaceFlags);
-            // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-        }
-
-        MenuBar();
-        UI_Toolbar();
-        UI_Settings();
-        RenderStats();
-
-        m_ContentBrowserPanel.OnImGuiRender();
-        m_SceneHierarchyPanel.OnImGuiRender();
-
-        ViewPort();
-
-
-        ImGui::End();
+    if (bFullscreen) {
+        ImGui::PopStyleVar(2);
     }
+    if (!bPadding) {
+        ImGui::PopStyleVar();
+    }
+
+    // Submit the DockSpace
+    ImGuiIO &io = ImGui::GetIO();
+
+    ImGuiStyle &style = ImGui::GetStyle();
+    {
+        float min_windows_width = style.WindowMinSize.x;
+        style.WindowMinSize.x   = 320.f;
+        style.WindowMinSize.x   = min_windows_width;
+    }
+
+    //  make this window dockspace
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+    {
+        ImGuiID dockspace_id = ImGui::GetID("Main Dock Space");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), m_DockspaceFlags);
+        // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    }
+
+    MenuBar();
+    UI_Toolbar();
+    UI_Settings();
+    RenderStats();
+
+    m_ContentBrowserPanel.OnImGuiRender();
+    m_SceneHierarchyPanel.OnImGuiRender();
+
+    ViewPort();
+
+
+    ImGui::End();
 } // namespace hazel
 
 
@@ -336,58 +334,57 @@ void EditorLayer::UpdateWindowFlags()
 
 void EditorLayer::MenuBar()
 {
-    if (ImGui::BeginMenuBar())
+    ImGui::BeginMenuBar();
+
+    if (ImGui::BeginMenu("file"))
     {
-        if (ImGui::BeginMenu("file"))
-        {
-            // TODO: MOVE short cuts info configuration file
-            if (ImGui::MenuItem("New")) {
-                NewScene();
-            }
-            if (ImGui::MenuItem("Open...", "Ctrl+O")) {
-                OpenScene();
-            }
-            if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S")) {
-                SaveAs();
-            }
-            if (ImGui::MenuItem("Exit")) {
-                hazel::App::Get().Close();
-            }
-            ImGui::EndMenu();
+        // TODO: MOVE short cuts info configuration file
+        if (ImGui::MenuItem("New")) {
+            NewScene();
         }
-
-        if (ImGui::BeginMenu("Options")) {
-            // Disabling fullscreen would allow the window to be moved to the front of other windows,
-            // which we can't undo at the moment without finer window depth/z control.
-            ImGui::MenuItem("Fullscreen", NULL, &bFullscreen);
-            ImGui::MenuItem("Padding", NULL, &bPadding);
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Flag: NoDockingOverCentralNode", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoDockingOverCentralNode) != 0)) {
-                m_DockspaceFlags ^= ImGuiDockNodeFlags_NoDockingOverCentralNode;
-            }
-            if (ImGui::MenuItem("Flag: NoDockingSplit", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoDockingSplit) != 0)) {
-                m_DockspaceFlags ^= ImGuiDockNodeFlags_NoDockingSplit;
-            }
-            if (ImGui::MenuItem("Flag: NoUndocking", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoUndocking) != 0)) {
-                m_DockspaceFlags ^= ImGuiDockNodeFlags_NoUndocking;
-            }
-            if (ImGui::MenuItem("Flag: NoResize", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoResize) != 0)) {
-                m_DockspaceFlags ^= ImGuiDockNodeFlags_NoResize;
-            }
-            if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (m_DockspaceFlags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) {
-                m_DockspaceFlags ^= ImGuiDockNodeFlags_AutoHideTabBar;
-            }
-            if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (m_DockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, bFullscreen)) {
-                m_DockspaceFlags ^= ImGuiDockNodeFlags_PassthruCentralNode;
-            }
-            ImGui::Separator();
-
-            ImGui::EndMenu();
+        if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+            OpenScene();
         }
-
-        ImGui::EndMenuBar();
+        if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S")) {
+            SaveAs();
+        }
+        if (ImGui::MenuItem("Exit")) {
+            hazel::App::Get().Close();
+        }
+        ImGui::EndMenu();
     }
+
+    if (ImGui::BeginMenu("Options")) {
+        // Disabling fullscreen would allow the window to be moved to the front of other windows,
+        // which we can't undo at the moment without finer window depth/z control.
+        ImGui::MenuItem("Fullscreen", NULL, &bFullscreen);
+        ImGui::MenuItem("Padding", NULL, &bPadding);
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Flag: NoDockingOverCentralNode", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoDockingOverCentralNode) != 0)) {
+            m_DockspaceFlags ^= ImGuiDockNodeFlags_NoDockingOverCentralNode;
+        }
+        if (ImGui::MenuItem("Flag: NoDockingSplit", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoDockingSplit) != 0)) {
+            m_DockspaceFlags ^= ImGuiDockNodeFlags_NoDockingSplit;
+        }
+        if (ImGui::MenuItem("Flag: NoUndocking", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoUndocking) != 0)) {
+            m_DockspaceFlags ^= ImGuiDockNodeFlags_NoUndocking;
+        }
+        if (ImGui::MenuItem("Flag: NoResize", "", (m_DockspaceFlags & ImGuiDockNodeFlags_NoResize) != 0)) {
+            m_DockspaceFlags ^= ImGuiDockNodeFlags_NoResize;
+        }
+        if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (m_DockspaceFlags & ImGuiDockNodeFlags_AutoHideTabBar) != 0)) {
+            m_DockspaceFlags ^= ImGuiDockNodeFlags_AutoHideTabBar;
+        }
+        if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (m_DockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, bFullscreen)) {
+            m_DockspaceFlags ^= ImGuiDockNodeFlags_PassthruCentralNode;
+        }
+        ImGui::Separator();
+
+        ImGui::EndMenu();
+    }
+
+    ImGui::EndMenuBar();
 }
 
 void EditorLayer::ViewPort()
@@ -636,7 +633,7 @@ void EditorLayer::UI_Settings()
 {
     static bool bOpen = false;
     // static bool bWantToClose = false;
-    if (!ImGui::Begin("Settings", &bOpen))
+    if (!ImGui::Begin("Settings", &bOpen, ImGuiWindowFlags_DockNodeHost))
     {
         ImGui::End();
         return;
@@ -902,12 +899,13 @@ void EditorLayer::OnScenePlay()
 
 void EditorLayer::OnSceneStop()
 {
+    // TODO: pre-stop and post-stop
     m_SceneState = ESceneState::Stop;
     m_ActiveScene->OnRuntimeStop();
     // TODO: cache the editor time's entity and component
     //       don'e let runtime affect it
     // SceneSerializer serializer(m_ActiveScene);
-    // serializer.DeserializeFromMemory(m_SceneCache); 
+    // serializer.DeserializeFromMemory(m_SceneCache);
 }
 
 
