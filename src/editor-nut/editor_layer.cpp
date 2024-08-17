@@ -7,6 +7,7 @@
  */
 
 //
+#include "hazel/scene/editor_camera.h"
 #include "hz_pch.h"
 //
 
@@ -274,7 +275,7 @@ void EditorLayer::OnImGuiRender()
 
         MenuBar();
         UI_Toolbar();
-        Settings();
+        UI_Settings();
         RenderStats();
 
         m_ContentBrowserPanel.OnImGuiRender();
@@ -631,7 +632,7 @@ void EditorLayer::FontSwitcher()
 
 
 
-void EditorLayer::Settings()
+void EditorLayer::UI_Settings()
 {
     static bool bOpen = false;
     // static bool bWantToClose = false;
@@ -655,6 +656,11 @@ void EditorLayer::Settings()
     ImGui::Text("Hovered Entity: %s", name);
 
     FontSwitcher();
+
+    if (ImGui::Button("Reset Editor Camera")) {
+        m_EditorCamera = EditorCamera{};
+        m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
+    }
 
     // if (ImGui::Button("close this")) {
     //     bOpen = false;
@@ -887,6 +893,10 @@ void EditorLayer::SaveAs()
 void EditorLayer::OnScenePlay()
 {
     m_SceneState = ESceneState::Play;
+    // TODO: cache the editor time's entity and component
+    //       don'e let runtime affect it
+    // SceneSerializer serializer(m_ActiveScene);
+    // m_SceneCache = serializer.SerializeToMemory();
     m_ActiveScene->OnRuntimeStart();
 }
 
@@ -894,6 +904,10 @@ void EditorLayer::OnSceneStop()
 {
     m_SceneState = ESceneState::Stop;
     m_ActiveScene->OnRuntimeStop();
+    // TODO: cache the editor time's entity and component
+    //       don'e let runtime affect it
+    // SceneSerializer serializer(m_ActiveScene);
+    // serializer.DeserializeFromMemory(m_SceneCache); 
 }
 
 

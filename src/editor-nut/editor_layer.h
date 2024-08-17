@@ -14,7 +14,6 @@
 #include "panel/scene_hierachy_panel.h"
 
 
-
 namespace hazel {
 
 class EditorLayer : public hazel::Layer
@@ -27,6 +26,7 @@ class EditorLayer : public hazel::Layer
     };
 
   private:
+    // Scene
     Ref<Scene>  m_ActiveScene;
     ESceneState m_SceneState = ESceneState::Stop;
 
@@ -90,7 +90,7 @@ class EditorLayer : public hazel::Layer
     void FontSwitcher();
     void UI_Toolbar();
 
-    void Settings();
+    void UI_Settings();
     void RenderStats();
 
     // Must call in viewport draw process(in the same window)
