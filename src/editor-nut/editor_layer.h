@@ -82,6 +82,8 @@ class EditorLayer : public hazel::Layer
     // update it when have project
     static std::filesystem::path DefaultAssetsDirectory();
 
+    void SetActiveScene(Ref<Scene> new_scene);
+
   private:
 
 
@@ -112,10 +114,6 @@ class EditorLayer : public hazel::Layer
 
     void OnScenePlay();
     void OnSceneStop();
-
-
-    // ---
-    void DuplicateEntity(Entity entity);
 };
 
 

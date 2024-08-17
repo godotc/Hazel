@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 03:27:45
+ * @ Modified time: 2024-08-18 04:35:09
  * @ Description:
  */
 
@@ -31,6 +31,13 @@
 namespace hazel {
 template <class Component>
 static void copy_component(entt::registry &dst, const entt::registry &src, const std::unordered_map<UUID, entt::entity> &entt_map);
+template <class Component>
+static void copy_component_if_exist(Entity dst, Entity src)
+{
+    if (src && src.HasComponent<Component>()) {
+        dst.AddOrReplaceComponent<Component>(static_cast<Component &>(src.GetComponent<Component>()));
+    }
+}
 
 static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::EBodyType body_type)
 {
@@ -66,6 +73,27 @@ Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string &name)
     tag.Tag   = name.empty() ? "Entity" : name;
 
     return entity;
+}
+
+void Scene::DuplicateEntity(Entity entity)
+{
+    if (!entity) {
+        return;
+    }
+
+    std::string new_name = entity.GetName() + "(copy)";
+    HZ_CORE_INFO("Duplicate entity: {0}", new_name);
+    auto new_entity = CreateEntity(new_name);
+
+
+    // except id and tag component
+    // TODO: static reflection typelist
+    copy_component_if_exist<TransformComponent>(new_entity, entity);
+    copy_component_if_exist<SpriteRendererComponent>(new_entity, entity);
+    copy_component_if_exist<CameraComponent>(new_entity, entity);
+    copy_component_if_exist<Rigidbody2DComponent>(new_entity, entity);
+    copy_component_if_exist<BoxCollider2DComponent>(new_entity, entity);
+    copy_component_if_exist<NativeScriptComponent>(new_entity, entity);
 }
 
 void Scene::DestroyEntity(Entity entity)

@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-17 21:30:46
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 03:24:56
+ * @ Modified time: 2024-08-18 04:28:14
  * @ Description:
  */
 
@@ -64,6 +64,8 @@ class HAZEL_API Scene
 
     Entity CreateEntity(const std::string &name);
     Entity CreateEntityWithUUID(UUID uuid, const std::string &name);
+    void   DuplicateEntity(Entity entity);
+
 
     void DestroyEntity(Entity entity);
 

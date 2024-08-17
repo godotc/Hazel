@@ -1,15 +1,16 @@
 /**
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
- *  Modified by: @godot42
- *  Modified time: 2024-07-30 18:50:05
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-08-18 04:33:09
  *  Description:
  */
 
 //
-#include "hazel/scene/editor_camera.h"
 #include "hz_pch.h"
 //
+
+#include "hazel/scene/editor_camera.h"
 
 
 #include "glm/fwd.hpp"
@@ -77,7 +78,8 @@ void EditorLayer::OnAttach()
     spec.Height      = 600;
     m_Framebuffer    = hazel::Framebuffer::Create(spec);
 
-    m_ActiveScene = hazel::CreateRef<hazel::Scene>();
+    auto new_scene = hazel::CreateRef<hazel::Scene>();
+    SetActiveScene(new_scene);
 
     // m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
     // m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
@@ -238,6 +240,13 @@ std::filesystem::path EditorLayer::DefaultAssetsDirectory()
 {
     static std::filesystem::path s_AssetsDirectory = FPath("res");
     return s_AssetsDirectory;
+}
+
+void EditorLayer::SetActiveScene(Ref<Scene> new_scene)
+{
+    // m_RuntimeScene = nullptr; // destroy by assign
+    m_ActiveScene = new_scene;
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 }
 
 
@@ -659,9 +668,9 @@ void EditorLayer::UI_Settings()
         m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
     }
 
-    // if (ImGui::Button("close this")) {
-    //     bOpen = false;
-    // }
+    if (ImGui::Button("Duplicate Selected Entity")) {
+        m_ActiveScene->DuplicateEntity(m_SceneHierarchyPanel.GetSelectedEntity());
+    }
 
     ImGui::End();
 }
@@ -780,6 +789,12 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
                 }
                 break;
             }
+            case Key::W:
+            {
+                if (control) {
+                    m_ActiveScene->DuplicateEntity(m_SceneHierarchyPanel.GetSelectedEntity());
+                }
+            }
             default:
                 break;
         }
@@ -797,7 +812,9 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
             }
             case Key::W:
             {
-                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                {
+                    m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                }
                 break;
             }
             case Key::E:
@@ -811,8 +828,9 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
                 break;
             }
         }
-        return false;
+        return true;
     }
+
 
     return false;
 }
@@ -836,9 +854,9 @@ bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
 
 void EditorLayer::NewScene()
 {
-    m_ActiveScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
-    m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    auto new_scene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
+    new_scene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+    SetActiveScene(new_scene);
 }
 
 void EditorLayer::OpenScene()
@@ -880,7 +898,7 @@ void EditorLayer::OpenSceneImpl(const std::string &path)
         m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
-        m_ActiveScene = m_EditorScene;
+        SetActiveScene(m_EditorScene);
     }
 }
 
@@ -899,8 +917,9 @@ void EditorLayer::SaveAs()
 
 void EditorLayer::OnScenePlay()
 {
-    m_SceneState  = ESceneState::Play;
-    m_ActiveScene = Scene::Copy(m_EditorScene);
+    m_SceneState   = ESceneState::Play;
+    auto new_scene = Scene::Copy(m_EditorScene);
+    SetActiveScene(new_scene);
     m_ActiveScene->OnRuntimeStart();
 }
 
@@ -910,12 +929,7 @@ void EditorLayer::OnSceneStop()
     m_SceneState = ESceneState::Stop;
     m_ActiveScene->OnRuntimeStop();
 
-    // m_RuntimeScene = nullptr; // destroy by assign
-    m_ActiveScene = m_EditorScene;
-}
-
-void EditorLayer::DuplicateEntity(Entity entity) {
-  
+    SetActiveScene(m_EditorScene);
 }
 
 

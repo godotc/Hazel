@@ -1,8 +1,16 @@
+/**
+ * @ Author: godot42
+ * @ Create Time: 2024-08-15 22:17:08
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-08-18 04:34:26
+ * @ Description:
+ */
+
 #pragma once
 
+
+
 #include "component.h"
-#include "entt/entity/entity.hpp"
-#include "entt/entity/fwd.hpp"
 
 #include "entt/entity/registry.hpp"
 #include "hazel/core/base.h"
@@ -10,6 +18,7 @@
 #include "scene.h"
 #include <cstdint>
 #include <entt/entt.hpp>
+#include <string>
 #include <type_traits>
 
 namespace hazel {
@@ -25,7 +34,8 @@ class HAZEL_API Entity
     Entity() = default;
     Entity(entt::entity handle, Scene *scene);
     Entity(const Entity &other) = default;
-    UUID GetUUID() const;
+    UUID        GetUUID() const;
+    std::string GetName() const { return m_Scene->m_Registry.get<TagComponent>(m_EntityHandle).Tag; }
 
     operator bool() const { return m_EntityHandle != entt::null && m_Scene->m_Registry.valid(m_EntityHandle); }
     operator uint32_t() const { return uint32_t(m_EntityHandle); }
@@ -34,7 +44,7 @@ class HAZEL_API Entity
     bool operator==(Entity &Other) { return m_EntityHandle == Other.m_EntityHandle; }
 
     template <class ComponentType>
-    bool HasComponent()
+    bool HasComponent() const
     {
         return m_Scene->m_Registry.all_of<ComponentType>(m_EntityHandle);
     }
@@ -49,8 +59,23 @@ class HAZEL_API Entity
         return comp;
     }
 
+    template <class ComponentType, class... Args>
+    ComponentType &AddOrReplaceComponent(Args &&...args)
+    {
+        auto &comp = m_Scene->m_Registry.emplace_or_replace<ComponentType>(m_EntityHandle, std::forward<Args>(args)...);
+        comp.OnComponentAdded(m_Scene);
+        return comp;
+    }
+
     template <class ComponentType>
     ComponentType &GetComponent()
+    {
+        HZ_CORE_ASSERT(HasComponent<ComponentType>(), "Entity did not has that component!");
+        return m_Scene->m_Registry.get<ComponentType>(m_EntityHandle);
+    }
+
+    template <class ComponentType>
+    const ComponentType &GetComponent() const
     {
         HZ_CORE_ASSERT(HasComponent<ComponentType>(), "Entity did not has that component!");
         return m_Scene->m_Registry.get<ComponentType>(m_EntityHandle);
