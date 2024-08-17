@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 04:33:09
+ * @ Modified time: 2024-08-18 04:55:45
  *  Description:
  */
 
@@ -766,43 +766,47 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
     }
     bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
     bool shift   = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
-    if (!ImGuizmo::IsUsing()) {
-        switch (Ev.GetKeyCode()) {
-            case Key::N:
-            {
-                if (control) {
-                    NewScene();
-                }
-                break;
+
+    // first priority
+    switch (Ev.GetKeyCode()) {
+        case Key::N:
+        {
+            if (control) {
+                NewScene();
             }
-            case Key::O:
-            {
-                if (control) {
-                    OpenScene();
-                }
-                break;
+            break;
+        }
+        case Key::O:
+        {
+            if (control) {
+                OpenScene();
             }
-            case Key::S:
-            {
-                if (control && shift) {
+            break;
+        }
+        case Key::S:
+        {
+            if (control) {
+                if (shift) {
                     SaveAs();
                 }
-                break;
-            }
-            case Key::W:
-            {
-                if (control) {
-                    m_ActiveScene->DuplicateEntity(m_SceneHierarchyPanel.GetSelectedEntity());
+                else {
+                    SaveScene();
                 }
             }
-            default:
-                break;
+            break;
         }
+        case Key::W:
+        {
+            if (control) {
+                m_ActiveScene->DuplicateEntity(m_SceneHierarchyPanel.GetSelectedEntity());
+            }
+        }
+        default:
+            break;
     }
 
     auto selected_entity = m_SceneHierarchyPanel.GetSelectedEntity();
-
-    if (selected_entity) {
+    if (ImGuizmo::IsUsing() && selected_entity) {
         switch (Ev.GetKeyCode()) {
             // Gizmos
             case Key::Q:
@@ -828,7 +832,7 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
                 break;
             }
         }
-        return true;
+        return false;
     }
 
 
@@ -899,20 +903,45 @@ void EditorLayer::OpenSceneImpl(const std::string &path)
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
         SetActiveScene(m_EditorScene);
+        m_ScenePath = path;
     }
 }
+
 
 void EditorLayer::SaveAs()
 {
     auto path = FileDialogs::SaveFile("Hazel Scene (*.hazel)\0*.hazel\0"
                                       "Hazel Scene (*.yaml)\0*.yaml\0");
+
+    bool Ok = SaveSceneImpl(m_ActiveScene, path);
+    if (Ok) {
+        m_ScenePath = path;
+    }
+}
+
+
+void EditorLayer::SaveScene()
+{
+    if (!m_ScenePath) {
+        SaveAs();
+        return;
+    }
+
+    SaveSceneImpl(m_ActiveScene, m_ScenePath->string());
+}
+
+bool EditorLayer::SaveSceneImpl(const Ref<Scene> scene, std::string path)
+{
     if (!path.empty()) {
         if (!FPath(path.c_str()).absolute_path.has_extension()) {
             path.append(".hazel");
         }
-        SceneSerializer Serialize(m_ActiveScene);
+        SceneSerializer Serialize(scene);
         Serialize.Serialize(path);
+
+        return true;
     }
+    return false;
 }
 
 void EditorLayer::OnScenePlay()

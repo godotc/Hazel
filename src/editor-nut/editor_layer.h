@@ -1,3 +1,11 @@
+/**
+ * @ Author: godot42
+ * @ Create Time: 2024-08-18 00:50:42
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-08-18 04:53:40
+ * @ Description:
+ */
+
 //
 // Created by nono on 2023-11-5
 //
@@ -13,6 +21,7 @@
 #include "hazel/scene/scene.h"
 #include "panel/content_browser_panel.h"
 #include "panel/scene_hierachy_panel.h"
+#include <optional>
 
 
 namespace hazel {
@@ -28,9 +37,10 @@ class EditorLayer : public hazel::Layer
 
   private:
     // Scene
-    Ref<Scene>  m_ActiveScene;
-    Ref<Scene>  m_EditorScene;
-    ESceneState m_SceneState = ESceneState::Stop;
+    Ref<Scene>                           m_ActiveScene;
+    Ref<Scene>                           m_EditorScene;
+    ESceneState                          m_SceneState = ESceneState::Stop;
+    std::optional<std::filesystem::path> m_ScenePath;
 
     // Panel
     SceneHierarchyPanel m_SceneHierarchyPanel;
@@ -104,12 +114,17 @@ class EditorLayer : public hazel::Layer
     bool OnKeyPressed(const KeyPressedEvent &Ev);
     bool OnMouseButtonPressed(const MouseButtonPressedEvent &Ev);
 
-    // ---
+    // --- Scene Create/Load/Save
     void NewScene();
+
     void OpenScene();
     void OpenScene(const std::filesystem::path &path);
     void OpenSceneImpl(const std::string &path);
+
     void SaveAs();
+    void SaveScene();
+    bool SaveSceneImpl(const Ref<Scene> scene, std::string path);
+    // ---
 
 
     void OnScenePlay();
