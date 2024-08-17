@@ -2,27 +2,59 @@
 
 #include "glm/ext/quaternion_float.hpp"
 #include "hazel/core/base.h"
-#include "hazel/core/timestep.h"
+#include "hazel/core/uuid.h"
 #include "hazel/renderer/texture.h"
-#include "hazel/scene/scriptable_entity.h"
+#include "scene.h"
 #include "scene_camera.h"
 #include <string>
 
+
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
 namespace hazel {
-struct TagComponent {
+
+struct ScriptableEntity;
+
+template <class T>
+struct Component {
+
+    virtual ~Component() = default;
+
+  public:
+    void OnComponentAdded(const Scene *scene)
+    {
+        static_cast<T *>(this)->OnComponentAddedImpl(scene);
+    }
+
+  protected:
+    virtual void OnComponentAddedImpl(const Scene *scene) = 0;
+};
+
+struct IDComponent : public Component<IDComponent> {
+    UUID ID;
+
+    IDComponent() = default;
+    IDComponent(UUID id) : ID(id) {}
+    IDComponent(const IDComponent &) = default;
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
+};
+
+struct TagComponent : public Component<TagComponent> {
     std::string Tag;
 
     TagComponent()                     = default;
     TagComponent(const TagComponent &) = default;
     TagComponent(const std::string &tag) : Tag(tag) {}
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
 };
 
-struct TransformComponent {
+struct TransformComponent : public Component<TransformComponent> {
     glm ::vec3 Translation = {0.f, 0.f, 0.f};
     glm ::vec3 Rotation    = {0.f, 0.f, 0.f};
     glm ::vec3 Scale       = {1.f, 1.f, 1.f};
@@ -43,10 +75,12 @@ struct TransformComponent {
                rotation *
                glm::scale(glm::mat4(1.f), Scale);
     }
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
 };
 
 
-struct SpriteRendererComponent {
+struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
     glm::vec4      Color{1, 1, 1, 1};
     Ref<Texture2D> Texture;
     float          TilingFactor = 1.0f;
@@ -57,19 +91,30 @@ struct SpriteRendererComponent {
 
     operator glm::vec4 &() { return Color; }
     operator const glm::vec4 &() const { return Color; }
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
 };
 
 
-struct CameraComponent {
+struct CameraComponent : public Component<CameraComponent> {
     SceneCamera Camera;
     bool        bPrimary          = true; // TODO: move to scene
     bool        bFixedAspectRatio = false;
 
     CameraComponent()                        = default;
     CameraComponent(const CameraComponent &) = default;
+
+    void OnComponentAddedImpl(const Scene *scene) override
+    {
+        auto w = scene->GetViewportWidth();
+        auto h = scene->GetViewportHeight();
+        if (w > 0 && h > 0) {
+            Camera.SetViewportSize(w, h);
+        }
+    }
 };
 
-struct NativeScriptComponent {
+struct NativeScriptComponent : public Component<NativeScriptComponent> {
     ScriptableEntity *Instance = nullptr;
 
     using InstantiateScript = ScriptableEntity *();
@@ -84,10 +129,12 @@ struct NativeScriptComponent {
         InstantiateScriptFunc = []() { return static_cast<ScriptableEntity *>(new T()); };
         DestroyScriptFunc     = [](NativeScriptComponent *nsc) { delete nsc->Instance; nsc->Instance= nullptr; };
     }
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
 };
 
 
-struct Rigidbody2DComponent {
+struct Rigidbody2DComponent : public Component<Rigidbody2DComponent> {
     enum class EBodyType
     {
         Static = 0,
@@ -102,9 +149,11 @@ struct Rigidbody2DComponent {
 
     Rigidbody2DComponent()                             = default;
     Rigidbody2DComponent(const Rigidbody2DComponent &) = default;
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
 };
 
-struct BoxCollider2DComponent {
+struct BoxCollider2DComponent : public Component<BoxCollider2DComponent> {
     glm::vec2 Offset = {0.0f, 0.0f};
     glm::vec2 Size   = {0.5f, 0.5f};
 
@@ -118,6 +167,9 @@ struct BoxCollider2DComponent {
 
     BoxCollider2DComponent()                               = default;
     BoxCollider2DComponent(const BoxCollider2DComponent &) = default;
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
 };
+
 
 } // namespace hazel

@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-18 00:58:03
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 01:04:49
+ * @ Modified time: 2024-08-18 01:53:14
  * @ Description:
  */
 
@@ -12,6 +12,10 @@
 
 #include <cstdint>
 #include <xhash>
+
+#if _WIN32
+    #undef UUID
+#endif
 
 namespace hazel {
 

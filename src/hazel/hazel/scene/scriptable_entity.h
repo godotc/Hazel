@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "entity.h"
 #include "hazel/core/timestep.h"
 
@@ -24,7 +23,7 @@ class ScriptableEntity
 
     virtual void OnCreate() {}
     virtual void OnUpdate(Timestep ts) {}
-    virtual void OnDestory(Timestep ts) {}
+    virtual void OnDestroy(Timestep ts) {}
 };
 
 } // namespace hazel

@@ -1,4 +1,6 @@
+
 #include "hz_pch.h"
+//
 
 #include "entt/entity/fwd.hpp"
 
@@ -163,8 +165,10 @@ SceneSerializer::SceneSerializer(const Ref<Scene> &scene)
 
 static void SerializeEntity(YAML::Emitter &out, Entity &entity)
 {
+    HZ_CORE_ASSERT(entity.HasComponent<IDComponent>());
+
     out << YAML::BeginMap;
-    out << YAML::Key << "Entity" << YAML::Value << (uint32_t)entity;
+    out << YAML::Key << "Entity" << YAML::Value << (uint64_t)entity.GetUUID();
 
     if (entity.HasComponent<TagComponent>()) {
         auto &comp = entity.GetComponent<TagComponent>();
@@ -324,29 +328,25 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
     auto entities = data["Entities"];
     if (entities) {
         for (auto entity : entities) {
-            // TODO
-            // uint64_t uuid = entity["Entity"].as<uint64_t>();
-            std::string uuid = entity["Entity"].as<std::string>();
+
+            uint64_t uuid = entity["Entity"].as<uint64_t>();
 
             std::string name;
-            auto        tag_component = entity["TagComponent"];
-            if (tag_component) {
+            if (auto tag_component = entity["TagComponent"]) {
                 name = tag_component["Tag"].as<std::string>();
             }
 
             HZ_CORE_TRACE("Deserialized entity with ID = {}, name = {}", uuid, name);
-            Entity deserialized_entity = m_Scene->CreateEntity(name);
+            Entity deserialized_entity = m_Scene->CreateEntityWithUUID(uuid, name);
 
-            auto transform_component = entity["TransformComponent"];
-            if (transform_component) {
+            if (auto transform_component = entity["TransformComponent"]) {
                 auto &tc       = deserialized_entity.GetOrAddComponent<TransformComponent>();
                 tc.Translation = transform_component["Translation"].as<glm::vec3>();
                 tc.Rotation    = transform_component["Rotation"].as<glm::vec3>();
                 tc.Scale       = transform_component["Scale"].as<glm::vec3>();
             }
 
-            const auto &camera_component = entity["CameraComponent"];
-            if (camera_component) {
+            if (const auto &camera_component = entity["CameraComponent"]) {
                 auto &cc = deserialized_entity.AddComponent<CameraComponent>();
 
                 cc.bPrimary          = camera_component["bPrimary"].as<bool>();
@@ -365,23 +365,19 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 cc.Camera.SetPerspectiveFovy(camera_props["PerspectiveFovy"].as<float>());
             }
 
-            const auto &sprite_renderer_component = entity["SpriteRendererComponent"];
-            if (sprite_renderer_component) {
+            if (const auto &sprite_renderer_component = entity["SpriteRendererComponent"]) {
                 auto &tc = deserialized_entity.AddComponent<SpriteRendererComponent>();
                 tc.Color = sprite_renderer_component["Color"].as<glm::vec4>();
             }
 
-            auto rigid_body_2d_component = entity["Rigidbody2DComponent"];
-            if (rigid_body_2d_component)
+            if (const auto rigid_body_2d_component = entity["Rigidbody2DComponent"])
             {
                 auto &rb2d          = deserialized_entity.AddComponent<Rigidbody2DComponent>();
                 rb2d.Type           = RigidBody2DBodyTypeFromString(rigid_body_2d_component["BodyType"].as<std::string>());
                 rb2d.bFixedRotation = rigid_body_2d_component["bFixedRotation"].as<bool>();
             }
 
-            auto box_collider_2d_component = entity["BoxCollider2DComponent"];
-            if (box_collider_2d_component)
-            {
+            if (const auto box_collider_2d_component = entity["BoxCollider2DComponent"]) {
                 auto &bc2d                = deserialized_entity.AddComponent<BoxCollider2DComponent>();
                 bc2d.Offset               = box_collider_2d_component["Offset"].as<glm::vec2>();
                 bc2d.Size                 = box_collider_2d_component["Size"].as<glm::vec2>();

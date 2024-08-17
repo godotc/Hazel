@@ -1,14 +1,16 @@
 #pragma once
 
+#include "component.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 
-#include "entt/entity/handle.hpp"
 #include "entt/entity/registry.hpp"
 #include "hazel/core/base.h"
+#include "hazel/core/uuid.h"
 #include "scene.h"
 #include <cstdint>
 #include <entt/entt.hpp>
+#include <type_traits>
 
 namespace hazel {
 
@@ -23,6 +25,7 @@ class HAZEL_API Entity
     Entity() = default;
     Entity(entt::entity handle, Scene *scene);
     Entity(const Entity &other) = default;
+    UUID GetUUID() const;
 
     operator bool() const { return m_EntityHandle != entt::null && m_Scene->m_Registry.valid(m_EntityHandle); }
     operator uint32_t() const { return uint32_t(m_EntityHandle); }
@@ -38,10 +41,11 @@ class HAZEL_API Entity
 
     template <class ComponentType, class... Args>
     ComponentType &AddComponent(Args &&...args)
+        requires(std::is_base_of_v<Component<ComponentType>, ComponentType>)
     {
         HZ_CORE_ASSERT(!HasComponent<ComponentType>(), "Entity already has that component!");
         auto &comp = m_Scene->m_Registry.emplace<ComponentType>(m_EntityHandle, std::forward<Args>(args)...);
-        m_Scene->OnComponentAdded<ComponentType>(*this, comp);
+        comp.OnComponentAdded(m_Scene);
         return comp;
     }
 
