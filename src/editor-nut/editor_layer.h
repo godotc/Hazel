@@ -87,11 +87,11 @@ class EditorLayer : public hazel::Layer
     void UpdateWindowFlags();
     void MenuBar();
     void ViewPort();
-    void FontSwitcher();
     void UI_Toolbar();
 
+    void UI_FontSwitcher();
     void UI_Settings();
-    void RenderStats();
+    void UI_RenderStats();
 
     // Must call in viewport draw process(in the same window)
     void Gizmos();

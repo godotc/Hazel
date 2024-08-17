@@ -275,7 +275,7 @@ void EditorLayer::OnImGuiRender()
     MenuBar();
     UI_Toolbar();
     UI_Settings();
-    RenderStats();
+    UI_RenderStats();
 
     m_ContentBrowserPanel.OnImGuiRender();
     m_SceneHierarchyPanel.OnImGuiRender();
@@ -461,7 +461,7 @@ void EditorLayer::ViewPort()
     }
 }
 
-void EditorLayer::FontSwitcher()
+void EditorLayer::UI_FontSwitcher()
 {
     auto &io    = ImGui::GetIO();
     auto  fonts = App::Get().GetImGuiLayer()->GetFonts();
@@ -652,7 +652,7 @@ void EditorLayer::UI_Settings()
     }
     ImGui::Text("Hovered Entity: %s", name);
 
-    FontSwitcher();
+    UI_FontSwitcher();
 
     if (ImGui::Button("Reset Editor Camera")) {
         m_EditorCamera = EditorCamera{};
@@ -666,7 +666,7 @@ void EditorLayer::UI_Settings()
     ImGui::End();
 }
 
-void EditorLayer::RenderStats()
+void EditorLayer::UI_RenderStats()
 {
     static bool bOpen = true;
     if (ImGui::Begin("Render2D stats", &bOpen)) {
