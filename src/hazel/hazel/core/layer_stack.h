@@ -25,8 +25,8 @@ class HAZEL_API LayerStack
 
     void PushLayer(Layer *layer);
     void PushOverlay(Layer *overlay);
-    void PophLayer(Layer *layer);
-    void PophOverlay(Layer *overlay);
+    void PopLayer(Layer *layer);
+    void PopOverlay(Layer *overlay);
 
     std::vector<Layer *> &GetLayers() { return m_Layers; }
 };

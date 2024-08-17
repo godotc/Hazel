@@ -122,7 +122,7 @@ void App::PushLayer(Layer *layer)
 void App::PopLayer(Layer *layer)
 {
     HZ_PROFILE_FUNCTION();
-    m_LayerStack.PophLayer(layer);
+    m_LayerStack.PopLayer(layer);
 }
 
 void App::PushOverlay(Layer *layer)
@@ -134,7 +134,7 @@ void App::PushOverlay(Layer *layer)
 void App::PopOverlay(Layer *layer)
 {
     HZ_PROFILE_FUNCTION();
-    m_LayerStack.PophOverlay(layer);
+    m_LayerStack.PopOverlay(layer);
 }
 
 

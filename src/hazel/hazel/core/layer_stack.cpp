@@ -42,7 +42,7 @@ void LayerStack ::PushOverlay(Layer *overlay)
     m_Layers.emplace_back(overlay);
 }
 
-void LayerStack ::PophLayer(Layer *layer)
+void LayerStack ::PopLayer(Layer *layer)
 {
     auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
     if (it != m_Layers.end()) {
@@ -52,7 +52,7 @@ void LayerStack ::PophLayer(Layer *layer)
     }
 }
 
-void LayerStack ::PophOverlay(Layer *overlay)
+void LayerStack ::PopOverlay(Layer *overlay)
 {
     auto it = std::find(m_Layers.begin(), m_Layers.end(), overlay);
     if (it != m_Layers.end()) {
