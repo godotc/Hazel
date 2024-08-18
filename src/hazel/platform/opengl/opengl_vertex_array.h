@@ -29,8 +29,9 @@ class OpenGLVertexArray : public VertexArray
     void Bind() override;
     void Unbind() override;
 
-    void                                         AddVertexBuffer(Ref<VertexBuffer> &vertex_buffer) override;
-    void                                         SetIndexBuffer(Ref<IndexBuffer> &index_buffer) override;
+    void                                         AddVertexBuffer(Ref<VertexBuffer> vertex_buffer) override;
+    void                                         SetIndexBuffer(Ref<IndexBuffer> index_buffer) override;
+    Ref<IndexBuffer>                             GetIndexBuffer() override { return m_IndexBuffer; }
     inline const std::vector<Ref<VertexBuffer>> &GetVertexBuffer() const override { return m_VertexBuffers; }
     inline const Ref<IndexBuffer>               &GetIndexBuffer() const override { return m_IndexBuffer; }
 };

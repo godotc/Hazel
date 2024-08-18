@@ -16,8 +16,8 @@ class OpenGLTexture2D : public Texture2D
     std::string m_Path;
     uint32_t    m_Width, m_Height;
     uint32_t    m_TextureID      = {0};
-    GLenum      m_InternalFormat = {GL_RGBA8},
-           m_DataFormat          = {GL_RGBA};
+    GLenum      m_InternalFormat = {GL_RGBA8};
+    GLenum      m_DataFormat     = {GL_RGBA};
 
   public:
     OpenGLTexture2D(uint32_t w, uint32_t h);

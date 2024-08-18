@@ -13,7 +13,7 @@
 add_rules("mode.debug", "mode.release")
 -- add_rules("debug_game")
 
-set_symbols("debug")
+-- set_symbols("debug")
 
 set_project("hazel")
 set_languages("c++20")
@@ -32,8 +32,8 @@ elseif is_plat("windows") then
     add_defines("NOMINMAX")
     add_cxflags("/Zc:preprocessor")
     add_cxflags("/EHs")
-	add_defines("UNICODE", "_UNICODE")
-	add_cxflags("/utf-8")
+    add_defines("UNICODE", "_UNICODE")
+    add_cxflags("/utf-8")
     -- add_defines("_MSVC_LANG=202002L")
 end
 
@@ -72,12 +72,28 @@ includes("./src")
 task("test")
     set_menu {}
     on_run(function()
-        exec_cmds(
-            "xmake f -m debug --test=y",
-            -- "xmake f -m debug",
-            "xmake build -g test",
-            "xmake run -g test"
-        )
+     for targetname, target in pairs(project.targets()) do
+            print(targetname)
+            print(target)
+            print(target:targetfile())
+            print(target:basename())
+            print(target:filename())
+            print(target:linkname())
+            print(target:targetdir())
+            print(target:kind())
+            -- return
+
+            -- local target_name = arg[1] or "__DEFAULT_VAR__"
+            -- local target_dir = arg[2] or "__DEFAULT_VAR__"
+            -- local target_base_name = arg[3] or "__DEFAULT_VAr__"
+     end
+
+        -- exec_cmds(
+        --     "xmake f -m debug --test=y",
+        --     -- "xmake f -m debug",
+        --     "xmake build -g test",
+        --     "xmake run -g test"
+        -- )
     end)
 
 task("cpcm")
@@ -129,4 +145,37 @@ task("vscode")
                 cmd.run_native_lua("script/vscode.lua", target:name(), target:targetdir() , target:basename(), target:type())
             end
         end
+    end)
+
+
+
+task("t")
+    set_menu {}
+    on_run(function()
+    local cmds = import ("script.cmd")
+    local project =import("core.project.project")
+     for targetname, target in pairs(project.targets()) do
+            print(targetname)
+            -- print(target)
+            print(target:targetfile())
+            local a , b,c =target:tool("cxx")
+            print(a)
+            print(b)
+            print(c)
+            print(c.name)
+            print(c.arch)
+
+            print(target:basename())
+            print(target:filename())
+            print(target:linkname())
+            print(target:targetdir())
+            print(target:kind())
+            break
+     end
+
+    --  print("........................")
+    --  local ret = cmds.exec_cmds("xmake show -l toolchains")
+    --  print(ret)
+
+
     end)

@@ -55,7 +55,7 @@ void OpenGLVertexArray::Unbind()
 {
     glBindVertexArray(0);
 }
-void OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer> &vertex_buffer)
+void OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer> vertex_buffer)
 {
     HZ_PROFILE_FUNCTION();
 
@@ -127,7 +127,7 @@ void OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer> &vertex_buffer)
     m_VertexBuffers.push_back(vertex_buffer);
 }
 
-void OpenGLVertexArray::SetIndexBuffer(Ref<IndexBuffer> &index_buffer)
+void OpenGLVertexArray::SetIndexBuffer(Ref<IndexBuffer> index_buffer)
 {
     HZ_PROFILE_FUNCTION();
 

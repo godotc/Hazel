@@ -41,7 +41,7 @@ std::optional<std::vector<char>> File::read_all(const std::string &filepath)
 bool File::is_image(const std::filesystem::path &filepath)
 {
     auto ext = filepath.filename().extension();
-    return ext == ".png" || ext == ".jpg" || ext == ".jpeg";
+    return ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp";
 }
 
 

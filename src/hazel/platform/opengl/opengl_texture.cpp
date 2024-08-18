@@ -31,9 +31,9 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
     }
 
     HZ_CORE_INFO("{}, w: {}, h: {}, nChannel: {}", m_Path, w, h, nChannel);
-    m_IsLoaded =true;
-    m_Width  = w;
-    m_Height = h;
+    m_IsLoaded = true;
+    m_Width    = w;
+    m_Height   = h;
 
     m_InternalFormat = nChannel == 3 ? GL_RGB8 : GL_RGBA8;
     m_DataFormat     = nChannel == 3 ? GL_RGB : GL_RGBA;
@@ -95,7 +95,7 @@ void OpenGLTexture2D::Bind(uint32_t slot) const
 void OpenGLTexture2D::Unbind() const
 {
     // TODO
-    //     glBindTexture(slot, m_TextureID);
+    // glBindTexture(slot, m_TextureID);
 }
 
 void OpenGLTexture2D::SetData(void *data, uint32_t size)

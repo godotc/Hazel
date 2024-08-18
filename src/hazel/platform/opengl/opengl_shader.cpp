@@ -342,12 +342,13 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
             shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
                 source,
                 utils::GLShaderStageToShaderRcType(stage),
-                m_FilePath.string().c_str(),
+                fmt::format("{} ({})", m_FilePath.string(), utils::GLShaderStageToString(stage)).c_str(),
                 options);
 
             if (result.GetCompilationStatus() != shaderc_compilation_status_success)
             {
                 HZ_CORE_ERROR(result.GetErrorMessage());
+                std::filesystem::remove(cached_path);
                 HZ_CORE_ASSERT(false);
             }
 

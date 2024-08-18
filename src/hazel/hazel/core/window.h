@@ -5,7 +5,6 @@
 #include "hazel/event/event.h"
 #include "hazel/renderer/graphics_context.h"
 #include <any>
-#include <type_traits>
 
 
 
