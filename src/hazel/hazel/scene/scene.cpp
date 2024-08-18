@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 04:35:09
+ * @ Modified time: 2024-08-19 01:21:21
  * @ Description:
  */
 
@@ -90,6 +90,7 @@ void Scene::DuplicateEntity(Entity entity)
     // TODO: static reflection typelist
     copy_component_if_exist<TransformComponent>(new_entity, entity);
     copy_component_if_exist<SpriteRendererComponent>(new_entity, entity);
+    copy_component_if_exist<CircleRendererComponent>(new_entity, entity);
     copy_component_if_exist<CameraComponent>(new_entity, entity);
     copy_component_if_exist<Rigidbody2DComponent>(new_entity, entity);
     copy_component_if_exist<BoxCollider2DComponent>(new_entity, entity);
@@ -148,6 +149,7 @@ Ref<Scene> Scene::Copy(Ref<Scene> scene)
     // TODO: static reflection typelist
     copy_component<TransformComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<SpriteRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<CircleRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<CameraComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<Rigidbody2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<BoxCollider2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
@@ -208,10 +210,19 @@ void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
 {
     Render2D::BeginScene(camera);
 
-    auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-    for (entt::entity entity : group) {
-        auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-        Render2D::DrawSprite(transf.GetTransform(), color, int(entity));
+    {
+        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for (entt::entity entity : group) {
+            auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+            Render2D::DrawSprite(transf.GetTransform(), color, int(entity));
+        }
+    }
+    {
+        auto view = m_Registry.view<TransformComponent, CircleRendererComponent>();
+        for (entt::entity entity : view) {
+            auto [transf, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+            Render2D::DrawCircle(transf.GetTransform(), circle.Color, circle.Thickness, circle.Fade, int(entity));
+        }
     }
 
     Render2D::EndScene();
@@ -285,10 +296,21 @@ void Scene::OnUpdateRuntime(Timestep ts)
     {
         Render2D::BeginScene(*main_camera, transform);
 
-        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (auto entity : group) {
-            auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Render2D::DrawQuad(transf.GetTransform(), 1.f, color);
+        // quad
+        {
+            auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+            for (entt::entity entity : group) {
+                auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                Render2D::DrawSprite(transf.GetTransform(), color, int(entity));
+            }
+        }
+        // circle
+        {
+            auto view = m_Registry.view<TransformComponent, CircleRendererComponent>();
+            for (entt::entity entity : view) {
+                auto [transf, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+                Render2D::DrawCircle(transf.GetTransform(), circle.Color, circle.Thickness, circle.Fade, int(entity));
+            }
         }
 
         Render2D::EndScene();

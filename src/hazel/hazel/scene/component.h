@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glm/detail/qualifier.hpp"
 #include "glm/ext/quaternion_float.hpp"
 #include "hazel/core/base.h"
 #include "hazel/core/uuid.h"
@@ -97,6 +98,20 @@ struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
 };
 
 
+struct CircleRendererComponent : public Component<CircleRendererComponent> {
+    glm::vec4 Color{1, 1, 1, 1};
+    float     Radius    = 0.5f;
+    float     Thickness = 1.f;
+    float     Fade      = 0.005f;
+
+
+    CircleRendererComponent() {}
+    CircleRendererComponent(const CircleRendererComponent &) = default;
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
+};
+
+
 struct CameraComponent : public Component<CameraComponent> {
     SceneCamera Camera;
     bool        bPrimary          = true; // TODO: move to scene
@@ -153,6 +168,7 @@ struct BoxCollider2DComponent : public Component<BoxCollider2DComponent> {
 
     void OnComponentAddedImpl(const Scene *scene) override {}
 };
+
 
 struct NativeScriptComponent : public Component<NativeScriptComponent> {
     ScriptableEntity *Instance = nullptr;

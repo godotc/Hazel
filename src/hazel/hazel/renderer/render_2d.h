@@ -51,6 +51,8 @@ class HAZEL_API Render2D
 
     static void DrawSprite(const glm::mat4 &transf, const SpriteRendererComponent &src, int entity_id = -1);
 
+    static void DrawCircle(const glm::mat4 &transf, const glm::vec4 &color, float thickness = 1.f, float fade = 0.005f, int entity_id = -1);
+
     static void DrawQuad(const glm::mat4 &transf, float tiling = 1.f, const glm::vec4 &tint = glm::vec4(1.f));
     static void DrawQuad(const glm::mat4 &transf, const glm::vec4 &tint = glm::vec4(1.f), int entity_id = -1);
     static void DrawQuad(const glm::mat4 &transf, const Ref<Texture2D> &texture, float tiling = 1.f, const glm::vec4 &tint = glm::vec4(1.f), int entity_id = -1);

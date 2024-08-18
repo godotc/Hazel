@@ -292,6 +292,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 ImGui::CloseCurrentPopup();
             }
         }
+        if (!m_Selection.HasComponent<CircleRendererComponent>())
+        {
+            if (ImGui::MenuItem("Circle Renderer")) {
+                m_Selection.AddComponent<CircleRendererComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
 
         imgui::EndPopup();
     }
@@ -401,6 +408,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             }
             ImGui::EndDragDropTarget();
         }
+    });
+
+    draw_component<CircleRendererComponent>("CircleRenderer", entity, [](CircleRendererComponent &component) {
+        imgui::ColorEdit4("Color", glm::value_ptr(component.Color));
+        imgui::DragFloat("Thickness", &component.Thickness, 0.01f, 0.0f, 1.0f);
+        imgui::DragFloat("Fade", &component.Fade, 0.01f, 0.0f, 1.0f);
+        // imgui::DragFloat("Radius", &component.Radius, 0.01f, 0.0f, 100.0f);
     });
 
 
