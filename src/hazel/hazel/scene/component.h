@@ -100,7 +100,7 @@ struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
 
 struct CircleRendererComponent : public Component<CircleRendererComponent> {
     glm::vec4 Color{1, 1, 1, 1};
-    float     Radius    = 0.5f;
+    // float     Radius    = 0.5f;
     float     Thickness = 1.f;
     float     Fade      = 0.005f;
 

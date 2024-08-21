@@ -242,9 +242,6 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
 
         out << YAML::EndMap; // CircleRendererComponent
     }
-
-
-
     if (entity.HasComponent<NativeScriptComponent>()) {
         auto comp = entity.GetComponent<NativeScriptComponent>();
 

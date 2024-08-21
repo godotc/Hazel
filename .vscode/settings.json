@@ -22,6 +22,8 @@
         "libclang",
         "LLDB",
         "lpstr",
+        "Lsizei",
+        "MULTISAMPLE",
         "nono",
         "OPENFILENAMEA",
         "Parameteri",

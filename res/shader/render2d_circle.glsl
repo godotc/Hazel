@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-13 00:16:31
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-19 01:00:49
+ * @ Modified time: 2024-08-21 23:20:47
  * @ Description:
  */
 
@@ -69,15 +69,17 @@ layout (location=1) out int o_EntityId;//-1 + id +1
 void main()
 {
     float distance = 1.0 - length(Input.LocalPostion);
-    float circle = smoothstep(0.0, Input.Fade, distance);
+    float circle = smoothstep(0.0, Input.Fade, distance); // alpha?
     circle *= smoothstep(Input.Thickness + Input.Fade, Input.Thickness, distance);
 
+
+    // drop enity id
     if(circle==0.0){
         discard;
     }
 
-
     o_Color = Input.Color;
     o_Color.a *= circle;
+
     o_EntityId = v_EntityId;
 }

@@ -36,7 +36,7 @@ struct TextureSpec {
         : TextureFormat(format){};
 };
 
-// Why attachment involove attachment? I don't like it
+// Why attachment involve attachment? I don't like it
 struct AttachmentSpec {
     std::vector<TextureSpec> Attachments;
 

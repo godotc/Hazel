@@ -66,8 +66,8 @@ layout( location =4) in flat int v_EntityId;
 layout(binding = 0) uniform sampler2D u_Textures[32];
 
 // each in different color attachment
-layout (location=0) out vec4 color;
-layout (location=1) out int color2;//-1 + id +1
+layout (location=0) out vec4 o_Color;
+layout (location=1) out int o_EntityId;//-1 + id +1
 
 
 
@@ -80,7 +80,7 @@ layout (location=1) out int color2;//-1 + id +1
 // #define MULTI_MACRO(...) EXPAND_ARGS(__VA_ARGS__)
 
 void main(){
-    color = Input.Color; // I dont't know WTF must I use the Input.Color at here,
+    o_Color = Input.Color; // I dont't know WTF must I use the Input.Color at here,
                         // Or it will be compile error by SPRIV "VertexOutput.Color is not declare in previous stage"
 
     vec4 the_texture;
@@ -121,6 +121,7 @@ void main(){
         // CASE(32);
     }
 
-    color *=  the_texture;
-    color2 = v_EntityId;
+    o_Color *=  the_texture;
+    o_EntityId = v_EntityId;
+
 }

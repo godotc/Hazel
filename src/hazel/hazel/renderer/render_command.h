@@ -12,16 +12,21 @@ namespace hazel {
 class HAZEL_API RenderCommand
 {
   public:
-    inline static void Init() { Get()->Init(); }
-    inline static void SetClearColor(const glm::vec4 &color) { Get()->SetClearColor(color); }
-    inline static void Clear() { Get()->Clear(); }
+    static void Init() { GetRenderAPI()->Init(); }
 
-    static inline void DrawIndex(const Ref<VertexArray> &vertexArray, uint32_t count = 0) { Get()->DrawIndexed(vertexArray, count); }
+    static void Clear() { GetRenderAPI()->Clear(); }
 
-    static void SetViewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+    static void SetClearColor(const glm::vec4 &color) { GetRenderAPI()->SetClearColor(color); }
+    static void SetLineWidth(float width) { GetRenderAPI()->SetLineWidth(width); }
+    static void SetViewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h) { GetRenderAPI()->SetViewPort(x, y, w, h); }
+
+    static void DrawIndex(const Ref<VertexArray> &vertexArray, uint32_t count = 0) { GetRenderAPI()->DrawIndexed(vertexArray, count); }
+    static void DrawLines(const Ref<VertexArray> &vertexArray, uint32_t count = 0) { GetRenderAPI()->DrawLines(vertexArray, count); }
 
   private:
-    static hazel::RendererAPI *Get();
+    static hazel::RendererAPI *GetRenderAPI();
 };
+
+
 
 } // namespace hazel

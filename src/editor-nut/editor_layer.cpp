@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 04:55:45
+ * @ Modified time: 2024-08-22 00:13:36
  *  Description:
  */
 
@@ -73,7 +73,9 @@ void EditorLayer::OnAttach()
 
 
     hazel::FramebufferSpec spec;
-    spec.Attachments = {framebuffer::ETextureFormat::RGBA8, framebuffer::ETextureFormat::RED_INTEGER, framebuffer::ETextureFormat::Depth};
+    spec.Attachments = {framebuffer::ETextureFormat::RGBA8,
+                        framebuffer::ETextureFormat::RED_INTEGER, // EntityId
+                        framebuffer::ETextureFormat::Depth};
     spec.Width       = 800;
     spec.Height      = 600;
     m_Framebuffer    = hazel::Framebuffer::Create(spec);

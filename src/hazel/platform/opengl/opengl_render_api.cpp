@@ -17,6 +17,8 @@ void OpenGLRenderAPI::Init()
 
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LINE_SMOOTH);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -39,9 +41,20 @@ void OpenGLRenderAPI::DrawIndexed(const Ref<VertexArray> &vertex_array, uint32_t
     // glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void OpenGLRenderAPI::DrawLines(const Ref<VertexArray> &vertex_array, uint32_t vertex_count)
+{
+    vertex_array->Bind();
+    glDrawArrays(GL_LINES, 0, (GLsizei)vertex_count);
+}
+
 void OpenGLRenderAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     glViewport(x, y, w, h);
+}
+
+void OpenGLRenderAPI::SetLineWidth(float width)
+{
+    glLineWidth(width);
 }
 
 } // namespace hazel

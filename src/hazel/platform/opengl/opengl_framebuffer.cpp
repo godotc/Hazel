@@ -61,7 +61,7 @@ static auto AttachDepthTexture(const uint32_t texture_id, const int samples,
     else {
         glTexStorage2D(GL_TEXTURE_2D, 1, format, w, h);
 
-        // NOTICE: deferent of the glTexParameter and glTextureParamter freaking same old issue!!!!
+        // NOTICE: deferent of the glTexParameter and glTextureParamater freaking same old issue!!!!
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -247,6 +247,11 @@ void OpenGLFrameBuffer::UpdateAll()
                                           m_Specification.Width, m_Specification.Height);
                 break;
             }
+            case framebuffer::ETextureFormat::None:
+            case framebuffer::ETextureFormat::RGBA8:
+            case framebuffer::ETextureFormat::RED_INTEGER:
+            case framebuffer::ETextureFormat::RGB16F:
+                break;
         }
     }
     // GL_CHECK_HEALTH();
