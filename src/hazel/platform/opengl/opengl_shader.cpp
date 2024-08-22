@@ -17,29 +17,35 @@
 
 #include "hazel/core/log.h"
 #include "hazel/debug/instrumentor.h"
-#include "hazel/utils/platform_utils.h"
 
 #include "gl_macros.h"
 #include "hazel/core/base.h"
 
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
+#include "nlohmann/json_fwd.hpp"
 #include "opengl_shader.h"
 #include "utils/path.h"
 
 
+
+#include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <ios>
 
-#include <map>
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_cross.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
+#include <string>
 #include <unordered_map>
 #include <vector>
+
+#include "nlohmann/json.hpp"
+#include "utils/file.h"
 
 
 
@@ -53,6 +59,7 @@ static const char *eol_flag =
 #endif
 
 namespace utils {
+
 static GLenum ShaderTypeFromString(const std::string &type)
 {
     if (type == "vertex")
@@ -90,12 +97,15 @@ static const char *GLShaderStageToString(GLenum stage)
 }
 
 static std::string           cache_relative_path = "res/cache/shader/opengl";
-static std::filesystem::path GetCacheDirectory() { return FPath(cache_relative_path).absolute_path; }
+static std::filesystem::path GetCacheDirectory()
+{
+    static auto _ = (HZ_CORE_INFO("Initial Cache directory: {}", FPath(cache_relative_path).absolute_path.string()), 0);
+    return FPath(cache_relative_path);
+}
 
 static void CreateCacheDirectoryIfNeeded()
 {
     auto cache_dir = GetCacheDirectory();
-    HZ_INFO("the shader cached dir is {}", cache_dir.string());
 
     if (!std::filesystem::exists(cache_dir))
     {
@@ -142,36 +152,78 @@ static const char *GLShaderStage_CachedVulkan_FileExtension(GLenum stage)
 }
 
 
-
 } // namespace utils
 
 OpenGLShader::OpenGLShader(const std::string &shader_file_path)
 {
     HZ_PROFILE_FUNCTION();
 
+    m_FilePath = shader_file_path;
+    m_ShaderID = 0;
+
     utils::CreateCacheDirectoryIfNeeded();
 
-    m_ShaderID                 = 0;
-    std::string source         = ReadFile(shader_file_path);
-    auto        shader_sources = PreProcess(source);
-    // HZ_CORE_ERROR("{}:\n{}", utils::GLShaderStageToString(GL_VERTEX_SHADER), shader_sources[GL_VERTEX_SHADER]);
-    // HZ_CORE_INFO("{}:\n{}", utils::GLShaderStageToString(GL_FRAGMENT_SHADER), shader_sources[GL_FRAGMENT_SHADER]);
 
-    m_FilePath = shader_file_path;
+    // derive the shader name from the filename
+    m_Name = std::filesystem::path(m_FilePath).stem().string();
+    HZ_CORE_ASSERT(!m_Name.empty(), "Cannot derive the shader name from shader file.");
+
+    HZ_CORE_TRACE("Creating OpenGL Shader....\n\tShader file path: {} \n\tShader name: {}", m_FilePath.string(), m_Name);
+
+    // check the source file hash
+    bool bSourceChanged = true;
+
+    auto source = ::utils::File::read_all(m_FilePath.string());
+    HZ_CORE_ASSERT(source.has_value(), "Failed to read shader source file: {}", m_FilePath.string());
+
+    auto hash = ::utils::File::get_hash(std::ref(source.value())).value();
+    HZ_CORE_INFO("Current Shader hash: {}", hash);
+
+    nlohmann::json cached_meta_json;
+    auto           cached_meta_filepath = GetCacheMetaPath();
+    std::ifstream  ifs(cached_meta_filepath);
+    if (!ifs.fail()) {
+        cached_meta_json = nlohmann::json::parse(ifs);
+        if (cached_meta_json.contains("hash")) {
+            HZ_CORE_ASSERT(cached_meta_json["hash"].is_number(), "Old shader hash is not a number");
+            auto old_hash  = cached_meta_json["hash"].get<size_t>();
+            bSourceChanged = (hash != old_hash);
+            HZ_CORE_INFO("Cached shader hash:  {}", old_hash);
+        }
+    }
+
+    // split shader sources
+    std::unordered_map<GLenum, std::string> shader_sources;
+    if (bSourceChanged) {
+        shader_sources = PreProcess(source.value());
+        // HZ_CORE_ERROR("{}:\n{}", utils::GLShaderStageToString(GL_VERTEX_SHADER), shader_sources[GL_VERTEX_SHADER]);
+        // HZ_CORE_INFO("{}:\n{}", utils::GLShaderStageToString(GL_FRAGMENT_SHADER), shader_sources[GL_FRAGMENT_SHADER]);
+    }
+    else {
+        // construct  empty shader sources for recompilation
+        // TODO: remove  this  and fix successor steps
+        shader_sources = {
+            {  GL_VERTEX_SHADER, {}},
+            {GL_FRAGMENT_SHADER, {}}
+        };
+    }
+
 
     {
         Timer timer;
-        CompileOrGet_VulkanBinaries(shader_sources);
-
-        CompileOrGet_GLBinaries();
+        CreateVulkanBinaries(shader_sources, bSourceChanged);
+        CreateGLBinaries(bSourceChanged);
         CreateProgram();
         // Sleep(3000);
-        HZ_CORE_WARN("Shader creation took {0} ms", timer.ElapsedMillis());
+        HZ_CORE_WARN("Shader compile and creation took {0} ms", timer.ElapsedMillis());
     }
-    // derive the shader name from the filename
-    m_Name = std::filesystem::path(shader_file_path).stem().string();
-    HZ_CORE_INFO("Shader name: {}", m_Name);
-    HZ_CORE_ASSERT(!m_Name.empty(), "Cannot derive the shader name from shader file.");
+
+    // overwrite the source hash
+    if (bSourceChanged) {
+        cached_meta_json["hash"] = hash;
+        std::ofstream ofs(cached_meta_filepath, std::ios::out | std::ios::trunc);
+        ofs << cached_meta_json.dump(4) << std::endl;
+    }
 }
 
 OpenGLShader::OpenGLShader(const std::string &name, const std::string &vert_src, const std::string &frag_src)
@@ -187,8 +239,8 @@ OpenGLShader::OpenGLShader(const std::string &name, const std::string &vert_src,
         {GL_FRAGMENT_SHADER, frag_src}
     };
 
-    CompileOrGet_VulkanBinaries(sources);
-    CompileOrGet_GLBinaries();
+    CreateVulkanBinaries(sources, true);
+    CreateGLBinaries(true);
     CreateProgram();
 }
 
@@ -276,11 +328,8 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
     const size_t type_token_len = strlen(type_token);
     size_t       pos            = source.find(type_token, 0);
 
-
-
     while (pos != std::string ::npos)
     {
-
         // get the type string
         size_t eol = source.find_first_of(eol_flag, pos);
         HZ_CORE_ASSERT(eol != std::string ::npos, "Syntax error");
@@ -306,9 +355,10 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
     return shader_sources;
 }
 
-void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources)
+void OpenGLShader::CreateVulkanBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources, bool bSourceChanged)
 {
     HZ_PROFILE_FUNCTION();
+
     shaderc::Compiler       compiler;
     shaderc::CompileOptions options;
     options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
@@ -317,19 +367,18 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
         options.SetOptimizationLevel(shaderc_optimization_level_performance);
     }
 
-    auto  cached_dir  = utils::GetCacheDirectory();
     auto &shader_data = m_Vulkan_SPIRV;
     shader_data.clear();
 
     for (auto &&[stage, source] : shader_sources)
     {
         auto shader_file_path = m_FilePath;
-        auto cached_path      = cached_dir / (shader_file_path.filename().string() +
-                                         utils::GLShaderStage_CachedVulkan_FileExtension(stage));
+        auto cached_path      = GetCachePath(true, stage);
 
-        std::ifstream f(cached_path, std::ios::in | std::ios::binary);
-        if (!f.fail())
-        {
+        // load binary spirv caches
+        if (!bSourceChanged) {
+            std::ifstream f(cached_path, std::ios::in | std::ios::binary);
+            HZ_CORE_ASSERT(f.is_open(), "Cached spirv file not found when source do not changed!!");
             f.seekg(0, std::ios::end);
             auto size = f.tellg();
             f.seekg(0, std::ios::beg);
@@ -338,6 +387,7 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
             f.read((char *)data.data(), size);
             f.close();
         }
+        // recompile
         else {
             shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
                 source,
@@ -352,8 +402,9 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
                 HZ_CORE_ASSERT(false);
             }
 
+            // store compile result into memory and cached file
             shader_data[stage] = std::vector<uint32_t>(result.begin(), result.end());
-            std::ofstream ofs(cached_path, std::ios::out | std::ios::binary);
+            std::ofstream ofs(cached_path, std::ios::out | std::ios::binary | std::ios::trunc);
             if (ofs.is_open()) {
                 auto &data = shader_data[stage];
                 ofs.write((char *)data.data(), data.size() * sizeof(uint32_t));
@@ -369,9 +420,8 @@ void OpenGLShader::CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned
     }
 }
 
-void OpenGLShader::CompileOrGet_GLBinaries()
+void OpenGLShader::CreateGLBinaries(bool bSourceChanged)
 {
-    auto &shader_data = m_OpenGL_SPIRV;
 
     shaderc::Compiler       compiler;
     shaderc::CompileOptions options;
@@ -382,21 +432,18 @@ void OpenGLShader::CompileOrGet_GLBinaries()
         options.SetOptimizationLevel(shaderc_optimization_level_performance);
     }
 
-
-    std::filesystem::path cached_directory = utils::GetCacheDirectory();
+    auto &shader_data = m_OpenGL_SPIRV;
     shader_data.clear();
     m_OpenGL_SourceCode.clear();
 
     for (auto &&[stage, spirv_binary] : m_Vulkan_SPIRV)
     {
-        std::filesystem::path shaderFilePath  = m_FilePath;
-        std::filesystem::path cached_filepath = cached_directory /
-                                                (shaderFilePath.filename().string() +
-                                                 utils::GLShaderStage_CachedOpenGL_FileExtension(stage));
+        auto cached_filepath = GetCachePath(false, stage);
+        if (!bSourceChanged) {
+            // load binary opengl caches
+            std::ifstream in(cached_filepath, std::ios::in | std::ios::binary);
+            HZ_CORE_ASSERT(in.is_open(), "Cached opengl file not found when source do not changed!!");
 
-        std::ifstream in(cached_filepath, std::ios::in | std::ios::binary);
-        if (!in.fail())
-        {
             in.seekg(0, std::ios::end);
             auto size = in.tellg();
             in.seekg(0, std::ios::beg);
@@ -408,15 +455,14 @@ void OpenGLShader::CompileOrGet_GLBinaries()
         }
         else
         {
+            // spirv binary -> glsl source code
             spirv_cross::CompilerGLSL glsl_compiler(spirv_binary);
             m_OpenGL_SourceCode[stage] = glsl_compiler.compile();
 
             // HZ_CORE_INFO("????????????????????????\n{}", m_OpenGL_SourceCode[stage]);
-
-
             auto &source = m_OpenGL_SourceCode[stage];
             // HZ_CORE_ERROR(source);
-            HZ_CORE_ERROR(m_FilePath.string());
+            // HZ_CORE_ERROR(m_FilePath.string());
 
             shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
                 source,
@@ -429,9 +475,9 @@ void OpenGLShader::CompileOrGet_GLBinaries()
                 HZ_CORE_ASSERT(false);
             }
 
+            // store compile result(opengl) into memory and cached file
             shader_data[stage] = std::vector<uint32_t>(result.cbegin(), result.cend());
-
-            std::ofstream out(cached_filepath, std::ios::out | std::ios::binary);
+            std::ofstream out(cached_filepath, std::ios::out | std::ios::binary | std::ios::trunc);
             if (out.is_open())
             {
                 auto &data = shader_data[stage];
@@ -518,6 +564,22 @@ void OpenGLShader::Reflect(GLenum stage, const std::vector<uint32_t> &shader_dat
         HZ_CORE_TRACE("\tMembers = {0}", member_count);
     }
 }
+
+std::filesystem::path OpenGLShader::GetCachePath(bool bVulkan, GLenum stage)
+{
+    auto cached_dir = utils::GetCacheDirectory();
+    auto filename   = m_FilePath.filename().string() +
+                    (bVulkan
+                         ? utils::GLShaderStage_CachedVulkan_FileExtension(stage)
+                         : utils::GLShaderStage_CachedOpenGL_FileExtension(stage));
+    return cached_dir / filename;
+}
+
+std::filesystem::path OpenGLShader::GetCacheMetaPath()
+{
+    return utils::GetCacheDirectory() / (m_FilePath.filename().string() + ".cached.meta.json");
+}
+
 
 void OpenGLShader::SetInt(const std::string &name, const int32_t value)
 {

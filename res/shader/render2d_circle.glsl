@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-13 00:16:31
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-21 23:20:47
+ * @ Modified time: 2024-08-22 14:35:53
  * @ Description:
  */
 
@@ -79,7 +79,7 @@ void main()
     }
 
     o_Color = Input.Color;
-    o_Color.a *= circle;
+    o_Color.a *= circle; // 
 
     o_EntityId = v_EntityId;
 }

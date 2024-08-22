@@ -1,12 +1,18 @@
+/**
+ * @ Author: godot42
+ * @ Create Time: 2024-08-02 10:47:59
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-08-22 14:09:12
+ * @ Description:
+ */
+
+
 #pragma once
 
-#include <cstddef>
-#include <fstream>
-#include <iostream>
-#include <optional>
-#include <string_view>
-#include <vector>
 
+
+#include <cstddef>
+#include <filesystem>
 
 
 namespace utils {
@@ -20,8 +26,12 @@ struct File {
      *         If the file cannot be opened or read, the optional is empty.
      * @throws None
      */
-    static std::optional<std::vector<char>> read_all(const std::string &filepath);
+    static std::optional<std::string> read_all(const std::filesystem::path &filepath);
 
     static bool is_image(const std::filesystem::path &filepath);
+
+
+    static std::optional<size_t> get_content_hash(const std::filesystem::path &filepath);
+    static std::optional<size_t> get_hash(const std::string &text);
 };
 } // namespace utils

@@ -42,7 +42,9 @@ add_requires("vulkansdk", {
     }
 })
 
+add_requires("nlohmann_json")
 add_requires("box2d")
+-- add_requires("openssl")
 
 
 ---@format disable
@@ -80,6 +82,8 @@ target("hazel")
     add_packages("glfw", { public = true })
     add_packages("vulkansdk", { public = true })
     add_packages("box2d")
+    add_packages("nlohmann_json", { public = true })
+    -- add_packages("openssl", { public = true })
 
     on_config(function(target)
         local kind = target:get("kind")

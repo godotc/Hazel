@@ -68,10 +68,14 @@ class OpenGLShader : public Shader
     std::unordered_map<unsigned int, std::string> PreProcess(const std::string &source);
 
     void Compile();
-    void CompileOrGet_VulkanBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources);
-    void CompileOrGet_GLBinaries();
+    void CreateVulkanBinaries(const std::unordered_map<unsigned int, std::string> &shader_sources, bool bSourceChanged = true);
+    void CreateGLBinaries(bool bSourceChanged = true);
     void CreateProgram();
     void Reflect(GLenum stage, const std::vector<uint32_t> &shader_data);
+
+    // vulkan or opengl
+    std::filesystem::path GetCachePath(bool bVulkan, GLenum stage);
+    std::filesystem::path GetCacheMetaPath();
 };
 
 } // namespace hazel

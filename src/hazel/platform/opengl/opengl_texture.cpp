@@ -17,6 +17,8 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
 {
     HZ_PROFILE_FUNCTION();
 
+    HZ_CORE_TRACE("Creating OpenGLTexture2D: {}", path);
+
     int      w, h, nChannel;
     stbi_uc *data = nullptr;
     {
@@ -30,7 +32,7 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
         return;
     }
 
-    HZ_CORE_INFO("{}, w: {}, h: {}, nChannel: {}", m_Path, w, h, nChannel);
+    HZ_CORE_INFO("w: {}, h: {}, nChannel: {}", w, h, nChannel);
     m_IsLoaded = true;
     m_Width    = w;
     m_Height   = h;
