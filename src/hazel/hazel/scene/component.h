@@ -101,8 +101,8 @@ struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
 struct CircleRendererComponent : public Component<CircleRendererComponent> {
     glm::vec4 Color{1, 1, 1, 1};
     // float     Radius    = 0.5f;
-    float     Thickness = 1.f;
-    float     Fade      = 0.005f;
+    float Thickness = 1.f;
+    float Fade      = 0.005f;
 
 
     CircleRendererComponent() {}
@@ -129,7 +129,6 @@ struct CameraComponent : public Component<CameraComponent> {
         }
     }
 };
-
 
 
 struct Rigidbody2DComponent : public Component<Rigidbody2DComponent> {
@@ -165,6 +164,24 @@ struct BoxCollider2DComponent : public Component<BoxCollider2DComponent> {
 
     BoxCollider2DComponent()                               = default;
     BoxCollider2DComponent(const BoxCollider2DComponent &) = default;
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
+};
+
+struct CircleCollider2DComponent : public Component<CircleCollider2DComponent> {
+    glm::vec2 Offset = {0.0f, 0.0f};
+    float     Radius = 0.5f;
+
+    float Density              = 1.0f; // 冲力
+    float Friction             = 0.5f; // 摩擦力
+    float Restitution          = 0.0f; // ???
+    float RestitutionThreshold = 0.5f; //
+
+    // Storage for runtime
+    void *RuntimeFixture = nullptr;
+
+    CircleCollider2DComponent()                                  = default;
+    CircleCollider2DComponent(const CircleCollider2DComponent &) = default;
 
     void OnComponentAddedImpl(const Scene *scene) override {}
 };

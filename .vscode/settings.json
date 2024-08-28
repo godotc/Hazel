@@ -34,6 +34,7 @@
         "spdlog",
         "SPIR",
         "SPIRV",
+        "sref",
         "stbi",
         "subtexture",
         "Texcoord",

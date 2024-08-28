@@ -2,13 +2,14 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-19 01:21:21
+ * @ Modified time: 2024-08-23 17:15:43
  * @ Description:
  */
 
 
 
 #include "scene.h"
+#include "box2d/b2_collision.h"
 #include "hazel/core/uuid.h"
 
 #include "hazel/core/base.h"
@@ -18,10 +19,12 @@
 #include "hazel/scene/entity.h"
 
 #include "box2d/b2_body.h"
+#include "box2d/b2_circle_shape.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_world.h"
 #include <cstdint>
+
 
 
 #include "hazel/scene/scriptable_entity.h"
@@ -95,6 +98,7 @@ void Scene::DuplicateEntity(Entity entity)
     copy_component_if_exist<Rigidbody2DComponent>(new_entity, entity);
     copy_component_if_exist<BoxCollider2DComponent>(new_entity, entity);
     copy_component_if_exist<NativeScriptComponent>(new_entity, entity);
+    copy_component_if_exist<CircleCollider2DComponent>(new_entity, entity);
 }
 
 void Scene::DestroyEntity(Entity entity)
@@ -149,10 +153,11 @@ Ref<Scene> Scene::Copy(Ref<Scene> scene)
     // TODO: static reflection typelist
     copy_component<TransformComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<SpriteRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<CircleRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<CameraComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<Rigidbody2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<BoxCollider2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<CircleRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    copy_component<CircleCollider2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
     copy_component<NativeScriptComponent>(dst_scene_registry, src_scene_registry, entt_map);
 
 
@@ -195,6 +200,25 @@ void Scene::OnRuntimeStart()
 
             b2Fixture *fixture  = body->CreateFixture(&fixture_def);
             bc2d.RuntimeFixture = fixture;
+        }
+
+        if (entity.HasComponent<CircleRendererComponent>())
+        {
+            auto &cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+            b2CircleShape shape;
+            shape.m_p      = {cc2d.Offset.x, cc2d.Offset.y};
+            shape.m_radius = cc2d.Radius;
+
+            b2FixtureDef fixture_def;
+            fixture_def.shape                = &shape;
+            fixture_def.density              = cc2d.Density;
+            fixture_def.friction             = cc2d.Friction;
+            fixture_def.restitution          = cc2d.Restitution;
+            fixture_def.restitutionThreshold = cc2d.RestitutionThreshold;
+
+            b2Fixture *fixture  = body->CreateFixture(&fixture_def);
+            cc2d.RuntimeFixture = fixture;
         }
     }
 }

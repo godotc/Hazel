@@ -25,8 +25,11 @@ class SceneHierarchyPanel
     void OnImGuiRender();
 
   private:
+  private:
     void DrawEntityNode(Entity entity);
     void DrawComponents(Entity entity);
+
+    void UI_AddComponents();
 };
 
 
