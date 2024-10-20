@@ -17,6 +17,10 @@
 #include "utils/trait.h"
 #include <string>
 
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+
 namespace hazel {
 
 
@@ -26,12 +30,14 @@ struct DefaultConfig : public utils::trait::disable_copy {
   public:
     void Init()
     {
-        auto filepath = FPath(ConfigName());
+        auto filepath = FPath("config") / ConfigName();
 
         auto content = utils::File::read_all(filepath);
         if (!content.has_value()) {
-            HZ_CORE_ERROR("Failed to read config file: {}", filepath.absolute_path.string());
+            HZ_CORE_ERROR("Failed to read config file: {}", filepath.string());
         }
+
+        auto config = nlohmann::json::parse(filepath);
 
         // TODO: reflect all variable in content
     }

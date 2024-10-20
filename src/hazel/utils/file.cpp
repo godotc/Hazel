@@ -56,6 +56,7 @@ std::optional<std::string> File::read_all(const std::filesystem::path &filepath)
 
 bool File::is_image(const std::filesystem::path &filepath)
 {
+    // TODO: read binary file type
     auto ext = filepath.filename().extension();
     return ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp";
 }
