@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-23 17:15:43
+ * @ Modified time: 2024-10-20 19:28:45
  * @ Description:
  */
 
@@ -28,10 +28,21 @@
 
 
 #include "hazel/scene/scriptable_entity.h"
+#include "hazel/sref/typelist.hpp"
 
 
 
 namespace hazel {
+
+template <class T>
+struct only_copy_component {
+    static constexpr bool value = !(std::is_same_v<T, IDComponent> ||
+                                    std::is_same_v<T, TagComponent>);
+};
+using TCopyComponentTypes = sref::filter<TComponentTypes, only_copy_component>;
+
+
+
 template <class Component>
 static void copy_component(entt::registry &dst, const entt::registry &src, const std::unordered_map<UUID, entt::entity> &entt_map);
 template <class Component>
@@ -88,17 +99,10 @@ void Scene::DuplicateEntity(Entity entity)
     HZ_CORE_INFO("Duplicate entity: {0}", new_name);
     auto new_entity = CreateEntity(new_name);
 
-
     // except id and tag component
-    // TODO: static reflection typelist
-    copy_component_if_exist<TransformComponent>(new_entity, entity);
-    copy_component_if_exist<SpriteRendererComponent>(new_entity, entity);
-    copy_component_if_exist<CircleRendererComponent>(new_entity, entity);
-    copy_component_if_exist<CameraComponent>(new_entity, entity);
-    copy_component_if_exist<Rigidbody2DComponent>(new_entity, entity);
-    copy_component_if_exist<BoxCollider2DComponent>(new_entity, entity);
-    copy_component_if_exist<NativeScriptComponent>(new_entity, entity);
-    copy_component_if_exist<CircleCollider2DComponent>(new_entity, entity);
+    sref::foreach_types<TCopyComponentTypes>([&new_entity, &entity](auto type_val) {
+        copy_component_if_exist<decltype(type_val)>(new_entity, entity);
+    });
 }
 
 void Scene::DestroyEntity(Entity entity)
@@ -117,7 +121,7 @@ static void copy_component(entt::registry &dst, const entt::registry &src, const
     for (auto e : src.view<Component>())
     {
         UUID uuid = src.get<IDComponent>(e).ID;
-        HZ_CORE_ASSERT(entt_map.contains(uuid));
+        HZ_CORE_ASSERT(entt_map.contains(uuid), "UUID not found in entity map");
         auto dst_entt_id = entt_map.at(uuid);
 
         auto &src_component = src.get<Component>(e);
@@ -149,16 +153,10 @@ Ref<Scene> Scene::Copy(Ref<Scene> scene)
         // entt_map[uuid] = entity;
     }
 
-    // except id and tag component
-    // TODO: static reflection typelist
-    copy_component<TransformComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<SpriteRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<CameraComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<Rigidbody2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<BoxCollider2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<CircleRendererComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<CircleCollider2DComponent>(dst_scene_registry, src_scene_registry, entt_map);
-    copy_component<NativeScriptComponent>(dst_scene_registry, src_scene_registry, entt_map);
+    // id and tag component have been created, now copy the rest
+    sref::foreach_types<TCopyComponentTypes>([&dst_scene_registry, &src_scene_registry, entt_map](auto type_val) {
+        copy_component<decltype(type_val)>(dst_scene_registry, src_scene_registry, entt_map);
+    });
 
 
     return new_scene;
@@ -202,7 +200,7 @@ void Scene::OnRuntimeStart()
             bc2d.RuntimeFixture = fixture;
         }
 
-        if (entity.HasComponent<CircleRendererComponent>())
+        if (entity.HasComponent<CircleCollider2DComponent>())
         {
             auto &cc2d = entity.GetComponent<CircleCollider2DComponent>();
 

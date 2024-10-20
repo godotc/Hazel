@@ -1,9 +1,14 @@
+/**
+ * @ Author: godot42
+ * @ Create Time: 2024-08-21 22:28:05
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-10-20 19:29:52
+ * @ Description:
+ */
+
 #pragma once
 
-#include "glm/detail/qualifier.hpp"
 #include "glm/ext/quaternion_float.hpp"
-#include "hazel/core/base.h"
-#include "hazel/core/uuid.h"
 #include "hazel/renderer/texture.h"
 #include "scene_camera.h"
 #include <string>
@@ -16,6 +21,8 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+
+#include "hazel/sref/typelist.hpp"
 
 namespace hazel {
 
@@ -205,5 +212,18 @@ struct NativeScriptComponent : public Component<NativeScriptComponent> {
 
     void OnComponentAddedImpl(const Scene *scene) override {}
 };
+
+
+using TComponentTypes = sref::type_list<
+    IDComponent,
+    TagComponent,
+    TransformComponent,
+    SpriteRendererComponent,
+    CircleRendererComponent,
+    CameraComponent,
+    Rigidbody2DComponent,
+    BoxCollider2DComponent,
+    CircleCollider2DComponent,
+    NativeScriptComponent>;
 
 } // namespace hazel

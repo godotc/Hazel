@@ -26,3 +26,4 @@ cache
 *.log
 
 vs2022
+*.exe

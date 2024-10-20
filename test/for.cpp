@@ -1,19 +1,9 @@
-/**
- * @ Author: godot42
- * @ Create Time: 2024-08-23 17:03:13
- * @ Modified by: @godot42
- * @ Modified time: 2024-10-19 23:36:02
- * @ Description:
- */
-
-#pragma once
 
 #include <cstdio>
 #include <functional>
 #include <type_traits>
+#include <utility>
 
-
-namespace sref {
 
 
 template <typename... Args>
@@ -22,6 +12,7 @@ struct type_list {
 };
 
 namespace detail {
+
 template <typename>
 struct head;
 template <typename T, typename... Remains>
@@ -110,9 +101,10 @@ struct filter<type_list<T, Remains...>, Fn> {
         typename filter<type_list<Remains...>, Fn>::type>;                        // continue to remains
 };
 
-
-
 } // namespace detail
+
+
+// template <typename, template <typename> typename>
 
 
 template <typename TypeList>
@@ -136,11 +128,49 @@ using filter = typename detail::filter<TypeList, Fn>::type;
 
 
 
-template <typename Type>
-struct not_in_type {
+template <class Type>
+void f(Type dummy)
+{
+    if (std::is_same_v<float, decltype(dummy)>) {
+        printf("www");
+    }
+}
 
-    // static constexpr bool value = std::is_same_v<head_t<TypeList>>;
-};
+
+
+// template <typename T, typename... Remains>
+// void for_each(std::function<T &&> &f)
+// {
+//     f();
+//     for_each<type_list<Remains...>>(f);
+// };
+
+
+
+// template <typename TypeList>
+// void for_each()
+// {
+//     printf("for_each: %s\n", typeid(T).name());
+//     if (sizeof...(Remains) > 0) {
+//         for_each<type_list<Remains...>>();
+//     }
+// };
+
+template <int StartIndex, int UpperBound, class Fn, class... Arg>
+void static_for(Fn func, Arg... args)
+{
+    if constexpr (StartIndex < UpperBound) {
+
+        constexpr int index = StartIndex;
+        func(index, std::forward<Arg>(args)...);
+        static_for<StartIndex + 1, UpperBound>(func, std::forward<Arg>(args)...);
+    }
+}
+
+
+
+using list = type_list<int, double, float>;
+
 
 template <class TypeList, class Fn, class... Arg>
 void foreach_types(Fn func, Arg... args)
@@ -148,79 +178,34 @@ void foreach_types(Fn func, Arg... args)
 
     if constexpr (TypeList::size > 0)
     {
-        using CurrentType = head_t<TypeList>;
-        func(CurrentType{}, std::forward<Arg>(args)...);
+        using CurType = head_t<TypeList>;
+        func(std::declval<CurType>(), std::forward<Arg>(args)...);
         foreach_types<tail_t<TypeList>>(func, std::forward<Arg>(args)...);
     }
 }
 
-} // namespace sref
+// template <class TypeList, template <typename> typename Fn, class... Arg>
+// void foreach_types_v1(Fn func, Arg... args)
+// {
+//     if constexpr (TypeList::size > 0)
+//     {
+//         using CurType = head_t<TypeList>;
+//         func<CurType>(std::forward<Arg>(args)...);
+//         foreach_types_v1<tail_t<TypeList>>(func, std::forward<Arg>(args)...);
+//     }
+// }
 
-#if test
+// template <typename Type>
+// void ff()
+// {
+//     std::declval<Type>();
+// }
 
-    #include <iostream>
-    #include <string>
-
-
-
-struct Person2 final {
-    std::string last_name;
-    float       height;
-    // bool        is_transaxle;
-    bool is_female;
-
-    void Sleep() const
-    {
-        printf("Zzzzz....\n");
-    }
-    // bool IsTransaxle() const { return is_transaxle; }
-    bool IsFemale() const
-    {
-        printf("???....\n");
-        return is_female;
-    }
-    bool GetMarriedWith(Person2 other)
-    {
-        if (other.is_female != is_female) //&& is_transaxle != other.is_transaxle;)
-        {
-            if (is_female) {
-                last_name = "Mrs." + other.last_name;
-            }
-            else {
-                last_name = "Mr." + last_name;
-            }
-            return true;
-        }
-        return false;
-    }
-};
-
-
-
-template <typename T>
-struct only_integer {
-    constexpr static bool value = std::is_integral_v<T>;
-};
-template <typename T>
-struct change_to_float {
-    using type = std::conditional_t<std::is_integral_v<T>, float, T>;
-};
-
-
-inline void type_list_test()
+int main()
 {
-    using namespace sref;
-    using type = type_list<int, char, bool, double>;
-
-    using first_elem = head_t<type>;
-    using the_2      = nth_t<type, 2>;
-
-    constexpr size_t num = count<type, std::is_integral>;
-    std::cout << num << std::endl;
-
-    using changed = detail::map<type, change_to_float>::type;
-
-    using filtered = filter<type, only_integer>;
+    using component_types = type_list<int, double, float>;
+    foreach_types<component_types>([](auto v) {
+        printf("%s\n", typeid(v).name());
+    });
+    // foreach_types_v1<component_types>(ff);
 }
-
-#endif
