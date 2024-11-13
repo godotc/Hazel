@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 18:47:13
+ * @ Modified time: 2024-11-13 19:38:32
  * @ Description:
  */
 
@@ -284,6 +284,14 @@ void Scene::OnUpdateRuntime(Timestep ts)
                 bc2d.Friction                   = fixture->GetFriction();
                 bc2d.Restitution                = fixture->GetRestitution();
                 bc2d.RestitutionThreshold       = fixture->GetRestitutionThreshold();
+            }
+            if (entity.HasComponent<CircleCollider2DComponent>()) {
+                CircleCollider2DComponent &cc2d    = entity.GetComponent<CircleCollider2DComponent>();
+                const b2Fixture           *fixture = (b2Fixture *)cc2d.RuntimeFixture;
+                cc2d.Density                       = fixture->GetDensity();
+                cc2d.Friction                      = fixture->GetFriction();
+                cc2d.Restitution                   = fixture->GetRestitution();
+                cc2d.RestitutionThreshold          = fixture->GetRestitutionThreshold();
             }
         }
     }
