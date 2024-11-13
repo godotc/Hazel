@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-18 00:50:42
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 04:53:40
+ * @ Modified time: 2024-11-13 20:23:51
  * @ Description:
  */
 
@@ -58,6 +58,8 @@ class EditorLayer : public hazel::Layer
     ImGuiDockNodeFlags m_DockspaceFlags = ImGuiDockNodeFlags_None;
     ImGuiWindowFlags   m_WindowFlags    = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
+    bool bShow2DPhysicsCollisions = true;
+
     // ----------------------
 
     glm::vec2 m_ViewportSize = {0.f, 0.f};
@@ -95,6 +97,8 @@ class EditorLayer : public hazel::Layer
     void SetActiveScene(Ref<Scene> new_scene);
 
   private:
+    // Overlay
+    void OnOverlayRender();
 
 
     // --- GUI renderer

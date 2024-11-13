@@ -2,12 +2,16 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-22 00:13:36
+ * @ Modified time: 2024-11-13 22:44:00
  *  Description:
  */
 
-//
 #include "hz_pch.h"
+//
+#include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/vector_float3.hpp"
+#include "hazel/renderer/render_2d.h"
 //
 
 #include "hazel/scene/editor_camera.h"
@@ -52,6 +56,7 @@
 
 
 #include "math/math.h"
+#include "platform/opengl/gl_macros.h"
 #include "utils/path.h"
 
 namespace hazel {
@@ -220,6 +225,8 @@ void EditorLayer::OnUpdate(Timestep ts)
         }
     }
 
+    OnOverlayRender();
+
     m_Framebuffer->Unbind();
 };
 
@@ -249,6 +256,59 @@ void EditorLayer::SetActiveScene(Ref<Scene> new_scene)
     // m_RuntimeScene = nullptr; // destroy by assign
     m_ActiveScene = new_scene;
     m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+}
+
+void EditorLayer::OnOverlayRender()
+{
+    if (!bShow2DPhysicsCollisions) {
+        return;
+    }
+
+    if (m_SceneState == ESceneState::Play)
+    {
+        Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+        Render2D::BeginScene(camera.GetComponent<CameraComponent>().Camera,
+                             camera.GetComponent<TransformComponent>().GetTransform());
+    }
+    else {
+        Render2D::BeginScene(m_EditorCamera);
+    }
+
+    // Box
+    {
+        auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+        for (auto entity : view) {
+            const auto &[tc, bc2dc] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+            glm::vec3 pos           = tc.Translation + glm::vec3(bc2dc.Offset, 0.2);
+            glm::vec3 scale         = tc.Scale * glm::vec3(bc2dc.Size * 2.0f, 1.f);
+            glm::mat4 transf        = glm::translate(glm::mat4(1.0f), pos) *
+                               glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0, 0, 1)) *
+                               glm::scale(glm::mat4(1.0f), scale);
+
+            Render2D::DrawRect(transf, glm::vec4(0, 0, 1, 1));
+        }
+    }
+
+
+
+    // Circle
+    {
+        auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+        for (auto entity : view) {
+            const auto &[tc, cc2dc] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+            glm::vec3 pos    = tc.Translation + glm::vec3(cc2dc.Offset, 0.001f);
+            glm::vec3 scale  = tc.Scale * (cc2dc.Radius * 2);
+            glm::mat4 transf = glm::translate(glm::mat4(1.0f), pos) *
+                               glm::scale(glm::mat4(1.0f), scale);
+
+            Render2D::DrawCircle(transf, glm::vec4(0, 0, 1, 1), 0.1f);
+        }
+    }
+
+    Render2D::EndScene();
+    GL_CHECK_HEALTH();
+
 }
 
 
@@ -649,6 +709,7 @@ void EditorLayer::UI_Settings()
         ImGui::End();
         return;
     }
+    ImGui::Checkbox("Show 2D Physics Collision", &bShow2DPhysicsCollisions);
 
     auto pos = m_EditorCamera.GetPosition();
     ImGui::Text("Postion: %f, %f, %f", pos.x, pos.y, pos.z);

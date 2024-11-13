@@ -1,10 +1,19 @@
+/**
+ * @ Author: godot42
+ * @ Create Time: 2024-07-28 20:32:18
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-11-13 22:42:41
+ * @ Description:
+ */
+
 //
 // Created by nono on 10/14/23.
+//
+#include "hz_pch.h"
 //
 #include "glm/fwd.hpp"
 #include "glm/matrix.hpp"
 #include "hazel/renderer/uniform_buffer.h"
-#include "hz_pch.h"
 
 #include "render_2d.h"
 
@@ -30,11 +39,12 @@
 #include "hazel/renderer/texture.h"
 #include <cstddef>
 #include <cstdint>
-#include <wingdi.h>
 
 #include "utils/path.h"
 
 #include "hazel/scene/component.h"
+
+#include "C:\Users\dexzhou\1\Hazel\src\hazel\platform\opengl\gl_macros.h"
 
 namespace hazel {
 
@@ -492,7 +502,8 @@ void Render2D::DrawRect(const glm::vec3 &postion, const glm::vec2 &size, const g
 void Render2D::DrawRect(const glm::mat4 &transf, const glm::vec4 &color, int entity_id)
 {
     glm::vec3 line_vertices[4];
-    for (size_t i = 0; i < 4; ++i) {
+    constexpr int quad_vertex_count = 4;
+    for (size_t i = 0; i < quad_vertex_count; ++i) {
         line_vertices[i] = transf * s_Data.QuadVertexPositions[i];
     }
 
@@ -500,6 +511,7 @@ void Render2D::DrawRect(const glm::mat4 &transf, const glm::vec4 &color, int ent
     DrawLine(line_vertices[1], line_vertices[2], color);
     DrawLine(line_vertices[2], line_vertices[3], color);
     DrawLine(line_vertices[3], line_vertices[0], color);
+
 }
 
 

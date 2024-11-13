@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-17 21:30:46
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 18:54:23
+ * @ Modified time: 2024-11-13 19:46:06
  * @ Description:
  */
 
@@ -12,9 +12,10 @@
 #include "__microshit_api_hazel.h"
 #include "hazel/core/timestep.h"
 #include "hazel/core/uuid.h"
+#include "hazel/scene/component.h"
 #include "hazel/scene/editor_camera.h"
 #include <entt/entt.hpp>
-#include "hazel/scene/component.h"
+
 
 
 
@@ -59,6 +60,12 @@ class HAZEL_API Scene
     void OnUpdateEditor(Timestep ts, EditorCamera &camera);
     void OnUpdateRuntime(Timestep ts);
     void OnViewportResize(uint32_t w, uint32_t h);
+
+    template <typename... Component>
+    auto GetAllEntitiesWith()
+    {
+        return m_Registry.view<Component...>();
+    }
 
   public:
     Entity GetPrimaryCameraEntity();

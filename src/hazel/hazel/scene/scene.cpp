@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 19:38:32
+ * @ Modified time: 2024-11-13 22:46:32
  * @ Description:
  */
 
@@ -10,6 +10,7 @@
 
 #include "scene.h"
 #include "box2d/b2_collision.h"
+#include "glm/ext/matrix_transform.hpp"
 #include "hazel/core/uuid.h"
 
 #include "hazel/core/base.h"
@@ -179,6 +180,7 @@ void Scene::OnRuntimeStart()
             auto &bc2d = entity.GetComponent<BoxCollider2DComponent>();
 
             b2PolygonShape shape;
+            // half-width and half-height
             shape.SetAsBox(bc2d.Size.x * transf.Scale.x, bc2d.Size.y * transf.Scale.y);
 
             b2FixtureDef fixture_def;
@@ -198,7 +200,7 @@ void Scene::OnRuntimeStart()
 
             b2CircleShape shape;
             shape.m_p      = {cc2d.Offset.x, cc2d.Offset.y};
-            shape.m_radius = cc2d.Radius;
+            shape.m_radius = cc2d.Radius * transf.Scale.x;
 
             b2FixtureDef fixture_def;
             fixture_def.shape                = &shape;
@@ -218,6 +220,7 @@ void Scene::OnRuntimeStop()
     delete m_PhysicsWorld;
     m_PhysicsWorld = nullptr;
 }
+
 
 
 void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
