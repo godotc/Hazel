@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-21 22:28:05
  * @ Modified by: @godot42
- * @ Modified time: 2024-10-20 19:29:52
+ * @ Modified time: 2024-11-13 19:30:52
  * @ Description:
  */
 
@@ -13,20 +13,20 @@
 #include "scene_camera.h"
 #include <string>
 
-// TODO: remove this and move all OnComponentAdded to cpp
-#include "scene.h"
-
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "hazel/core/uuid.h"
 #include "hazel/sref/typelist.hpp"
+
 
 namespace hazel {
 
 struct ScriptableEntity;
+struct Scene;
 
 template <class T>
 struct Component {
@@ -34,17 +34,21 @@ struct Component {
     virtual ~Component() = default;
 
   public:
-    void OnComponentAdded(const Scene *scene)
-    {
-        static_cast<T *>(this)->OnComponentAddedImpl(scene);
-    }
+    void        OnComponentAdded(const Scene *scene) { static_cast<T *>(this)->OnComponentAddedImpl(scene); }
+    static const char *GetComponentName() { return T::GetComponentNameImpl(); }
 
   protected:
-    virtual void OnComponentAddedImpl(const Scene *scene) = 0;
+    virtual void        OnComponentAddedImpl(const Scene *scene) = 0;
+
+#define GENERATED_COMPONENT_BODY(cls) \
+    static const char *GetComponentNameImpl(){ return #cls; }
 };
 
 struct IDComponent : public Component<IDComponent> {
+    GENERATED_COMPONENT_BODY(IDComponent)
+
     UUID ID;
+
 
     IDComponent() = default;
     IDComponent(UUID id) : ID(id) {}
@@ -54,6 +58,8 @@ struct IDComponent : public Component<IDComponent> {
 };
 
 struct TagComponent : public Component<TagComponent> {
+    GENERATED_COMPONENT_BODY(TagComponent)
+
     std::string Tag;
 
     TagComponent()                     = default;
@@ -64,6 +70,7 @@ struct TagComponent : public Component<TagComponent> {
 };
 
 struct TransformComponent : public Component<TransformComponent> {
+    GENERATED_COMPONENT_BODY(TransformComponent)
     glm ::vec3 Translation = {0.f, 0.f, 0.f};
     glm ::vec3 Rotation    = {0.f, 0.f, 0.f};
     glm ::vec3 Scale       = {1.f, 1.f, 1.f};
@@ -90,6 +97,8 @@ struct TransformComponent : public Component<TransformComponent> {
 
 
 struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
+    GENERATED_COMPONENT_BODY(SpriteRendererComponent)
+
     glm::vec4      Color{1, 1, 1, 1};
     Ref<Texture2D> Texture;
     float          TilingFactor = 1.0f;
@@ -105,7 +114,11 @@ struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
 };
 
 
+
+
 struct CircleRendererComponent : public Component<CircleRendererComponent> {
+    GENERATED_COMPONENT_BODY(CircleRendererComponent)
+
     glm::vec4 Color{1, 1, 1, 1};
     // float     Radius    = 0.5f;
     float Thickness = 1.f;
@@ -120,6 +133,8 @@ struct CircleRendererComponent : public Component<CircleRendererComponent> {
 
 
 struct CameraComponent : public Component<CameraComponent> {
+    GENERATED_COMPONENT_BODY(CameraComponent)
+
     SceneCamera Camera;
     bool        bPrimary          = true; // TODO: move to scene
     bool        bFixedAspectRatio = false;
@@ -127,18 +142,13 @@ struct CameraComponent : public Component<CameraComponent> {
     CameraComponent()                        = default;
     CameraComponent(const CameraComponent &) = default;
 
-    void OnComponentAddedImpl(const Scene *scene) override
-    {
-        auto w = scene->GetViewportWidth();
-        auto h = scene->GetViewportHeight();
-        if (w > 0 && h > 0) {
-            Camera.SetViewportSize(w, h);
-        }
-    }
+    void OnComponentAddedImpl(const Scene *scene) override;
 };
 
 
 struct Rigidbody2DComponent : public Component<Rigidbody2DComponent> {
+    GENERATED_COMPONENT_BODY(Rigidbody2DComponent)
+
     enum class EBodyType
     {
         Static = 0,
@@ -158,6 +168,8 @@ struct Rigidbody2DComponent : public Component<Rigidbody2DComponent> {
 };
 
 struct BoxCollider2DComponent : public Component<BoxCollider2DComponent> {
+    GENERATED_COMPONENT_BODY(BoxCollider2DComponent)
+
     glm::vec2 Offset = {0.0f, 0.0f};
     glm::vec2 Size   = {0.5f, 0.5f};
 
@@ -176,6 +188,8 @@ struct BoxCollider2DComponent : public Component<BoxCollider2DComponent> {
 };
 
 struct CircleCollider2DComponent : public Component<CircleCollider2DComponent> {
+    GENERATED_COMPONENT_BODY(CircleCollider2DComponent)
+
     glm::vec2 Offset = {0.0f, 0.0f};
     float     Radius = 0.5f;
 
@@ -195,6 +209,8 @@ struct CircleCollider2DComponent : public Component<CircleCollider2DComponent> {
 
 
 struct NativeScriptComponent : public Component<NativeScriptComponent> {
+    GENERATED_COMPONENT_BODY(NativeScriptComponent)
+
     ScriptableEntity *Instance = nullptr;
 
     using InstantiateScript = ScriptableEntity *();
@@ -207,8 +223,10 @@ struct NativeScriptComponent : public Component<NativeScriptComponent> {
     void Bind()
     {
         InstantiateScriptFunc = []() { return static_cast<ScriptableEntity *>(new T()); };
-        DestroyScriptFunc     = [](NativeScriptComponent *nsc) { delete nsc->Instance; nsc->Instance= nullptr; };
+        DestroyScriptFunc     = DestroyScriptFuncImpl;
     }
+
+    static void DestroyScriptFuncImpl(NativeScriptComponent *nsc);
 
     void OnComponentAddedImpl(const Scene *scene) override {}
 };
@@ -225,5 +243,6 @@ using TComponentTypes = sref::type_list<
     BoxCollider2DComponent,
     CircleCollider2DComponent,
     NativeScriptComponent>;
+
 
 } // namespace hazel

@@ -11,7 +11,8 @@ namespace hazel {
 class SceneHierarchyPanel
 {
     Ref<Scene> m_Context;
-    Entity     m_LastSelection, m_Selection;
+    Entity     m_LastSelection;
+    Entity     m_Selection;
 
   public:
     SceneHierarchyPanel() = default;

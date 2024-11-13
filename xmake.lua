@@ -51,8 +51,6 @@ end
 includes("./src")
 
 
-
-
 -- on_config(function()
 --     print("-- Loading manual testting...")
 --     for _, file in ipairs(os.files("./test")) do
@@ -68,11 +66,11 @@ includes("./src")
 -- end)
 
 
----@format disable
 task("test")
+do
     set_menu {}
     on_run(function()
-     for targetname, target in pairs(project.targets()) do
+        for targetname, target in pairs(project.targets()) do
             print(targetname)
             print(target)
             print(target:targetfile())
@@ -86,7 +84,7 @@ task("test")
             -- local target_name = arg[1] or "__DEFAULT_VAR__"
             -- local target_dir = arg[2] or "__DEFAULT_VAR__"
             -- local target_base_name = arg[3] or "__DEFAULT_VAr__"
-     end
+        end
 
         -- exec_cmds(
         --     "xmake f -m debug --test=y",
@@ -95,13 +93,15 @@ task("test")
         --     "xmake run -g test"
         -- )
     end)
+end
 
 task("cpcm")
+do
     set_menu {
         usage = "xmake cpcm"
     }
     on_run(function()
-        local cmd  =import ("script.cmd")
+        local cmd     = import("script.cmd")
         -- print(cmd)
 
         local profile = "debug"
@@ -111,21 +111,25 @@ task("cpcm")
             "xmake project -k compile_commands"
         )
     end)
+end
 
 task("targets")
+do
     set_menu {}
     on_run(function()
         for targetname, target in pairs(project.targets()) do
             print(target:targetfile())
         end
     end)
+end
 
 task("vscode")
-    set_menu{ }
-    on_run(function ()
-        local cmd  =import ("script.cmd")
+do
+    set_menu {}
+    on_run(function()
+        local cmd     = import("script.cmd")
 
-        local project =import("core.project.project")
+        local project = import("core.project.project")
         -- print(project)
         for targetname, target in pairs(project.targets()) do
             -- print(targetname)
@@ -142,23 +146,26 @@ task("vscode")
             -- local target_dir = arg[2] or "__DEFAULT_VAR__"
             -- local target_base_name = arg[3] or "__DEFAULT_VAr__"
             if target:kind() == "binary" then
-                cmd.run_native_lua("script/vscode.lua", target:name(), target:targetdir() , target:basename(), target:type())
+                cmd.run_native_lua("script/vscode.lua", target:name(), target:targetdir(), target:basename(),
+                    target:type())
             end
         end
     end)
+end
 
 
 
 task("t")
+do
     set_menu {}
     on_run(function()
-    local cmds = import ("script.cmd")
-    local project =import("core.project.project")
-     for targetname, target in pairs(project.targets()) do
+        local cmds = import("script.cmd")
+        local project = import("core.project.project")
+        for targetname, target in pairs(project.targets()) do
             print(targetname)
             -- print(target)
             print(target:targetfile())
-            local a , b,c =target:tool("cxx")
+            local a, b, c = target:tool("cxx")
             print(a)
             print(b)
             print(c)
@@ -171,11 +178,10 @@ task("t")
             print(target:targetdir())
             print(target:kind())
             break
-     end
+        end
 
-    --  print("........................")
-    --  local ret = cmds.exec_cmds("xmake show -l toolchains")
-    --  print(ret)
-
-
+        --  print("........................")
+        --  local ret = cmds.exec_cmds("xmake show -l toolchains")
+        --  print(ret)
     end)
+end

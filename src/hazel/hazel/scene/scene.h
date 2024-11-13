@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-17 21:30:46
  * @ Modified by: @godot42
- * @ Modified time: 2024-10-20 19:24:27
+ * @ Modified time: 2024-11-13 18:54:23
  * @ Description:
  */
 
@@ -14,6 +14,7 @@
 #include "hazel/core/uuid.h"
 #include "hazel/scene/editor_camera.h"
 #include <entt/entt.hpp>
+#include "hazel/scene/component.h"
 
 
 
@@ -72,6 +73,21 @@ class HAZEL_API Scene
     uint32_t GetViewportWidth() const { return m_ViewportWidth; }
     uint32_t GetViewportHeight() const { return m_ViewportHeight; }
 };
+
+template <class T>
+struct only_copy_component {
+    static constexpr bool value = !(std::is_same_v<T, IDComponent> || std::is_same_v<T, TagComponent>);
+};
+using TCopyComponentTypes = sref::filter<TComponentTypes, only_copy_component>;
+
+template <class T>
+struct without_mutable_component {
+    static constexpr bool value = !(std::is_same_v<T, IDComponent> || std::is_same_v<T, TagComponent>);
+};
+
+// The IDComponent and TagComponent are created at the same time when a new entity is created
+// So we should block them when adding new components
+using TWithoutMutableComponentTypes = sref::filter<TComponentTypes, without_mutable_component>;
 
 
 

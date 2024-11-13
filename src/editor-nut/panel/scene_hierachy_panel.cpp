@@ -1,3 +1,4 @@
+#include "hazel/core/log.h"
 #include "hz_pch.h"
 
 #include "entt/entity/fwd.hpp"
@@ -18,9 +19,12 @@
 
 #include "editor_layer.h"
 #include "hazel/scene/component.h"
+#include "hazel/scene/scene.h"
 #include "utils/file.h"
 #include "utils/path.h"
 
+
+#include "hazel/sref/typelist.hpp"
 
 
 namespace hazel {
@@ -166,7 +170,7 @@ void SceneHierarchyPanel::OnImGuiRender()
     {
         auto &entities = m_Context->m_Registry.storage<entt::entity>();
 
-#ifndef NDebug
+#ifndef NDEBUG
         // TODO: Why cannot to get the size of entities here?
         int32_t size = entities.size();
 #endif
@@ -206,51 +210,20 @@ void SceneHierarchyPanel::OnImGuiRender()
 
 void SceneHierarchyPanel::UI_AddComponents()
 {
+    static bool bOpened = true;
     if (imgui::BeginPopup("AddComponent"))
     {
-        // if (!m_Selection.HasComponent<CameraComponent>()) {
-        if (imgui::MenuItem("Camera")) {
-            m_Selection.AddComponent<CameraComponent>();
-            imgui::CloseCurrentPopup();
-        }
-        // }
-
-        if (!m_Selection.HasComponent<SpriteRendererComponent>()) {
-            if (imgui::MenuItem("Sprite Renderer")) {
-                m_Selection.AddComponent<SpriteRendererComponent>();
-                imgui::CloseCurrentPopup();
+        // HZ_CORE_TRACE("Available Components:");
+        sref::foreach_types<TWithoutMutableComponentTypes>([selection = &m_Selection](auto type_val) {
+            using component_type = decltype(type_val);
+            // HZ_CORE_TRACE("{}", component_type::GetComponentName());
+            if (!selection->HasComponent<component_type>()) {
+                if (imgui::MenuItem(component_type::GetComponentName())) {
+                    selection->AddComponent<component_type>();
+                    imgui::CloseCurrentPopup();
+                }
             }
-        }
-        if (!m_Selection.HasComponent<Rigidbody2DComponent>())
-        {
-            if (ImGui::MenuItem("RigidBody 2D"))
-            {
-                m_Selection.AddComponent<Rigidbody2DComponent>();
-                ImGui::CloseCurrentPopup();
-            }
-        }
-        if (!m_Selection.HasComponent<BoxCollider2DComponent>())
-        {
-            if (ImGui::MenuItem("Box Collider 2D"))
-            {
-                m_Selection.AddComponent<BoxCollider2DComponent>();
-                ImGui::CloseCurrentPopup();
-            }
-        }
-        if (!m_Selection.HasComponent<CircleRendererComponent>())
-        {
-            if (ImGui::MenuItem("Circle Renderer")) {
-                m_Selection.AddComponent<CircleRendererComponent>();
-                ImGui::CloseCurrentPopup();
-            }
-        }
-        if (!m_Selection.HasComponent<CircleCollider2DComponent>()) {
-            if (ImGui::MenuItem("Circle Collider 2D")) {
-                m_Selection.AddComponent<CircleCollider2DComponent>();
-                ImGui::CloseCurrentPopup();
-            }
-        }
-
+        });
         imgui::EndPopup();
     }
 }
@@ -312,7 +285,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     if (imgui::Button("Add Component")) {
         imgui::OpenPopup("AddComponent");
     }
-
+    UI_AddComponents();
     imgui::PopItemWidth();
 
 

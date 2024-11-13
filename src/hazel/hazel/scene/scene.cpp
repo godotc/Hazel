@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-10-20 19:28:45
+ * @ Modified time: 2024-11-13 18:47:13
  * @ Description:
  */
 
@@ -33,14 +33,6 @@
 
 
 namespace hazel {
-
-template <class T>
-struct only_copy_component {
-    static constexpr bool value = !(std::is_same_v<T, IDComponent> ||
-                                    std::is_same_v<T, TagComponent>);
-};
-using TCopyComponentTypes = sref::filter<TComponentTypes, only_copy_component>;
-
 
 
 template <class Component>

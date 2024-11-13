@@ -43,12 +43,12 @@ add_requires("vulkansdk", {
 })
 
 add_requires("nlohmann_json")
-add_requires("box2d")
+add_requires("box2d v2.4.2")
 -- add_requires("openssl")
 
 
----@format disable
 target("hazel")
+do
     -- set_kind("shared")
     set_kind("static")
 
@@ -88,7 +88,7 @@ target("hazel")
     on_config(function(target)
         local kind = target:get("kind")
         local plat = target:is_plat("windows") and "windows" or "other"
-        print(string.format("--[%s] type: %s, platform: %s", target:name(), kind , plat))
+        print(string.format("--[%s] type: %s, platform: %s", target:name(), kind, plat))
 
 
         if kind == "shared" then
@@ -99,6 +99,6 @@ target("hazel")
                 target:add("shflags", "-fPIC")
             end
         end
-
     end)
+end
 target_end()

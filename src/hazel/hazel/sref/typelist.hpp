@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-23 17:03:13
  * @ Modified by: @godot42
- * @ Modified time: 2024-10-19 23:36:02
+ * @ Modified time: 2024-11-13 19:25:38
  * @ Description:
  */
 
@@ -145,7 +145,6 @@ struct not_in_type {
 template <class TypeList, class Fn, class... Arg>
 void foreach_types(Fn func, Arg... args)
 {
-
     if constexpr (TypeList::size > 0)
     {
         using CurrentType = head_t<TypeList>;
