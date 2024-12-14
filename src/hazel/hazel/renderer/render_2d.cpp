@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 22:42:41
+ * @ Modified time: 2024-12-15 01:56:54
  * @ Description:
  */
 
@@ -31,12 +31,14 @@
 
 #include "hazel/debug/instrumentor.h"
 
+#include "platform/opengl/gl_macros.h"
 #include "render_command.h"
 
 #include "buffer.h"
 #include "hazel/renderer/shader.h"
 
 #include "hazel/renderer/texture.h"
+#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -44,7 +46,6 @@
 
 #include "hazel/scene/component.h"
 
-#include "C:\Users\dexzhou\1\Hazel\src\hazel\platform\opengl\gl_macros.h"
 
 namespace hazel {
 
@@ -88,7 +89,12 @@ struct Render2DData {
     Ref<VertexBuffer> QuadVertexBuffer;
     Ref<Shader>       QuadShader;
 
-    std::array<glm::vec4, 4> QuadVertexPositions;
+    const std::array<glm::vec4, 4> QuadVertexPositions = {
+        glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f),
+        glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),
+        glm::vec4(0.5f, 0.5f, 0.0f, 1.0f),
+        glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f),
+    };
 
     uint32_t    QuadIndexCount       = 0;
     QuadVertex *QuadVertexBufferHead = nullptr;
@@ -125,7 +131,8 @@ struct Render2DData {
     LineVertex *LineVertexBufferHead = nullptr;
     LineVertex *LineVertexBufferPtr  = nullptr;
 
-    float LineWidth = 2.0f;
+    // 0 ~ 1.F?
+    float LineWidth = 1.0f;
     // ---------
 
 
@@ -215,10 +222,10 @@ void Render2D::Init()
         }
 
         // basic quad data
-        s_Data.QuadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.f};
-        s_Data.QuadVertexPositions[1] = {0.5f, -0.5f, 0.0f, 1.f};
-        s_Data.QuadVertexPositions[2] = {0.5f, 0.5f, 0.0f, 1.f};
-        s_Data.QuadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.f};
+        // s_Data.QuadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.f};
+        // s_Data.QuadVertexPositions[1] = {0.5f, -0.5f, 0.0f, 1.f};
+        // s_Data.QuadVertexPositions[2] = {0.5f, 0.5f, 0.0f, 1.f};
+        // s_Data.QuadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.f};
 
         s_Data.QuadWhiteTextureCoord[0] = {0.f, 0.f};
         s_Data.QuadWhiteTextureCoord[1] = {1.f, 0.f};
@@ -313,7 +320,7 @@ void Render2D::BeginScene(const Camera &camera, const glm::mat4 &transform)
 {
     HZ_PROFILE_FUNCTION();
 
-    const glm::mat4 view_projection = camera.GetProjection() * glm::inverse(transform);
+    glm::mat4 view_projection = camera.GetProjection() * glm::inverse(transform);
 
     // just set camera once for one scene process
     s_Data.CameraBuffer.ViewProjection = std::move(view_projection);
@@ -322,11 +329,12 @@ void Render2D::BeginScene(const Camera &camera, const glm::mat4 &transform)
     StartBatch();
 }
 
+
 void Render2D::BeginScene(const EditorCamera &camera)
 {
     HZ_PROFILE_FUNCTION();
 
-    const glm::mat4 view_projection = camera.GetViewProjection();
+    glm::mat4 view_projection = camera.GetViewProjection();
     // just set camera once for one scene process
     s_Data.CameraBuffer.ViewProjection = std::move(view_projection);
     s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Render2DData::CameraData));
@@ -360,6 +368,7 @@ void Render2D::StartBatch()
 
     s_Data.TextureSlotIndex = 1;
 }
+
 
 void Render2D::FlushAndReset()
 {
@@ -421,6 +430,8 @@ void Render2D::Flush()
     }
 
     if (s_Data.LineVertexCount) {
+
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         uint32_t size = (uint8_t *)s_Data.LineVertexBufferPtr - (uint8_t *)s_Data.LineVertexBufferHead;
         s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferHead, size);
 
@@ -428,6 +439,7 @@ void Render2D::Flush()
         RenderCommand::SetLineWidth(s_Data.LineWidth);
         RenderCommand::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
         ++s_Data.Stats.DrawCalls;
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }
 
@@ -447,9 +459,9 @@ void Render2D::DrawCircle(const glm::mat4 &transf, const glm::vec4 &color, float
     HZ_PROFILE_FUNCTION();
 
     // TODO: implement for circle
-    // if (s_Data.QuadIndexCount >= Render2DData::MaxIndices) {
-    //     FlushAndReset();
-    // }
+    if (s_Data.CircleIndexCount >= Render2DData::MaxIndices) {
+        FlushAndReset();
+    }
 
     constexpr size_t quad_vertex_count = 4;
 
@@ -471,14 +483,20 @@ void Render2D::DrawCircle(const glm::mat4 &transf, const glm::vec4 &color, float
 
 void Render2D::DrawLine(const glm::vec3 &start, const glm::vec3 &end, const glm::vec4 &color, int entity_id)
 {
+    if (s_Data.LineVertexCount >= Render2DData::MaxIndices) {
+        FlushAndReset();
+    }
+
     s_Data.LineVertexBufferPtr->Position = start;
     s_Data.LineVertexBufferPtr->Color    = color;
     s_Data.LineVertexBufferPtr->EntityId = entity_id;
+    ++s_Data.LineVertexBufferPtr;
     ++s_Data.LineVertexCount;
 
     s_Data.LineVertexBufferPtr->Position = end;
     s_Data.LineVertexBufferPtr->Color    = color;
     s_Data.LineVertexBufferPtr->EntityId = entity_id;
+    ++s_Data.LineVertexBufferPtr;
     ++s_Data.LineVertexCount;
 
     s_Data.LineVertexCount += 2;
@@ -501,17 +519,19 @@ void Render2D::DrawRect(const glm::vec3 &postion, const glm::vec2 &size, const g
 
 void Render2D::DrawRect(const glm::mat4 &transf, const glm::vec4 &color, int entity_id)
 {
-    glm::vec3 line_vertices[4];
+    glm::vec3     line_vertices[4];
     constexpr int quad_vertex_count = 4;
     for (size_t i = 0; i < quad_vertex_count; ++i) {
         line_vertices[i] = transf * s_Data.QuadVertexPositions[i];
     }
 
+    // quad ok but line not works
+    // DrawQuad(transf, color, entity_id);
+
     DrawLine(line_vertices[0], line_vertices[1], color);
     DrawLine(line_vertices[1], line_vertices[2], color);
     DrawLine(line_vertices[2], line_vertices[3], color);
     DrawLine(line_vertices[3], line_vertices[0], color);
-
 }
 
 
