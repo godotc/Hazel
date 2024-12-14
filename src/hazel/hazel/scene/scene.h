@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-17 21:30:46
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 19:46:06
+ * @ Modified time: 2024-12-15 03:50:25
  * @ Description:
  */
 
@@ -15,7 +15,6 @@
 #include "hazel/scene/component.h"
 #include "hazel/scene/editor_camera.h"
 #include <entt/entt.hpp>
-
 
 
 
@@ -50,15 +49,19 @@ class HAZEL_API Scene
 
   public:
     Scene();
-    virtual ~Scene() = default;
+    virtual ~Scene();
 
     static Ref<Scene> Copy(Ref<Scene> scene);
 
     void OnRuntimeStart();
     void OnRuntimeStop();
 
+    void OnSimulationStart();
+    void OnSimulationStop();
+
     void OnUpdateEditor(Timestep ts, EditorCamera &camera);
     void OnUpdateRuntime(Timestep ts);
+    void OnUpdateSimulation(Timestep ts, EditorCamera &camera);
     void OnViewportResize(uint32_t w, uint32_t h);
 
     template <typename... Component>
@@ -79,7 +82,16 @@ class HAZEL_API Scene
 
     uint32_t GetViewportWidth() const { return m_ViewportWidth; }
     uint32_t GetViewportHeight() const { return m_ViewportHeight; }
+
+  private:
+    void RenderScene(const EditorCamera &camera);
+
+    void UpdatePhysics2D(Timestep ts);
+
+    void OnPhysics2DStart();
+    void OnPhysics2DStop();
 };
+
 
 template <class T>
 struct only_copy_component {
@@ -96,6 +108,8 @@ struct without_mutable_component {
 // So we should block them when adding new components
 using TWithoutMutableComponentTypes = sref::filter<TComponentTypes, without_mutable_component>;
 
+
+#pragma endregion
 
 
 } // namespace hazel

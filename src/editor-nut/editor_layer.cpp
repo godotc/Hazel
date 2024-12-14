@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 22:44:00
+ * @ Modified time: 2024-12-15 03:53:17
  *  Description:
  */
 
@@ -49,6 +49,7 @@
 #include "editor_layer.h"
 #include <cstdint>
 #include <objidlbase.h>
+#include <processthreadsapi.h>
 #include <string>
 #include <sysinfoapi.h>
 #include <vector>
@@ -56,8 +57,14 @@
 
 
 #include "math/math.h"
-#include "platform/opengl/gl_macros.h"
 #include "utils/path.h"
+
+
+// debug
+#include "platform/opengl/gl_macros.h"
+#include <gl/GL.h>
+#include <glad/glad.h>
+#include <winuser.h>
 
 namespace hazel {
 
@@ -73,8 +80,12 @@ EditorLayer::~EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-    m_IconPlay = Texture2D::Create(FPath("res/texture/editor/play.png"));
-    m_IconStop = Texture2D::Create(FPath("res/texture/editor/stop.png"));
+    m_IconPlay     = Texture2D::Create(FPath("res/texture/editor/play.png"));
+    m_IconStop     = Texture2D::Create(FPath("res/texture/editor/stop.png"));
+    m_IconSimulate = Texture2D::Create(FPath("res/texture/editor/simulate_button.png"));
+    // m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
+    // m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
+    // m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
 
 
     hazel::FramebufferSpec spec;
@@ -85,12 +96,9 @@ void EditorLayer::OnAttach()
     spec.Height      = 600;
     m_Framebuffer    = hazel::Framebuffer::Create(spec);
 
-    auto new_scene = hazel::CreateRef<hazel::Scene>();
-    SetActiveScene(new_scene);
+    m_EditorScene = hazel::CreateRef<hazel::Scene>();
+    SetActiveScene(m_EditorScene);
 
-    // m_FaceTexture  = hazel::Texture2D::Create(FPath("res/texture/face.png"));
-    // m_ArchTexture  = hazel::Texture2D::Create(FPath("res/texture/arch.png"));
-    // m_BlockTexture = hazel::Texture2D::Create(FPath("res/texture/block.png"));
 
     m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
 
@@ -208,6 +216,13 @@ void EditorLayer::OnUpdate(Timestep ts)
             m_ActiveScene->OnUpdateRuntime(ts);
             break;
         }
+        case ESceneState::Simulate:
+        {
+            // Why not update editor camera controller?
+            m_EditorCamera.OnUpdate(ts);
+            m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+            break;
+        }
     }
 
     // Mouse hover/picking preps
@@ -226,6 +241,7 @@ void EditorLayer::OnUpdate(Timestep ts)
     }
 
     OnOverlayRender();
+    OnDebugRender();
 
     m_Framebuffer->Unbind();
 };
@@ -267,6 +283,9 @@ void EditorLayer::OnOverlayRender()
     if (m_SceneState == ESceneState::Play)
     {
         Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+        if (!camera) {
+            return;
+        }
         Render2D::BeginScene(camera.GetComponent<CameraComponent>().Camera,
                              camera.GetComponent<TransformComponent>().GetTransform());
     }
@@ -279,9 +298,10 @@ void EditorLayer::OnOverlayRender()
         auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
         for (auto entity : view) {
             const auto &[tc, bc2dc] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
-            glm::vec3 pos           = tc.Translation + glm::vec3(bc2dc.Offset, 0.2);
-            glm::vec3 scale         = tc.Scale * glm::vec3(bc2dc.Size * 2.0f, 1.f);
-            glm::mat4 transf        = glm::translate(glm::mat4(1.0f), pos) *
+
+            glm::vec3 pos    = tc.Translation + glm::vec3(bc2dc.Offset, 0.001f);
+            glm::vec3 scale  = tc.Scale * glm::vec3(bc2dc.Size * 2.0f, 1.f);
+            glm::mat4 transf = glm::translate(glm::mat4(1.0f), pos) *
                                glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0, 0, 1)) *
                                glm::scale(glm::mat4(1.0f), scale);
 
@@ -308,7 +328,9 @@ void EditorLayer::OnOverlayRender()
 
     Render2D::EndScene();
     GL_CHECK_HEALTH();
-
+}
+void EditorLayer::OnDebugRender()
+{
 }
 
 
@@ -589,18 +611,58 @@ void EditorLayer::UI_Toolbar()
                           ImGuiWindowFlags_NoScrollbar |
                           ImGuiWindowFlags_NoScrollWithMouse)) {
         ImGui::End();
+        return;
     }
 
-    auto  icon = m_SceneState == ESceneState::Stop ? m_IconPlay : m_IconStop;
-    float size = ImGui::GetWindowHeight() * 0.6f;
-    // ImGui::PushStyleColor(ImGuiCol_Button, {1, 1, 1, 1});
-    ImGui::SameLine(ImGui::GetWindowContentRegionMax().x * 0.5f - size * 0.5f); // align center
-    if (ImGui::ImageButton((ImTextureID)icon->GetTextureID(), {size, size}, {0, 1}, {1, 0}, 0)) {
-        if (m_SceneState == ESceneState::Stop) {
-            OnScenePlay();
+    bool   bToolbarEnable = (bool)m_ActiveScene;
+    ImVec4 tint_color     = {1.f, 1.f, 1.f, 1.f};
+    if (!bToolbarEnable) {
+        tint_color.w = 0.5f;
+    }
+    float size = ImGui::GetWindowHeight() - 4.0f;
+
+
+    // play button
+    {
+        Ref<Texture2D> icon = (m_SceneState == ESceneState::Stop || m_SceneState == ESceneState::Simulate) ? m_IconPlay : m_IconStop;
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) -
+                             (size * 0.5f) * 1.8f); // 2 button
+        bool bPressed = ImGui::ImageButton("Toolbar_Play",
+                                           reinterpret_cast<ImTextureID>(icon->GetTextureID()),
+                                           ImVec2(size, size),
+                                           ImVec2(0, 0), ImVec2(1, 1),
+                                           ImVec4(0.0f, 0.0f, 0.0f, 0.0f),
+                                           tint_color);
+
+        if (bPressed && bToolbarEnable)
+        {
+            if (m_SceneState == ESceneState::Stop || m_SceneState == ESceneState::Simulate) {
+                OnScenePlay();
+            }
+            else if (m_SceneState == ESceneState::Play) {
+                OnSceneStop();
+            }
         }
-        else if (m_SceneState == ESceneState::Play) {
-            OnSceneStop();
+    }
+    ImGui::SameLine();
+    // simulate button
+    {
+        Ref<Texture2D> icon = (m_SceneState == ESceneState::Stop || m_SceneState == ESceneState::Play) ? m_IconSimulate : m_IconStop;
+        // ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+        bool bPressed = ImGui::ImageButton("Toolbar_Simulate",
+                                           reinterpret_cast<ImTextureID>(icon->GetTextureID()),
+                                           ImVec2(size, size),
+                                           ImVec2(0, 0), ImVec2(1, 1),
+                                           ImVec4(0.0f, 0.0f, 0.0f, 0.0f),
+                                           tint_color);
+        if (bPressed && bToolbarEnable)
+        {
+            if (m_SceneState == ESceneState::Stop || m_SceneState == ESceneState::Play) {
+                OnSceneSimulate();
+            }
+            else if (m_SceneState == ESceneState::Simulate) {
+                OnSceneStop();
+            }
         }
     }
 
@@ -1009,17 +1071,57 @@ bool EditorLayer::SaveSceneImpl(const Ref<Scene> scene, std::string path)
 
 void EditorLayer::OnScenePlay()
 {
+    switch (m_SceneState) {
+
+        case ESceneState::Stop:
+        case ESceneState::Play:
+            break;
+        case ESceneState::Simulate:
+        {
+            OnSceneStop();
+            break;
+        }
+    }
     m_SceneState   = ESceneState::Play;
     auto new_scene = Scene::Copy(m_EditorScene);
     SetActiveScene(new_scene);
     m_ActiveScene->OnRuntimeStart();
 }
 
+void EditorLayer::OnSceneSimulate()
+{
+    if (m_SceneState == ESceneState::Play) {
+        OnSceneStop();
+    }
+
+    m_SceneState = ESceneState::Simulate;
+
+    m_ActiveScene = Scene::Copy(m_EditorScene);
+    m_ActiveScene->OnSimulationStart();
+
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+}
+
 void EditorLayer::OnSceneStop()
 {
+    HZ_CORE_ASSERT(m_SceneState == ESceneState::Play || m_SceneState == ESceneState::Simulate);
+
     // TODO: pre-stop and post-stop
+    switch (m_SceneState) {
+        case ESceneState::Stop:
+            break;
+        case ESceneState::Play:
+        {
+            m_ActiveScene->OnRuntimeStop();
+            break;
+        }
+        case ESceneState::Simulate:
+        {
+            m_ActiveScene->OnSimulationStop();
+            break;
+        }
+    }
     m_SceneState = ESceneState::Stop;
-    m_ActiveScene->OnRuntimeStop();
 
     SetActiveScene(m_EditorScene);
 }

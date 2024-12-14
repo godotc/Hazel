@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-18 00:50:42
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 20:23:51
+ * @ Modified time: 2024-12-15 02:59:56
  * @ Description:
  */
 
@@ -32,7 +32,8 @@ class EditorLayer : public hazel::Layer
     enum class ESceneState
     {
         Stop = 0,
-        Play
+        Play,
+        Simulate,
     };
 
   private:
@@ -77,6 +78,7 @@ class EditorLayer : public hazel::Layer
     // Ed resources
     Ref<Texture2D> m_IconPlay;
     Ref<Texture2D> m_IconStop;
+    Ref<Texture2D> m_IconSimulate;
 
   public:
     EditorLayer();
@@ -99,6 +101,9 @@ class EditorLayer : public hazel::Layer
   private:
     // Overlay
     void OnOverlayRender();
+
+    //
+    void OnDebugRender();
 
 
     // --- GUI renderer
@@ -132,6 +137,7 @@ class EditorLayer : public hazel::Layer
 
 
     void OnScenePlay();
+    void OnSceneSimulate();
     void OnSceneStop();
 };
 

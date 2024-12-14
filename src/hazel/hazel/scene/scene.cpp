@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 22:46:32
+ * @ Modified time: 2024-12-15 02:52:50
  * @ Description:
  */
 
@@ -103,59 +103,69 @@ void Scene::DestroyEntity(Entity entity)
     m_Registry.destroy(entity);
 }
 
-
-Scene::Scene()
+void Scene::RenderScene(const EditorCamera &camera)
 {
+    Render2D::BeginScene(camera);
+
+    {
+        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for (entt::entity entity : group) {
+            auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+            Render2D::DrawSprite(transf.GetTransform(), color, int(entity));
+        }
+    }
+    {
+        auto view = m_Registry.view<TransformComponent, CircleRendererComponent>();
+        for (entt::entity entity : view) {
+            auto [transf, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+            Render2D::DrawCircle(transf.GetTransform(), circle.Color, circle.Thickness, circle.Fade, int(entity));
+        }
+    }
+
+    Render2D::EndScene();
 }
 
-template <class Component>
-static void copy_component(entt::registry &dst, const entt::registry &src, const std::unordered_map<UUID, entt::entity> &entt_map)
+void Scene::UpdatePhysics2D(Timestep ts)
 {
-    for (auto e : src.view<Component>())
-    {
-        UUID uuid = src.get<IDComponent>(e).ID;
-        HZ_CORE_ASSERT(entt_map.contains(uuid), "UUID not found in entity map");
-        auto dst_entt_id = entt_map.at(uuid);
+    // Physics
+    static const int32_t velocity_iterations = 6;
+    static const int32_t position_iterations = 2;
+    m_PhysicsWorld->Step(ts, velocity_iterations, position_iterations);
 
-        auto &src_component = src.get<Component>(e);
-        dst.emplace_or_replace<Component>(dst_entt_id, src_component);
+    auto view = m_Registry.view<Rigidbody2DComponent>();
+    for (auto e : view)
+    {
+        Entity entity{e, this};
+
+        auto &transform = entity.GetComponent<TransformComponent>();
+        auto &rb2d      = entity.GetComponent<Rigidbody2DComponent>();
+
+        const b2Body *body      = (b2Body *)rb2d.RuntimeBody;
+        const auto   &position  = body->GetPosition();
+        transform.Translation.x = position.x;
+        transform.Translation.y = position.y;
+        transform.Rotation.z    = body->GetAngle();
+
+        if (entity.HasComponent<BoxCollider2DComponent>()) {
+            BoxCollider2DComponent &bc2d    = entity.GetComponent<BoxCollider2DComponent>();
+            const b2Fixture        *fixture = (b2Fixture *)bc2d.RuntimeFixture;
+            bc2d.Density                    = fixture->GetDensity();
+            bc2d.Friction                   = fixture->GetFriction();
+            bc2d.Restitution                = fixture->GetRestitution();
+            bc2d.RestitutionThreshold       = fixture->GetRestitutionThreshold();
+        }
+        if (entity.HasComponent<CircleCollider2DComponent>()) {
+            CircleCollider2DComponent &cc2d    = entity.GetComponent<CircleCollider2DComponent>();
+            const b2Fixture           *fixture = (b2Fixture *)cc2d.RuntimeFixture;
+            cc2d.Density                       = fixture->GetDensity();
+            cc2d.Friction                      = fixture->GetFriction();
+            cc2d.Restitution                   = fixture->GetRestitution();
+            cc2d.RestitutionThreshold          = fixture->GetRestitutionThreshold();
+        }
     }
 }
 
-Ref<Scene> Scene::Copy(Ref<Scene> scene)
-{
-    auto new_scene = CreateRef<Scene>();
-
-    new_scene->m_ViewportHeight = scene->m_ViewportHeight;
-    new_scene->m_ViewportWidth  = scene->m_ViewportWidth;
-
-    std::unordered_map<UUID, entt::entity> entt_map;
-
-    const auto &src_scene_registry = scene->m_Registry;
-    auto       &dst_scene_registry = new_scene->m_Registry;
-
-    // create entities in new scene
-    auto id_view = src_scene_registry.view<IDComponent>();
-    for (auto e : id_view)
-    {
-        UUID        uuid = src_scene_registry.get<IDComponent>(e).ID;
-        const auto &name = src_scene_registry.get<TagComponent>(e).Tag;
-
-        auto entity = new_scene->CreateEntityWithUUID(uuid, name);
-        entt_map.insert({uuid, entity});
-        // entt_map[uuid] = entity;
-    }
-
-    // id and tag component have been created, now copy the rest
-    sref::foreach_types<TCopyComponentTypes>([&dst_scene_registry, &src_scene_registry, entt_map](auto type_val) {
-        copy_component<decltype(type_val)>(dst_scene_registry, src_scene_registry, entt_map);
-    });
-
-
-    return new_scene;
-}
-
-void Scene::OnRuntimeStart()
+void Scene::OnPhysics2DStart()
 {
     m_PhysicsWorld = new b2World({0.0f, -9.8f});
 
@@ -215,34 +225,94 @@ void Scene::OnRuntimeStart()
     }
 }
 
-void Scene::OnRuntimeStop()
+void Scene::OnPhysics2DStop()
 {
     delete m_PhysicsWorld;
     m_PhysicsWorld = nullptr;
 }
 
 
+Scene::Scene()
+{
+}
+
+Scene::~Scene()
+{
+    delete m_PhysicsWorld;
+}
+
+template <class Component>
+static void copy_component(entt::registry &dst, const entt::registry &src, const std::unordered_map<UUID, entt::entity> &entt_map)
+{
+    for (auto e : src.view<Component>())
+    {
+        UUID uuid = src.get<IDComponent>(e).ID;
+        HZ_CORE_ASSERT(entt_map.contains(uuid), "UUID not found in entity map");
+        auto dst_entt_id = entt_map.at(uuid);
+
+        auto &src_component = src.get<Component>(e);
+        dst.emplace_or_replace<Component>(dst_entt_id, src_component);
+    }
+}
+
+Ref<Scene> Scene::Copy(Ref<Scene> scene)
+{
+    auto new_scene = CreateRef<Scene>();
+
+    new_scene->m_ViewportHeight = scene->m_ViewportHeight;
+    new_scene->m_ViewportWidth  = scene->m_ViewportWidth;
+
+    std::unordered_map<UUID, entt::entity> entt_map;
+
+    const auto &src_scene_registry = scene->m_Registry;
+    auto       &dst_scene_registry = new_scene->m_Registry;
+
+    // create entities in new scene
+    auto id_view = src_scene_registry.view<IDComponent>();
+    for (auto e : id_view)
+    {
+        UUID        uuid = src_scene_registry.get<IDComponent>(e).ID;
+        const auto &name = src_scene_registry.get<TagComponent>(e).Tag;
+
+        auto entity = new_scene->CreateEntityWithUUID(uuid, name);
+        entt_map.insert({uuid, entity});
+        // entt_map[uuid] = entity;
+    }
+
+    // id and tag component have been created, now copy the rest
+    sref::foreach_types<TCopyComponentTypes>([&dst_scene_registry, &src_scene_registry, entt_map](auto type_val) {
+        copy_component<decltype(type_val)>(dst_scene_registry, src_scene_registry, entt_map);
+    });
+
+
+    return new_scene;
+}
+
+void Scene::OnRuntimeStart()
+{
+    OnPhysics2DStart();
+}
+
+void Scene::OnRuntimeStop()
+{
+    OnPhysics2DStop();
+}
+
+void Scene::OnSimulationStart()
+{
+    OnPhysics2DStart();
+}
+
+void Scene::OnSimulationStop()
+{
+    OnPhysics2DStop();
+}
+
+
 
 void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
 {
-    Render2D::BeginScene(camera);
-
-    {
-        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (entt::entity entity : group) {
-            auto [transf, color] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Render2D::DrawSprite(transf.GetTransform(), color, int(entity));
-        }
-    }
-    {
-        auto view = m_Registry.view<TransformComponent, CircleRendererComponent>();
-        for (entt::entity entity : view) {
-            auto [transf, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-            Render2D::DrawCircle(transf.GetTransform(), circle.Color, circle.Thickness, circle.Fade, int(entity));
-        }
-    }
-
-    Render2D::EndScene();
+    RenderScene(camera);
 }
 
 void Scene::OnUpdateRuntime(Timestep ts)
@@ -260,44 +330,9 @@ void Scene::OnUpdateRuntime(Timestep ts)
         });
     }
 
+
     // Physics
-    {
-        static const int32_t velocity_iterations = 6;
-        static const int32_t position_iterations = 2;
-        m_PhysicsWorld->Step(ts, velocity_iterations, position_iterations);
-
-        auto view = m_Registry.view<Rigidbody2DComponent>();
-        for (auto e : view)
-        {
-            Entity entity{e, this};
-
-            auto &transform = entity.GetComponent<TransformComponent>();
-            auto &rb2d      = entity.GetComponent<Rigidbody2DComponent>();
-
-            const b2Body *body      = (b2Body *)rb2d.RuntimeBody;
-            const auto   &position  = body->GetPosition();
-            transform.Translation.x = position.x;
-            transform.Translation.y = position.y;
-            transform.Rotation.z    = body->GetAngle();
-
-            if (entity.HasComponent<BoxCollider2DComponent>()) {
-                BoxCollider2DComponent &bc2d    = entity.GetComponent<BoxCollider2DComponent>();
-                const b2Fixture        *fixture = (b2Fixture *)bc2d.RuntimeFixture;
-                bc2d.Density                    = fixture->GetDensity();
-                bc2d.Friction                   = fixture->GetFriction();
-                bc2d.Restitution                = fixture->GetRestitution();
-                bc2d.RestitutionThreshold       = fixture->GetRestitutionThreshold();
-            }
-            if (entity.HasComponent<CircleCollider2DComponent>()) {
-                CircleCollider2DComponent &cc2d    = entity.GetComponent<CircleCollider2DComponent>();
-                const b2Fixture           *fixture = (b2Fixture *)cc2d.RuntimeFixture;
-                cc2d.Density                       = fixture->GetDensity();
-                cc2d.Friction                      = fixture->GetFriction();
-                cc2d.Restitution                   = fixture->GetRestitution();
-                cc2d.RestitutionThreshold          = fixture->GetRestitutionThreshold();
-            }
-        }
-    }
+    UpdatePhysics2D(ts);
 
 
     // render 2d scene
@@ -340,6 +375,12 @@ void Scene::OnUpdateRuntime(Timestep ts)
 
         Render2D::EndScene();
     }
+}
+
+void Scene::OnUpdateSimulation(Timestep ts, EditorCamera &camera)
+{
+    UpdatePhysics2D(ts);
+    RenderScene(camera);
 }
 
 void Scene::OnViewportResize(uint32_t w, uint32_t h)
