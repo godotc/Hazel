@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 05:23:37
+ * @ Modified time: 2024-12-15 05:30:44
  *  Description:
  */
 
@@ -240,6 +240,8 @@ void EditorLayer::OnUpdate(Timestep ts)
         }
     }
 
+
+
     OnOverlayRender();
     OnDebugRender();
 
@@ -326,6 +328,17 @@ void EditorLayer::OnOverlayRender()
 
             Render2D::DrawCircle(transf, glm::vec4(0, 0, 1, 1), 0.1f);
         }
+    }
+
+
+    // Draw selected entity outline
+    if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity()) {
+        const TransformComponent &tc = selectedEntity.GetComponent<TransformComponent>();
+        // Red
+        auto color = glm::vec4(1, 0, 0, 1);
+        auto transf = glm::translate(tc.GetTransform(), glm::vec3(0, 0, 0.1f));
+
+        Render2D::DrawRect(transf, color);
     }
 
     Render2D::EndScene();
