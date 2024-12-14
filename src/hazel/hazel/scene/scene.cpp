@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 02:52:50
+ * @ Modified time: 2024-12-15 04:40:22
  * @ Description:
  */
 
@@ -280,9 +280,16 @@ Ref<Scene> Scene::Copy(Ref<Scene> scene)
     }
 
     // id and tag component have been created, now copy the rest
-    sref::foreach_types<TCopyComponentTypes>([&dst_scene_registry, &src_scene_registry, entt_map](auto type_val) {
-        copy_component<decltype(type_val)>(dst_scene_registry, src_scene_registry, entt_map);
-    });
+    // sref::foreach_types(TCopyComponentTypes{}, [&dst_scene_registry, &src_scene_registry, entt_map](auto type_val) {
+    //     copy_component<decltype(type_val)>(dst_scene_registry, src_scene_registry, entt_map);
+    // });
+
+
+    sref::foreach_types_v2(
+        TCopyComponentTypes{},
+        [&](auto T) {
+            copy_component<decltype(T)>(dst_scene_registry, src_scene_registry, entt_map);
+        });
 
 
     return new_scene;

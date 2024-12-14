@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 03:53:17
+ * @ Modified time: 2024-12-15 05:23:37
  *  Description:
  */
 
@@ -253,7 +253,9 @@ void EditorLayer::OnEvent(hazel::Event &event)
     if (!m_SceneHierarchyPanel.GetSelectedEntity()) {
         m_CameraController.OnEvent(event);
     }
-    m_EditorCamera.OnEvent(event);
+    if (m_SceneState == ESceneState::Stop) {
+        m_EditorCamera.OnEvent(event);
+    }
 
 
     EventDispatcher dispatcher(event);
@@ -886,7 +888,7 @@ void EditorLayer::Gizmos()
 
 bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
 {
-    if (Ev.GetRepeatCount() > 0) {
+    if (Ev.IsRepeat()) {
         return false;
     }
     bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);

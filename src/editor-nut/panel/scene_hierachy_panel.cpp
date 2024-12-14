@@ -218,7 +218,7 @@ void SceneHierarchyPanel::UI_AddComponents()
             using component_type = decltype(type_val);
             // HZ_CORE_TRACE("{}", component_type::GetComponentName());
             if (!selection->HasComponent<component_type>()) {
-                if (imgui::MenuItem(component_type::GetComponentName())) {
+                if (imgui::MenuItem(component_type::GetComponentFriendlyName())) {
                     selection->AddComponent<component_type>();
                     imgui::CloseCurrentPopup();
                 }

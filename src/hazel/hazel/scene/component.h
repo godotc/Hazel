@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-21 22:28:05
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 00:51:28
+ * @ Modified time: 2024-12-15 05:15:54
  * @ Description:
  */
 
@@ -21,6 +21,24 @@
 
 #include "hazel/core/uuid.h"
 #include "hazel/sref/typelist.hpp"
+
+
+
+
+inline std::string CamelCaseToSpaceBetween(const std::string &str, bool bToLower = true)
+{
+    std::string result = "";
+    for (auto c : str) {
+        if (c >= 'A' && c <= 'Z') {
+            result.push_back(' ');
+            if (bToLower) {
+                c = std::tolower(c);
+            }
+        }
+        result.push_back(c);
+    }
+    return result;
+}
 
 
 namespace hazel {
@@ -42,15 +60,25 @@ struct Component {
   public:
     void               OnComponentAdded(const Scene *scene) { static_cast<T *>(this)->OnComponentAddedImpl(scene); }
     static const char *GetComponentName() { return T::GetComponentNameImpl(); }
+    static const char *GetComponentFriendlyName() { return T::GetComponentFriendlyNameImpl(); }
 
     // virtual void Serialize() = 0;
 
   protected:
+
     virtual void OnComponentAddedImpl(const Scene *scene) = 0;
 
-#define GENERATED_COMPONENT_BODY(cls) \
-    static const char *GetComponentNameImpl() { return #cls; }
-};
+
+
+#define GENERATED_COMPONENT_BODY(cls)                                                       \
+    static const char *GetComponentNameImpl() { return #cls; }                              \
+    static const char *GetComponentFriendlyNameImpl()                                       \
+    {                                                                                       \
+        static const std::string this_friendly_name = CamelCaseToSpaceBetween(#cls, false); \
+        return this_friendly_name.c_str();                                                  \
+    }
+
+}; // namespace hazel
 
 struct IDComponent : public Component<IDComponent> {
     GENERATED_COMPONENT_BODY(IDComponent)
@@ -105,7 +133,8 @@ struct TransformComponent : public Component<TransformComponent> {
 
 
 struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
-    GENERATED_COMPONENT_BODY(SpriteRendererComponent)
+    GENERATED_COMPONENT_BODY(SpriteRendererComponent);
+
 
     glm::vec4      Color{1, 1, 1, 1};
     Ref<Texture2D> Texture;

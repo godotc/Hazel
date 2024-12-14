@@ -26,15 +26,15 @@ class HAZEL_API KeyEvent : public Event
 class HAZEL_API KeyPressedEvent : public KeyEvent
 {
   public:
-    KeyPressedEvent(int keycode, int repeat_count) : KeyEvent(keycode), m_RepeatCount(repeat_count) {}
+    KeyPressedEvent(int keycode, bool bRepeat) : KeyEvent(keycode), bRepeat(bRepeat) {}
 
-    [[nodiscard]] std::string to_string() const override { return fmt::format("KeyPressedEvent: {} ({} repeats)", m_KeyCode, m_RepeatCount); }
-    int                       GetRepeatCount() const { return m_RepeatCount; }
+    [[nodiscard]] std::string to_string() const override { return fmt::format("KeyPressedEvent: {} (bRepeat: {})", m_KeyCode, bRepeat); }
+    bool                      IsRepeat() const { return bRepeat; }
 
     EVENT_CLASS_TYPE(KeyPressed)
 
   protected:
-    int m_RepeatCount;
+    bool bRepeat;
 };
 
 class HAZEL_API KeyReleasedEvent : public KeyEvent

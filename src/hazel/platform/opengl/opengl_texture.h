@@ -39,7 +39,7 @@ class OpenGLTexture2D : public Texture2D
 
     virtual bool operator==(const Texture &other) const override
     {
-        return m_TextureID == static_cast<const OpenGLTexture2D &>(other).m_TextureID;
+        return m_TextureID == other.GetTextureID();
     }
 };
 

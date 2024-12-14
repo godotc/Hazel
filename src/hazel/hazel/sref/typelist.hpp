@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-23 17:03:13
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 19:25:38
+ * @ Modified time: 2024-12-15 04:39:50
  * @ Description:
  */
 
@@ -153,7 +153,52 @@ void foreach_types(Fn func, Arg... args)
     }
 }
 
+
+
+/**
+ * from https://github.com/TheCherno/Hazel/commit/215d4953e07c56bc22adc4652d3f3ad8f9381564
+ */
+template <class... Type, typename Fn, class... Arg>
+void foreach_types_v2(type_list<Type...>, Fn &&func, Arg... args)
+{
+    // ([&]()
+    // 	{
+    // 		UUID uuid = src.get<IDComponent>(e).ID;
+    // 		HZ_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
+    // 		entt::entity dstEnttID = enttMap.at(uuid);
+    // 		auto view = src.view<Component>();
+    // 		for (auto srcEntity : view)
+    // 		{
+    // 			entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
+
+    // 		auto& component = src.get<Component>(e);
+    // 		dst.emplace_or_replace<Component>(dstEnttID, component);
+    // 	}
+    // 			auto& srcComponent = src.get<Component>(srcEntity);
+    // 			dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+    // 		}
+    // 	}(), ...);
+
+
+
+    // if constexpr (TypeList::size > 0)
+    // {
+    //     using CurrentType = head_t<TypeList>;
+    //     func(CurrentType{}, std::forward<Arg>(args)...);
+    //     foreach_types<tail_t<TypeList>>(func, std::forward<Arg>(args)...);
+    // }
+
+    // clang-format off
+    ([&]() {
+        func(Type{}, std::forward<Arg>(args)...);
+    }(),
+     ...);
+    // clang-format on
+}
+
 } // namespace sref
+
+
 
 #if test
 

@@ -145,7 +145,7 @@ void PlatGLFWWindow::initCallbacks()
                 }
                 case GLFW_REPEAT:
                 {
-                    KeyPressedEvent ev(key, 1);
+                    KeyPressedEvent ev(key, true);
                     data->EventCallback(ev);
                     break;
                 }
