@@ -8,7 +8,7 @@ add_requires("fmt 11.0.1", {
     }
 })
 add_requires("glm", { configs = { header_only = true, cxx_standard = "20" } })
-add_requires("spdlog", { system = false, configs = { fmt_eternal = true } })
+add_requires("spdlog v1.13.0", { system = false, configs = { fmt_eternal = true } })
 add_requires("stb", { configs = { shared = true, debug = true } })
 
 add_packages(

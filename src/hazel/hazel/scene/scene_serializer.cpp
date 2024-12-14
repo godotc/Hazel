@@ -1,4 +1,5 @@
 
+#include "hazel/sref/typelist.hpp"
 #include "hz_pch.h"
 //
 
@@ -22,6 +23,7 @@
 
 
 
+#include <cerrno>
 #include <cstdint>
 #include <fstream>
 #include <string>
@@ -162,6 +164,14 @@ SceneSerializer::SceneSerializer(const Ref<Scene> &scene)
     m_Scene = scene;
 }
 
+struct YAMLSerializerCompatHelper : hazel::SerializerCompatHelper {
+
+    YAML::Emitter &m_Emitter;
+
+    explicit YAMLSerializerCompatHelper(YAML::Emitter &emitter) : m_Emitter(emitter) {}
+    void *Get() override { return &m_Emitter; }
+};
+
 
 static void SerializeEntity(YAML::Emitter &out, Entity &entity)
 {
@@ -170,7 +180,8 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
     out << YAML::BeginMap;
     out << YAML::Key << "Entity" << YAML::Value << (uint64_t)entity.GetUUID();
 
-    if (entity.HasComponent<TagComponent>()) {
+    if (entity.HasComponent<TagComponent>())
+    {
         auto &comp = entity.GetComponent<TagComponent>();
         out << YAML::Key << "TagComponent";
         out << YAML::BeginMap;
@@ -218,7 +229,7 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
         out << YAML::EndMap;
     }
     if (entity.HasComponent<SpriteRendererComponent>()) {
-        auto comp = entity.GetComponent<SpriteRendererComponent>();
+        auto &comp = entity.GetComponent<SpriteRendererComponent>();
 
 
         out << YAML::Key << "SpriteRendererComponent";
@@ -243,7 +254,7 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
         out << YAML::EndMap; // CircleRendererComponent
     }
     if (entity.HasComponent<NativeScriptComponent>()) {
-        auto comp = entity.GetComponent<NativeScriptComponent>();
+        auto &comp = entity.GetComponent<NativeScriptComponent>();
 
         out << YAML::Key << "NativeScriptComponent";
 
@@ -280,6 +291,23 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
         out << YAML::EndMap; // BoxCollider2DComponent
     }
 
+    if (entity.HasComponent<CircleCollider2DComponent>())
+    {
+        out << YAML::Key << "CircleCollider2DComponent";
+        out << YAML::BeginMap; // CircleCollider2DComponent
+        auto &cc2d_comp = entity.GetComponent<CircleCollider2DComponent>();
+
+        out << YAML::Key << "Offset" << YAML::Value << cc2d_comp.Offset;
+        out << YAML::Key << "Size" << YAML::Value << cc2d_comp.Radius;
+        out << YAML::Key << "Density" << YAML::Value << cc2d_comp.Density;
+        out << YAML::Key << "Friction" << YAML::Value << cc2d_comp.Friction;
+        out << YAML::Key << "Restitution" << YAML::Value << cc2d_comp.Restitution;
+        out << YAML::Key << "RestitutionThreshold" << YAML::Value << cc2d_comp.RestitutionThreshold;
+
+        out << YAML::EndMap;
+    }
+
+
 
     out << YAML::EndMap;
 }
@@ -300,6 +328,7 @@ void SceneSerializer::Serialize(const std::string &filepath)
                     HZ_WARN("An entity is invalid!");
                     return;
                 }
+                // YAMLSerializerCompatHelper helper{out};
                 SerializeEntity(out, entity);
             };
         }
@@ -398,14 +427,28 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 rb2d.bFixedRotation = rigid_body_2d_component["bFixedRotation"].as<bool>();
             }
 
-            if (const auto box_collider_2d_component = entity["BoxCollider2DComponent"]) {
-                auto &bc2d                = deserialized_entity.AddComponent<BoxCollider2DComponent>();
+            if (const auto box_collider_2d_component = entity["BoxCollider2DComponent"])
+            {
+                auto &bc2d = deserialized_entity.AddComponent<BoxCollider2DComponent>();
+
                 bc2d.Offset               = box_collider_2d_component["Offset"].as<glm::vec2>();
                 bc2d.Size                 = box_collider_2d_component["Size"].as<glm::vec2>();
                 bc2d.Density              = box_collider_2d_component["Density"].as<float>();
                 bc2d.Friction             = box_collider_2d_component["Friction"].as<float>();
                 bc2d.Restitution          = box_collider_2d_component["Restitution"].as<float>();
                 bc2d.RestitutionThreshold = box_collider_2d_component["RestitutionThreshold"].as<float>();
+            }
+
+            if (const auto circle_collider_2d_component = entity["CircleCollider2DComponent"])
+            {
+                auto &cc2d = deserialized_entity.AddComponent<CircleCollider2DComponent>();
+
+                cc2d.Offset               = circle_collider_2d_component["Offset"].as<glm::vec2>();
+                cc2d.Radius               = circle_collider_2d_component["Size"].as<float>();
+                cc2d.Density              = circle_collider_2d_component["Density"].as<float>();
+                cc2d.Friction             = circle_collider_2d_component["Friction"].as<float>();
+                cc2d.Restitution          = circle_collider_2d_component["Restitution"].as<float>();
+                cc2d.RestitutionThreshold = circle_collider_2d_component["RestitutionThreshold"].as<float>();
             }
         }
     }

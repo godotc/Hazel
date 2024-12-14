@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-21 22:28:05
  * @ Modified by: @godot42
- * @ Modified time: 2024-11-13 22:27:37
+ * @ Modified time: 2024-12-15 00:51:28
  * @ Description:
  */
 
@@ -28,20 +28,28 @@ namespace hazel {
 struct ScriptableEntity;
 struct Scene;
 
+
+struct SerializerCompatHelper {
+    virtual void *Get() = 0;
+};
+
+
 template <class T>
 struct Component {
 
     virtual ~Component() = default;
 
   public:
-    void        OnComponentAdded(const Scene *scene) { static_cast<T *>(this)->OnComponentAddedImpl(scene); }
+    void               OnComponentAdded(const Scene *scene) { static_cast<T *>(this)->OnComponentAddedImpl(scene); }
     static const char *GetComponentName() { return T::GetComponentNameImpl(); }
 
+    // virtual void Serialize() = 0;
+
   protected:
-    virtual void        OnComponentAddedImpl(const Scene *scene) = 0;
+    virtual void OnComponentAddedImpl(const Scene *scene) = 0;
 
 #define GENERATED_COMPONENT_BODY(cls) \
-    static const char *GetComponentNameImpl(){ return #cls; }
+    static const char *GetComponentNameImpl() { return #cls; }
 };
 
 struct IDComponent : public Component<IDComponent> {
@@ -112,7 +120,6 @@ struct SpriteRendererComponent : public Component<SpriteRendererComponent> {
 
     void OnComponentAddedImpl(const Scene *scene) override {}
 };
-
 
 
 
