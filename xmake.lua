@@ -149,6 +149,9 @@ do
                 cmd.run_native_lua("script/vscode.lua", target:name(), target:targetdir(), target:basename(),
                     target:type())
             end
+
+            -- TODO: drop lua script, use python instead. It could safe much more times for trivial works...
+
         end
     end)
 end

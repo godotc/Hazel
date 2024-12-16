@@ -38,6 +38,7 @@
         "sref",
         "stbi",
         "subtexture",
+        "targetname",
         "Texcoord",
         "Timestep",
         "Viewports"
@@ -91,7 +92,8 @@
         "set_strip"
     ],
     "Lua.diagnostics.disable": [
-        "undefined-field"
+        "undefined-field",
+        "unused-local"
     ],
     "cSpell.ignorePaths": [
         "package-lock.json",
