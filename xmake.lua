@@ -25,12 +25,12 @@ if is_mode("debug") then
 end
 
 if is_plat("linux") then
-    add_cxflags("-Wall")
+    add_cxxflags("-Wall")
 elseif is_plat("windows") then
     add_requires("opengl")
     add_packages("opengl")
     add_defines("NOMINMAX")
-    add_cxflags("/Zc:preprocessor")
+    add_cxxflags("/Zc:preprocessor")
     add_cxflags("/EHs")
     add_defines("UNICODE", "_UNICODE")
     add_cxflags("/utf-8")
@@ -146,11 +146,11 @@ do
             -- local target_dir = arg[2] or "__DEFAULT_VAR__"
             -- local target_base_name = arg[3] or "__DEFAULT_VAr__"
             if target:kind() == "binary" then
-                cmd.run_native_lua("script/vscode.lua", target:name(), target:targetdir(), target:basename(),
-                    target:type())
+                -- cmd.exec("lua", "script/vscode.lua", target:name(), target:targetdir(), target:basename(), target:type())
+                -- TODO: drop lua script, use python instead. It could safe much more times for trivial works...
+                cmd.exec("python3", "script/update_vscode_debug_misc.py", target:name(), target:targetdir(), target:basename(), target:type())
             end
 
-            -- TODO: drop lua script, use python instead. It could safe much more times for trivial works...
 
         end
     end)

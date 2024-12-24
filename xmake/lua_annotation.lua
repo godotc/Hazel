@@ -36,6 +36,11 @@ function target(app) end
 ---@param v "cxx"|"no-cxx"
 function set_exceptions(v) end
 
+---@param ... string
+function add_cxflags(...) end
+---@param ... string
+function add_cxxflags(...) end
+
 ---@param platform "windows"|"linux"|"ios"
 function is_plat(platform) end
 
