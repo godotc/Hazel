@@ -98,13 +98,17 @@ end
 task("cpcm")
 do
     set_menu {
-        usage = "xmake cpcm"
+        usage = "xmake cpcm",
+        options = {
+            { nil, "rule", "v", "release", "the rule to config build mode " }
+        }
     }
     on_run(function()
         local cmd     = import("script.cmd")
+        local opt     = import("core.base.option")
         -- print(cmd)
 
-        local profile = "debug"
+        local profile = opt.get("rule")
         cmd.exec_cmds(
             "xmake f -c",
             string.format("xmake f -m %s ", profile), --toolchain=llvm",
@@ -125,33 +129,48 @@ end
 
 task("vscode")
 do
-    set_menu {}
+    local usage_str = "xmake vscode <toolchain (clang/gcc/msvc)>"
+    set_menu {
+        usage = usage_str,
+        description = "generate and update vscode project files",
+        options = {
+            {},
+            { nil, "toolchain", "v", nil, "the toolchain to use, clang/gcc/msvc" },
+        }
+    }
     on_run(function()
-        local cmd     = import("script.cmd")
+        local cmd       = import("script.cmd")
+        local opt       = import("core.base.option")
+        local project   = import("core.project.project")
 
-        local project = import("core.project.project")
+        local toolchain = opt.get("toolchain")
+        if toolchain == nil or toolchain == "" then
+            print(usage_str)
+            return
+        end
+
         -- print(project)
-        for targetname, target in pairs(project.targets()) do
-            -- print(targetname)
+        for target_name, target in pairs(project.targets()) do
+            -- print(targetname) -- nut
             -- print(target)
             -- print(target:targetfile())
-            -- print(target:basename())
+            local target_basename = target:basename() -- hazel-editor-nut
+            -- print(basename)
             -- print(target:filename())
             -- print(target:linkname())
-            -- print(target:targetdir())
+            local target_dir = target:targetdir() -- build\windows\x64
+            -- print(targetdir)
             -- print(target:kind())
-            -- return
+            -- print(target:toolchains())
+            -- do return end
 
-            -- local target_name = arg[1] or "__DEFAULT_VAR__"
-            -- local target_dir = arg[2] or "__DEFAULT_VAR__"
-            -- local target_base_name = arg[3] or "__DEFAULT_VAr__"
+            -- local toolchain = arg[1] or "lldb"
             if target:kind() == "binary" then
                 -- cmd.exec("lua", "script/vscode.lua", target:name(), target:targetdir(), target:basename(), target:type())
                 -- TODO: drop lua script, use python instead. It could safe much more times for trivial works...
-                cmd.exec("python3", "script/update_vscode_debug_misc.py", target:name(), target:targetdir(), target:basename(), target:type())
+                cmd.exec("python3", "script/update_vscode_debug_misc.py", toolchain, target_name, target_basename,
+                    target_dir)
             end
-
-
         end
     end)
 end

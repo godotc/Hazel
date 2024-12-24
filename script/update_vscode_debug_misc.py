@@ -5,61 +5,169 @@ import json
 
 VSCODE_TASK_JSON_FILE = ".vscode/tasks.json"
 VSCODE_LAUNCH_JSON_FILE = ".vscode/launch.json"
+INDENT = 4
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def get_lldb_launch_config(target_name, target_dir, target_base_name):
-    """
-    "name":"[nut] LLDB RELEASE",
-    "args":[],
-    "windows":{
-      "program":"${workspaceFolder}/build\\windows\\x64/release/hazel-editor-nut"
-    },
-    "preLaunchTask":"build nut",
-    "request":"launch",
-    "cwd":"${workspaceFolder}",
-    "type":"lldb"
-    """
-
-    bDebug = target_dir.find("debug")
-    return {
-        "name": f"[{target_name}] LLDB {bDebug and 'DEBUG' or 'RELEASE'}",
-        "args": [],
+def gen_launch_configs(
+    target_name, target_dir, target_base_name, toolchain_name, bDebug
+):
+    config = {}
+    if toolchain_name == "msvc":
+        """msvc
+        {
+        "type": "cppvsdbg",
+        "name": "[nut] MSVC DEBUG",
+        "program": "${workspaceRoot}/build/windows/x64/debug/hazel-editor-nut.exe",
+        "logging": {
+            "trace": true,
+            "moduleLoad": false
+        },
+        "cwd": "${workspaceRoot}",
+        "console": "internalConsole",
+        "visualizerFile": "${workspaceFolder}/my.natvis",
+        "request": "launch",
+        "preLaunchTask": "build nut",
+        },
+        """
+        config = {
+            "type": "cppvsdbg",
+            "name": f"[{target_name}] MSVC {bDebug and 'DEBUG' or 'RELEASE'}",
+            "request": "launch",
+            "program": (
+                f"${{workspaceRoot}}/{target_dir}/{bDebug and 'debug' or 'release'}/{target_base_name}"
+            ).replace("\\", "/"),
+            "logging": {
+                "trace": True,
+                "moduleLoad": False,
+            },
+            "cwd": "${workspaceRoot}",
+            "console": "internalConsole",
+            "visualizerFile": "${workspaceFolder}/my.natvis",
+            "preLaunchTask": f"build {target_name}",
+        }
+        pass
+    elif toolchain_name == "gcc":
+        """gcc
+        {
+        "type": "gdb",
+        "name": "[nut] GDB DEBUG",
+        "arguments": ""
+        "internalConsoleOptions": "openOnSessionStart",
         "windows": {
-            "program": "${workspaceFolder}"
+            "target": "${workspaceFolder}/build\\windows\\x64/debug/hazel-editor-nut"
+        },
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "valuesFormatting": "prettyPrinters",
+        "preLaunchTask": "build nut",
+        },
+        """
+        config = {
+            "type": "gdb",
+            "name": f"[{target_name}] GDB {bDebug and 'DEBUG' or 'RELEASE'}",
+            "internalConsoleOptions": "openOnSessionStart",
+            "arguments": "",
+            "windows": {
+                "target": (
+                    f"${{workspaceFolder}}/{target_dir}/{bDebug and 'debug' or 'release'}/{target_base_name}"
+                ).replace("\\", "/")
+            },
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "valuesFormatting": "prettyPrinters",
+            "preLaunchTask": f"build {target_name}",
         }
+        pass
+    elif toolchain_name == "clang":
+        """lldb
+        {
+        "name":"[nut] LLDB RELEASE",
+        "args":[],
+        "windows":{
+        "program":"${workspaceFolder}/build\\windows\\x64/release/hazel-editor-nut"
+        },
+        "request":"launch",
+        "cwd":"${workspaceFolder}",
+        "type":"lldb"
+        "preLaunchTask":"build nut",
+        }
+        """
+        config = {
+            "type": "lldb",
+            "name": f"[{target_name}] LLDB {bDebug and 'DEBUG' or 'RELEASE'}",
+            "args": [],
+            "windows": {
+                "program": (
+                    "${workspaceFolder}"
+                    + f"/{target_dir}/{bDebug and 'debug' or 'release'}/{target_base_name}"
+                ).replace("\\", "/"),
+            },
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": f"build {target_name}",
         }
 
+        pass
+    else:
+        print("unknown toolchain name: " + toolchain_name)
+        exit(1)
 
-def update_launch_profile(target_name, target_dir, target_base_name):
-    json_data = json.load(open(VSCODE_LAUNCH_JSON_FILE))
+    return config
 
-    json_data["configurations"] = json_data["configurations"] or []
 
-    -- Utils.DumpPrint(generates)
+def update_launch_profile(target_name, target_dir, target_base_name, toolchain_name):
+    json_data = None
+    try:
+        json_data = json.load(open(VSCODE_LAUNCH_JSON_FILE))
+    except Exception as e:
+        print(e)
+        json_data = {}
+
+    if not json_data.get("version"):
+        json_data["version"] = "2.0.0"
+
+    if not json_data.get("configurations"):
+        json_data["configurations"] = []
 
     def add_or_replace_configurations(configurations: list, new_configuration: dict):
-        configurations = configurations or {}
-        for config in configurations:
+        bReplaced = False
+        for i in range(len(configurations)):
+            config = configurations[i]
             if config["name"] == new_configuration["name"]:
-                config = new_configuration
+                configurations[i] = new_configuration
                 print("replace launch config: " + new_configuration["name"])
-            else: 
-                print("add launch config: " + new_configuration["name"])
+                bReplaced = True
+        if not bReplaced:
+            print("add launch config: " + new_configuration["name"])
+            configurations.append(new_configuration)
 
+    configs = [
+        gen_launch_configs(
+            target_name, target_dir, target_base_name, toolchain_name, True
+        ),
+        gen_launch_configs(
+            target_name, target_dir, target_base_name, toolchain_name, False
+        ),
+    ]
 
+    for config in configs:
+        # print(config)
+        add_or_replace_configurations(json_data["configurations"], config)
 
-    lldb =  gen_lldb_configurations(target_base_name, target_dir)
-    add_or_replace_configurations(json_data["configurations"], lldb)
-
-    gdb = gen_gdb_configurations(configs)
-    add_or_replace_configurations(json_data["configurations"], gdb)
-
+    print(json_data)
+    json.dump(json_data, open(VSCODE_LAUNCH_JSON_FILE, "w"), indent=INDENT)
 
 
 def update_task_profile(target_name):
-    json_data = json.load(open(VSCODE_TASK_JSON_FILE))
+    json_data = {}
+    try:
+        json_data = json.load(open(VSCODE_TASK_JSON_FILE, "r"))
+    except Exception as e:
+        print(e)
+
+    if not json_data.get("version"):
+        json_data["version"] = "2.0.0"
 
     """
      "tasks":[{
@@ -92,31 +200,37 @@ def update_task_profile(target_name):
         "args": ["build", target_name],
     }
 
-    json_data["tasks"] = json_data["tasks"] or []
+    json_data["tasks"] = json_data.get("tasks", [])
 
-    for t in json_data["tasks"]:
+    for i in range(len(json_data["tasks"])):
+        t = json_data["tasks"][i]
         if t["label"] == task["label"]:
-            t = task
+            json_data["tasks"][i] = task
             print(f"replace task: {task['label']}")
             break
     else:
         json_data["tasks"].append(task)
         print(f"add task: {task['label']}")
 
+    print(json_data)
+    json.dump(json_data, open(VSCODE_TASK_JSON_FILE, "w"), indent=INDENT)
 
-    json.dump(json_data, open(VSCODE_TASK_JSON_FILE, "w"), indent=2)
-  
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: vscode.py <target_name> <target_dir> <target_base_name>")
         sys.exit(1)
 
-    for arg in sys.argv:
-        print(arg)
+    for i in range(0, len(sys.argv)):
+        arg = sys.argv[i]
+        print(f"args[{i}]= {arg}")
 
-    target_name = sys.argv[0]
-    target_dir = sys.argv[1]
-    target_base_name = sys.argv[2]
+    # script = sys.argv[0]
+    toolchain_name = sys.argv[1]
+    print("toolchain: " + toolchain_name)
+    target_name = sys.argv[2]
+    target_base_name = sys.argv[3]
+    target_dir = sys.argv[4]
 
     update_task_profile(target_name)
+    update_launch_profile(target_name, target_dir, target_base_name, toolchain_name)

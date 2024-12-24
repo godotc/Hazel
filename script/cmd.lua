@@ -6,3 +6,10 @@ function exec(...)
     end
     print(os.exec(cmd))
 end
+
+function exec_cmds(...)
+    local arguments = { ... }
+    for _, v in ipairs(arguments) do
+        print(os.exec(v))
+    end
+end
