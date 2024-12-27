@@ -2,7 +2,7 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 05:30:44
+ * @ Modified time: 2024-12-28 03:07:25
  *  Description:
  */
 
@@ -309,7 +309,7 @@ void EditorLayer::OnOverlayRender()
                                glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0, 0, 1)) *
                                glm::scale(glm::mat4(1.0f), scale);
 
-            Render2D::DrawRect(transf, glm::vec4(0, 0, 1, 1));
+            Render2D::DrawRect(transf, m_DebugCollisionColor);
         }
     }
 
@@ -326,7 +326,7 @@ void EditorLayer::OnOverlayRender()
             glm::mat4 transf = glm::translate(glm::mat4(1.0f), pos) *
                                glm::scale(glm::mat4(1.0f), scale);
 
-            Render2D::DrawCircle(transf, glm::vec4(0, 0, 1, 1), 0.1f);
+            Render2D::DrawCircle(transf, m_DebugCollisionColor, 0.05f);
         }
     }
 
@@ -335,7 +335,7 @@ void EditorLayer::OnOverlayRender()
     if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity()) {
         const TransformComponent &tc = selectedEntity.GetComponent<TransformComponent>();
         // Red
-        auto color = glm::vec4(1, 0, 0, 1);
+        auto color  = glm::vec4(1, 0, 0, 1);
         auto transf = glm::translate(tc.GetTransform(), glm::vec3(0, 0, 0.1f));
 
         Render2D::DrawRect(transf, color);
@@ -624,7 +624,9 @@ void EditorLayer::UI_Toolbar()
                       ImGuiWindowFlags_NoTitleBar |
                           ImGuiWindowFlags_NoDecoration |
                           ImGuiWindowFlags_NoScrollbar |
-                          ImGuiWindowFlags_NoScrollWithMouse)) {
+                          ImGuiWindowFlags_NoScrollWithMouse |
+                          ImGuiWindowFlags_NoResize))
+    {
         ImGui::End();
         return;
     }
@@ -779,14 +781,16 @@ void EditorLayer::FontSwitcher()
 
 void EditorLayer::UI_Settings()
 {
-    static bool bOpen = false;
+    static bool bOpen = true;
     // static bool bWantToClose = false;
-    if (!ImGui::Begin("Settings", &bOpen, ImGuiWindowFlags_DockNodeHost))
+    if (!ImGui::Begin("Settings", &bOpen))
     {
         ImGui::End();
         return;
     }
     ImGui::Checkbox("Show 2D Physics Collision", &bShow2DPhysicsCollisions);
+    ImGui::Checkbox("Show Render Stats", &bShowRenderStats);
+    ImGui::ColorEdit4("Debug Collision Color", glm::value_ptr(m_DebugCollisionColor));
 
     auto pos = m_EditorCamera.GetPosition();
     ImGui::Text("Postion: %f, %f, %f", pos.x, pos.y, pos.z);
@@ -817,19 +821,22 @@ void EditorLayer::UI_Settings()
 
 void EditorLayer::UI_RenderStats()
 {
-    static bool bOpen = true;
-    if (ImGui::Begin("Render2D stats", &bOpen)) {
-        auto stat = hazel::Render2D::GetStatics();
-        ImGui::Text("Draw Calls  : %d", stat.DrawCalls);
-        ImGui::Text("Quad Count  : %d", stat.QuadCount);
-        ImGui::Text("Vertex Count: %d", stat.GetTotalVertexCount());
-        ImGui::Text("Index Count : %d", stat.GetTotalIndexCount());
-        auto [x, y] = hazel::Input::GetMousePos();
-        ImGui::Text("Mouse Pos : %d,%d", (int)x, (int)y);
+    if (!bShowRenderStats) {
+        return;
     }
-    if (bOpen) {
+
+    if (!ImGui::Begin("Render2D stats", &bShowRenderStats)) {
         ImGui::End();
+        return;
     }
+    auto stat = hazel::Render2D::GetStatics();
+    ImGui::Text("Draw Calls  : %d", stat.DrawCalls);
+    ImGui::Text("Quad Count  : %d", stat.QuadCount);
+    ImGui::Text("Vertex Count: %d", stat.GetTotalVertexCount());
+    ImGui::Text("Index Count : %d", stat.GetTotalIndexCount());
+    auto [x, y] = hazel::Input::GetMousePos();
+    ImGui::Text("Mouse Pos : %d,%d", (int)x, (int)y);
+    ImGui::End();
 }
 
 

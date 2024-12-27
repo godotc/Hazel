@@ -21,11 +21,15 @@ def gen_launch_configs(
         "name": "[nut] MSVC DEBUG",
         "program": "${workspaceRoot}/build/windows/x64/debug/hazel-editor-nut.exe",
         "logging": {
-            "trace": true,
-            "moduleLoad": false
+            "moduleLoad": true,
+            "threadExit": true,
+            "processExit": true,
+            "programOutput": true,
+             "engineLogging": false,
+            "exceptions": true,
         },
         "cwd": "${workspaceRoot}",
-        "console": "internalConsole",
+        "console": "integratedTerminal",
         "visualizerFile": "${workspaceFolder}/my.natvis",
         "request": "launch",
         "preLaunchTask": "build nut",
@@ -39,11 +43,15 @@ def gen_launch_configs(
                 f"${{workspaceRoot}}/{target_dir}/{bDebug and 'debug' or 'release'}/{target_base_name}"
             ).replace("\\", "/"),
             "logging": {
-                "trace": True,
-                "moduleLoad": False,
+                "moduleLoad": True,
+                "threadExit": True,
+                "processExit": True,
+                "programOutput": True,
+                "engineLogging": True,
+                "exceptions": True,
             },
             "cwd": "${workspaceRoot}",
-            "console": "internalConsole",
+            "console": "integratedTerminal",
             "visualizerFile": "${workspaceFolder}/my.natvis",
             "preLaunchTask": f"build {target_name}",
         }

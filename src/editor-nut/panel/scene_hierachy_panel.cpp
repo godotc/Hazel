@@ -166,10 +166,16 @@ void SceneHierarchyPanel::SetContext(const Ref<Scene> &scene)
 
 void SceneHierarchyPanel::OnImGuiRender()
 {
-    if (ImGui::Begin("Scene Hierarchy"))
+    static bool bOpen = false;
+
+    if (!ImGui::Begin("Scene Hierarchy", &bOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    if (!bOpen)
     {
         auto &entities = m_Context->m_Registry.storage<entt::entity>();
-
 #ifndef NDEBUG
         // TODO: Why cannot to get the size of entities here?
         int32_t size = entities.size();
@@ -192,20 +198,23 @@ void SceneHierarchyPanel::OnImGuiRender()
             ImGui::EndPopup();
         }
         UI_AddComponents();
-
-        ImGui::End();
     }
+    ImGui::End();
 
 
 
     static bool bPropertiesWindowOpened = true;
-    ImGui::Begin("Properties", &bPropertiesWindowOpened, ImGuiWindowFlags_DockNodeHost | ImGuiWindowFlags_NoCollapse);
+    if (!ImGui::Begin("Properties", &bPropertiesWindowOpened, ImGuiWindowFlags_NoCollapse))
+    {
+        ImGui::End();
+        return;
+    }
     if (bPropertiesWindowOpened) {
         if (m_Selection) {
             DrawComponents(m_Selection);
         }
-        ImGui::End();
     }
+    ImGui::End();
 }
 
 void SceneHierarchyPanel::UI_AddComponents()

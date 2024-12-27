@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-18 00:50:42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 02:59:56
+ * @ Modified time: 2024-12-28 01:23:44
  * @ Description:
  */
 
@@ -58,8 +58,10 @@ class EditorLayer : public hazel::Layer
     bool               bPadding         = true;
     ImGuiDockNodeFlags m_DockspaceFlags = ImGuiDockNodeFlags_None;
     ImGuiWindowFlags   m_WindowFlags    = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    bool               bShowRenderStats = true;
 
     bool bShow2DPhysicsCollisions = true;
+    glm::vec4 m_DebugCollisionColor = {0.f, 1.f, 0.f, 1.f};
 
     // ----------------------
 

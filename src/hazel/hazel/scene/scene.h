@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-17 21:30:46
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 03:50:25
+ * @ Modified time: 2024-12-28 01:29:59
  * @ Description:
  */
 
@@ -60,8 +60,9 @@ class HAZEL_API Scene
     void OnSimulationStop();
 
     void OnUpdateEditor(Timestep ts, EditorCamera &camera);
-    void OnUpdateRuntime(Timestep ts);
     void OnUpdateSimulation(Timestep ts, EditorCamera &camera);
+    void OnUpdateRuntime(Timestep ts);
+
     void OnViewportResize(uint32_t w, uint32_t h);
 
     template <typename... Component>
