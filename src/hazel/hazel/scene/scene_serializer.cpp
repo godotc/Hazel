@@ -1,3 +1,12 @@
+//
+/*
+ * @ Author: godot42
+ * @ Create Time: 2024-11-23 01:27:43
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 04:03:08
+ * @ Description:
+ */
+
 
 #include "hazel/sref/typelist.hpp"
 #include "hz_pch.h"
@@ -16,6 +25,7 @@
 #include "hazel/core/base.h"
 #include "hazel/scene/entity.h"
 #include "scene_serializer.h"
+#include "utils/path.h"
 #include "yaml-cpp/emitter.h"
 #include "yaml-cpp/emittermanip.h"
 #include "yaml-cpp/node/node.h"
@@ -25,6 +35,7 @@
 
 #include <cerrno>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <yaml-cpp/yaml.h>
@@ -231,13 +242,16 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
     if (entity.HasComponent<SpriteRendererComponent>()) {
         auto &comp = entity.GetComponent<SpriteRendererComponent>();
 
-
         out << YAML::Key << "SpriteRendererComponent";
-
         out << YAML::BeginMap;
         {
             // get the color as a key and the value to serialize
             out << YAML::Key << "Color" << YAML::Value << comp.Color;
+            if (comp.Texture) {
+                auto texture_path = std::filesystem::relative(comp.Texture->GetPath());
+                out << YAML::Key << "TexturePath" << YAML::Value << texture_path.string();
+            }
+            out << YAML::Key << "TillingFactor" << YAML::Value << comp.TilingFactor;
         }
         out << YAML::EndMap;
     }
@@ -348,6 +362,13 @@ void SceneSerializer::SerializeRuntime(const std::string &filepath)
 
 bool SceneSerializer::Deserialize(const std::string &filepath)
 {
+    namespace fs                       = std::filesystem;
+    std::filesystem::path project_root = utils::ProjectRoot();
+    auto                  current      = fs::current_path();
+    if (!fs::equivalent(current, utils::ProjectRoot())) {
+        project_root = current;
+    }
+
     YAML::Node data;
 
     try {
@@ -409,6 +430,13 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
             if (const auto &sprite_renderer_component = entity["SpriteRendererComponent"]) {
                 auto &tc = deserialized_entity.AddComponent<SpriteRendererComponent>();
                 tc.Color = sprite_renderer_component["Color"].as<glm::vec4>();
+                if (const auto &node = sprite_renderer_component["TexturePath"]) {
+                    const auto &path = node.as<std::string>();
+                    if (!path.empty()) {
+                        auto resolved_path = std::filesystem::relative(path, project_root);
+                        tc.Texture         = Texture2D::Create(path);
+                    }
+                }
             }
 
             auto circle_render_component = entity["CircleRendererComponent"];

@@ -8,6 +8,7 @@
 #include "glad/glad.h"
 #include "hazel/renderer/texture.h"
 #include <cstdint>
+#include <wingdi.h>
 
 namespace hazel {
 
@@ -18,6 +19,7 @@ class OpenGLTexture2D : public Texture2D
     uint32_t    m_TextureID      = {0};
     GLenum      m_InternalFormat = {GL_RGBA8};
     GLenum      m_DataFormat     = {GL_RGBA};
+
 
   public:
     OpenGLTexture2D(uint32_t w, uint32_t h);
@@ -35,6 +37,8 @@ class OpenGLTexture2D : public Texture2D
     uint32_t GetHeight() const override { return m_Height; }
 
     uint32_t GetTextureID() const override { return m_TextureID; }
+
+    const std::string &GetPath() const override { return m_Path; }
 
 
     virtual bool operator==(const Texture &other) const override

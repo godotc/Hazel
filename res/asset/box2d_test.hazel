@@ -9,6 +9,8 @@ Entities:
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [1, 1, 1, 1]
+      TexturePath: ..\..\res\texture\face.png
+      TillingFactor: 1
   - Entity: 3
     TagComponent:
       Tag: Camera
@@ -29,6 +31,7 @@ Entities:
         OrthographicFar: 1
     SpriteRendererComponent:
       Color: [0.00772190094, 0, 1, 1]
+      TillingFactor: 1
   - Entity: 2
     TagComponent:
       Tag: Red
@@ -38,6 +41,7 @@ Entities:
       Scale: [0.511919796, 0.578291833, 0.999999821]
     SpriteRendererComponent:
       Color: [0.945945919, 0, 0, 1]
+      TillingFactor: 1
     Rigidbody2DComponent:
       BodyType: Dynamic
       bFixedRotation: false
@@ -57,6 +61,7 @@ Entities:
       Scale: [0.999999464, 0.999999106, 1]
     SpriteRendererComponent:
       Color: [0.169884086, 1, 0, 1]
+      TillingFactor: 1
     Rigidbody2DComponent:
       BodyType: Dynamic
       bFixedRotation: false
@@ -76,6 +81,7 @@ Entities:
       Scale: [5.05403376, 0.641799271, 0.999970198]
     SpriteRendererComponent:
       Color: [0.39379257, 0.803088784, 0.466486096, 1]
+      TillingFactor: 1
     Rigidbody2DComponent:
       BodyType: Static
       bFixedRotation: false
@@ -116,6 +122,7 @@ Entities:
       Scale: [5.05403757, 0.64181298, 0.999999166]
     SpriteRendererComponent:
       Color: [0.482625484, 0.469998837, 0.231063932, 1]
+      TillingFactor: 1
     CircleRendererComponent:
       Color: [1, 1, 1, 1]
       Thickness: 1
