@@ -121,6 +121,12 @@ void main(){
         // CASE(32);
     }
 
+    // do this to make the texture transparent
+    // and make mouse picking not works when click on the transparent part of this texture 
+    if(the_texture.a == 0.0){
+        discard;
+    }
+
     o_Color *=  the_texture;
     o_EntityId = v_EntityId;
 
