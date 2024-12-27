@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-18 00:58:03
  * @ Modified by: @godot42
- * @ Modified time: 2024-08-18 01:53:14
+ * @ Modified time: 2024-12-28 04:10:39
  * @ Description:
  */
 
@@ -40,7 +40,8 @@ template <>
 struct hash<hazel::UUID> {
     std::size_t operator()(const hazel::UUID &uuid) const
     {
-        return hash<uint64_t>()(uuid);
+        // return hash<uint64_t>()(uuid);
+        return uint64_t(uuid);
     }
 };
 } // namespace std

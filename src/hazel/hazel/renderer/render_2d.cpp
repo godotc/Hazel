@@ -2,7 +2,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 01:56:54
+ * @ Modified time: 2024-12-28 04:11:16
  * @ Description:
  */
 
@@ -511,10 +511,10 @@ void Render2D::DrawRect(const glm::vec3 &postion, const glm::vec2 &size, const g
     glm::vec3 p2     = glm::vec3(postion.x + half_w, postion.y + half_h, postion.z);
     glm::vec3 p3     = glm::vec3(postion.x - half_w, postion.y + half_h, postion.z);
 
-    DrawLine(p0, p1, color);
-    DrawLine(p1, p2, color);
-    DrawLine(p2, p3, color);
-    DrawLine(p3, p0, color);
+    DrawLine(p0, p1, color,entity_id);
+    DrawLine(p1, p2, color,entity_id);
+    DrawLine(p2, p3, color,entity_id);
+    DrawLine(p3, p0, color,entity_id);
 }
 
 void Render2D::DrawRect(const glm::mat4 &transf, const glm::vec4 &color, int entity_id)
@@ -528,10 +528,10 @@ void Render2D::DrawRect(const glm::mat4 &transf, const glm::vec4 &color, int ent
     // quad ok but line not works
     // DrawQuad(transf, color, entity_id);
 
-    DrawLine(line_vertices[0], line_vertices[1], color);
-    DrawLine(line_vertices[1], line_vertices[2], color);
-    DrawLine(line_vertices[2], line_vertices[3], color);
-    DrawLine(line_vertices[3], line_vertices[0], color);
+    DrawLine(line_vertices[0], line_vertices[1], color, entity_id);
+    DrawLine(line_vertices[1], line_vertices[2], color, entity_id);
+    DrawLine(line_vertices[2], line_vertices[3], color, entity_id);
+    DrawLine(line_vertices[3], line_vertices[0], color, entity_id);
 }
 
 
