@@ -1,3 +1,12 @@
+//
+/*
+ * @ Author: godot42
+ * @ Modified by: @godot4223 01:27:43
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 05:04:59
+ * @ Description:
+ */
+
 #pragma once
 
 
@@ -79,7 +88,6 @@ class HAZEL_API EditorCamera
         m_FOV = v;
         UpdateProjection();
     }
-
 
   private:
 

@@ -2,8 +2,8 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-18 00:50:42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 01:23:44
- * @ Description:
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 05:35:36
  */
 
 //
@@ -16,6 +16,7 @@
 #include "hazel/core/base.h"
 #include "hazel/event/key_event.h"
 #include "hazel/renderer/texture.h"
+#include "hazel/scene/component.h"
 #include "hazel/scene/editor_camera.h"
 #include "hazel/scene/entity.h"
 #include "hazel/scene/scene.h"
@@ -24,7 +25,9 @@
 #include <optional>
 
 
+
 namespace hazel {
+
 
 class EditorLayer : public hazel::Layer
 {
@@ -46,6 +49,7 @@ class EditorLayer : public hazel::Layer
     // Panel
     SceneHierarchyPanel m_SceneHierarchyPanel;
     ContentBrowserPanel m_ContentBrowserPanel;
+
     EditorCamera        m_EditorCamera;
 
     OrthographicCameraController m_CameraController{16 / 9.f, true};
@@ -76,6 +80,8 @@ class EditorLayer : public hazel::Layer
     Entity m_HoveredEntity;
 
     int m_ViewportColorAttachmentId = 0;
+
+    float m_DebugFloat = 1.f;
 
     // Ed resources
     Ref<Texture2D> m_IconPlay;
@@ -119,7 +125,7 @@ class EditorLayer : public hazel::Layer
     void UI_RenderStats();
 
     // Must call in viewport draw process(in the same window)
-    void Gizmos();
+    void RenderGizmos();
 
     // --- Events
     bool OnKeyPressed(const KeyPressedEvent &Ev);

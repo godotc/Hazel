@@ -2,11 +2,17 @@
  *  Author: @godot42
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 03:07:25
- *  Description:
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 05:41:38
  */
 
+#include "glm/ext/quaternion_geometric.hpp"
 #include "hz_pch.h"
+//
+
+#include "glm/matrix.hpp"
+#include "hazel/scene/entity.h"
+#include "hazel/scene/scene.h"
 //
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -563,7 +569,7 @@ void EditorLayer::ViewPort()
         }
 
 
-        Gizmos();
+        RenderGizmos();
 
         ImGui::End();
     }
@@ -799,6 +805,8 @@ void EditorLayer::UI_Settings()
     // ImGui::Image(reinterpret_cast<void *>(id), ImVec2{64, 64});
     ImGui::InputInt("Attachment Id", &m_ViewportColorAttachmentId);
 
+    ImGui::DragFloat("Debug Float", &m_DebugFloat);
+
     const char *name = "None";
     if (m_HoveredEntity) {
         name = m_HoveredEntity.GetComponent<TagComponent>().Tag.c_str();
@@ -840,7 +848,7 @@ void EditorLayer::UI_RenderStats()
 }
 
 
-void EditorLayer::Gizmos()
+void EditorLayer::RenderGizmos()
 {
     Entity selected_entity = m_SceneHierarchyPanel.GetSelectedEntity();
     if (!selected_entity || m_GizmoType == -1) {
@@ -857,20 +865,50 @@ void EditorLayer::Gizmos()
                       m_ViewportBounds[1].x - m_ViewportBounds[0].x,
                       m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
-    // runtime camera from entity
-    // auto ce = m_ActiveScene->GetPrimaryCameraEntity();
-    // HZ_ASSERT(ce, "Should be valid");
-    // const SceneCamera &camera            = ce.GetComponent<CameraComponent>().Camera;
-    // const glm::mat4   &camera_projection = camera.GetProjection();
-    // const glm::mat4    camera_view       = glm::inverse(ce.GetComponent<TransformComponent>().GetTransform());
-
-    // Editor camera
-    const glm::mat4 &camera_projection = m_EditorCamera.GetProjection();
-    const glm::mat4  camera_view       = m_EditorCamera.GetViewMatrix();
 
     // selected entity transform
-    auto     &tc        = selected_entity.GetComponent<TransformComponent>();
-    glm::mat4 transform = tc.GetTransform();
+    auto     &selected_entity_tc = selected_entity.GetComponent<TransformComponent>();
+    glm::mat4 transform          = selected_entity_tc.GetTransform();
+
+
+
+    // Get transform from editor/runtime camera
+    glm::mat4 camera_projection(1);
+    glm::mat4 camera_view(1);
+    switch (m_SceneState)
+    {
+        case ESceneState::Stop:
+        case ESceneState::Simulate:
+            camera_projection = m_EditorCamera.GetProjection();
+            camera_view       = m_EditorCamera.GetViewMatrix();
+            break;
+        case ESceneState::Play:
+        {
+            Entity const *ce = m_ActiveScene->m_RuntimeCameraEntity;
+            if (!ENSURE(ce)) {
+                break;
+            }
+            camera_projection    = ce->GetComponent<CameraComponent>().Camera.GetProjection();
+            const auto &tfc      = ce->GetComponent<TransformComponent>();
+            glm::mat4   rotation = glm::toMat4(glm::quat(tfc.Rotation));
+            auto        dir      = tfc.Translation - selected_entity_tc.Translation;
+
+            // dir = dir.length() > 0 ? glm::normalize(dir) : glm::vec3(0, 0, 1);
+            // dir = dir.length() < 100 ? dir * 100.f : dir;
+            dir = glm::normalize(dir) * m_DebugFloat;
+
+            auto view = glm::translate(glm::mat4(1.f), dir) *
+                        rotation *
+                        glm::scale(glm::mat4(1.f), tfc.Scale);
+
+            camera_view = view;
+            break;
+        }
+        default:
+            HZ_ASSERT(false, "Unknown scene state");
+            break;
+    }
+
 
 
     // do transform a section by a section
@@ -897,12 +935,12 @@ void EditorLayer::Gizmos()
         // ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform), glm::value_ptr(translation),
         //                                       glm::value_ptr(rotation), glm::value_ptr(scale));
 
-        tc.Translation = translation;
-        tc.Scale       = scale;
+        selected_entity_tc.Translation = translation;
+        selected_entity_tc.Scale       = scale;
 
         // tc.Rotation    = rotation;
-        glm::vec3 rotation_delta = rotation - tc.Rotation;
-        tc.Rotation += rotation_delta;
+        glm::vec3 rotation_delta = rotation - selected_entity_tc.Rotation;
+        selected_entity_tc.Rotation += rotation_delta;
     }
 }
 

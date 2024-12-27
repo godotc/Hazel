@@ -2,8 +2,8 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 04:40:22
- * @ Description:
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 05:09:57
  */
 
 
@@ -324,6 +324,9 @@ void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera)
 
 void Scene::OnUpdateRuntime(Timestep ts)
 {
+    static Entity runtime_entity_owner;
+    runtime_entity_owner = {};
+
     // Update scripts
     {
         m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto &ns_comp) {
@@ -350,6 +353,8 @@ void Scene::OnUpdateRuntime(Timestep ts)
         for (auto ent : view) {
             auto [transf, cam] = view.get(ent);
             if (cam.bPrimary) {
+                runtime_entity_owner  = Entity(ent, this);
+                m_RuntimeCameraEntity = &runtime_entity_owner;
                 main_camera = &cam.Camera;
                 transform   = transf.GetTransform();
                 break;

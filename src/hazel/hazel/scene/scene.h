@@ -2,8 +2,8 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-17 21:30:46
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 01:29:59
- * @ Description:
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 05:20:10
  */
 
 
@@ -40,11 +40,15 @@ class HAZEL_API Scene
     friend class SceneSerializer;
 
 
+
   protected:
     entt::registry m_Registry;
     uint32_t       m_ViewportWidth  = 0;
     uint32_t       m_ViewportHeight = 0;
     b2World       *m_PhysicsWorld   = nullptr;
+
+  public:
+    Entity* m_RuntimeCameraEntity;
 
 
   public:

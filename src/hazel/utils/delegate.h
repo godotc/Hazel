@@ -1,3 +1,12 @@
+//
+/*
+ * @ Author: godot42
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 04:26:58
+ * @ Modified time: 2024-12-28 04:27:37
+ * @ Description:
+ */
+
 #pragma once
 
 #include <functional>
@@ -17,19 +26,15 @@ class Delegate<ReturnType(Args...)>
     Delegate(){};
     Delegate(const FunctionType &function) : m_Function(function), bBound(true) {}
 
-    void Set(const FunctionType &function)
+    void Bind(const FunctionType &function)
     {
         m_Function = function;
         bBound     = true;
     }
 
-    // Execute the delegate with arguments
-    ReturnType operator()(Args... args) const
-    {
-        return m_Function(std::forward<Args>(args)...);
-    }
+    void Unbind() { bBound = false; }
 
-    ReturnType ExecuteIfBound(Args &&...args) const
+    ReturnType ExecuteIfBound(Args ...args) const
     {
         if (bBound) {
             return m_Function(std::forward<Args>(args)...);

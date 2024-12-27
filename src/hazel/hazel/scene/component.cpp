@@ -2,12 +2,13 @@
  * @ Author: godot42
  * @ Create Time: 2024-11-13 17:47:25
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 00:51:26
- * @ Description:
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 05:46:37
  */
 
 
 #include "component.h"
+#include "scene.h"
 #include "hazel/scene/scriptable_entity.h"
 
 namespace hazel {

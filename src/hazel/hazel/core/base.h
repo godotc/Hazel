@@ -1,3 +1,12 @@
+//
+/*
+ * @ Author: godot42
+ * @ Create Time: 2023-11-17 23:45:29
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-28 04:48:08
+ * @ Description:
+ */
+
 #pragma once
 
 #include "__microshit_api_hazel.h"
@@ -38,6 +47,14 @@
     #define HZ_ASSERT(x, ...)
     #define HZ_CORE_ASSERT(x, ...)
 #endif
+
+
+#ifdef __HZ_DEBUG
+    #define ENSURE(x) (!!(x) ? void(0) : HZ_ERROR("Assertion Failed: {}", #x), x)
+#else
+    #define ENSURE(x) x
+#endif
+
 
 #define BIT(x) (1 << x)
 #define HZ_BIND_EVENT(ctx, fn) std::bind(fn, ctx, std::placeholders::_1)
