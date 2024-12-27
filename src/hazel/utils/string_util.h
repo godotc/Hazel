@@ -27,4 +27,16 @@ inline std::vector<std::string> string_split(std::string_view source, char delim
     return ret;
 }
 
+
+inline std::string string_replace(const std::string &source, const std::string &from, const std::string &to)
+{
+    std::string ret = source;
+    size_t      pos = 0;
+    while ((pos = ret.find(from, pos)) != std::string::npos) {
+        ret.replace(pos, from.size(), to);
+        pos += to.size();
+    }
+    return ret;
+}
+
 } // namespace utils

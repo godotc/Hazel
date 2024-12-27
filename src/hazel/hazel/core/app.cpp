@@ -24,6 +24,7 @@
 
 // tmp
 #include "GLFW/glfw3.h"
+#include <filesystem>
 #include <ranges>
 
 namespace hazel {
@@ -31,7 +32,7 @@ namespace hazel {
 
 App *App::g_Application = nullptr;
 
-App::App(const std::string &name, AppCommandLineArgs args)
+App::App(const ApplicationSpecification& app_sec)
 {
     HZ_PROFILE_FUNCTION();
 
@@ -39,7 +40,18 @@ App::App(const std::string &name, AppCommandLineArgs args)
     HZ_CORE_ASSERT(!g_Application, "Already a application instance");
     g_Application = this;
 
-    m_Window = Window::Create(WindowProps(name));
+    m_ApplicationSpecification = app_sec;
+    m_Window = Window::Create(WindowProps(app_sec.Name));
+    namespace fs = std::filesystem;
+    if (!m_ApplicationSpecification.WorkingDirectory.empty()) {
+        HZ_ASSERT(fs::exists(m_ApplicationSpecification.WorkingDirectory), "Working directory does not exist");
+
+        // does this do chdir? https://en.cppreference.com/w/cpp/filesystem/current_path
+        std::filesystem::current_path(app_sec.WorkingDirectory);
+        HZ_WARN("Set working directory to {}", app_sec.WorkingDirectory.string());
+    }
+
+
 
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
     m_Window->SetVSync(true);

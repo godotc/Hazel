@@ -33,7 +33,7 @@ class Sandbox : public hazel::App
 };
 
 
-hazel::App *hazel::CreateApplication(hazel::AppCommandLineArgs /*args*/)
+hazel::App *hazel::CreateApplication(hazel::ApplicationCommandLineArgs /*args*/)
 {
     return new Sandbox;
 }

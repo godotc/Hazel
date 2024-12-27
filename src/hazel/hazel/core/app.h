@@ -10,10 +10,11 @@
 #include "hazel/event/application_event.h"
 #include "hazel/event/event.h"
 #include "hazel/event/key_event.h"
+#include <filesystem>
 
 namespace hazel {
 
-struct HAZEL_API AppCommandLineArgs {
+struct HAZEL_API ApplicationCommandLineArgs {
     int    count = 0;
     char **args  = nullptr;
 
@@ -26,11 +27,17 @@ struct HAZEL_API AppCommandLineArgs {
 
 class App;
 
+struct HAZEL_API ApplicationSpecification {
+    std::string        Name = "Hazel Application";
+    std::filesystem::path      WorkingDirectory;
+    ApplicationCommandLineArgs CommandLineArgs;
+};
+
 class HAZEL_API App
 {
     static App *g_Application;
 
-    AppCommandLineArgs Args;
+    ApplicationSpecification m_ApplicationSpecification;
 
     LayerStack m_LayerStack;
     Window    *m_Window;
@@ -49,7 +56,7 @@ class HAZEL_API App
 
 
   public:
-    App(const std::string &name = "Hazel Engine", AppCommandLineArgs args = AppCommandLineArgs{});
+    App(const ApplicationSpecification& app_sec = ApplicationSpecification());
     virtual ~App();
 
     static inline App &Get() { return *g_Application; }
@@ -68,7 +75,8 @@ class HAZEL_API App
 
     inline Window &GetWindow() { return *m_Window; }
 
-    AppCommandLineArgs GetCommandLineArgs() const { return Args; }
+    ApplicationSpecification GetApplicationSpecification() const { return m_ApplicationSpecification; }
+    ApplicationCommandLineArgs GetCommandLineArgs() const { return m_ApplicationSpecification.CommandLineArgs; }
 
   protected:
     void OnEvent(Event &ev);
@@ -78,7 +86,7 @@ class HAZEL_API App
     bool OnKeyPressed(KeyPressedEvent &ev);
 };
 
-App *CreateApplication(AppCommandLineArgs args);
+App *CreateApplication(ApplicationCommandLineArgs args);
 
 
 } // namespace hazel

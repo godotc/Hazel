@@ -12,7 +12,7 @@
 
 
 
-extern hazel::App *hazel::CreateApplication(AppCommandLineArgs args);
+extern hazel::App *hazel::CreateApplication(ApplicationCommandLineArgs args);
 
 int main(int argc, char **argv)
 {

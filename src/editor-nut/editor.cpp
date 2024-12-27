@@ -12,20 +12,27 @@
 // entry point
 
 #include "editor_layer.h"
+#include "utils/path.h"
 
 namespace hazel {
 
 class HazelEditor : public hazel::App
 {
   public:
-    HazelEditor(AppCommandLineArgs args)
-        : hazel::App("Hazel Editor", args)
+    HazelEditor(ApplicationSpecification spec)
+        : hazel::App(spec)
     {
         HZ_INFO("Editor construct...");
         PushLayer(new hazel::EditorLayer());
         GetWindow().SetVSync(true);
-        RESET_IMGUI_CONTEXT();
-        RESET_IMGUIZMO_CONTEXT();
+
+        {
+            // this for a exe link to a dll, but dll has static variable
+            // and the variable ptr will be null but valid in exe process
+            // so we need call these funs to reset it?
+            RESET_IMGUI_CONTEXT();
+            RESET_IMGUIZMO_CONTEXT();
+        }
     }
 
     ~HazelEditor() override
@@ -36,9 +43,14 @@ class HazelEditor : public hazel::App
 
 
 
-App *CreateApplication(AppCommandLineArgs args)
+App *CreateApplication(ApplicationCommandLineArgs args)
 {
-    return new HazelEditor(args);
+    ApplicationSpecification spec{
+        .Name = "Hazel Editor",
+        .WorkingDirectory = FPath("example/project0"),
+        .CommandLineArgs  = args,
+    };
+    return new HazelEditor(spec);
 }
 
 }; // namespace hazel
