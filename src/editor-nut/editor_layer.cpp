@@ -3,7 +3,7 @@
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-29 01:02:18
+ * @ Modified time: 2024-12-29 02:30:53
  */
 
 #include "glm/ext/quaternion_geometric.hpp"
@@ -106,8 +106,7 @@ void EditorLayer::OnAttach()
     spec.Height      = 600;
     m_Framebuffer    = hazel::Framebuffer::Create(spec);
 
-    m_EditorScene = hazel::CreateRef<hazel::Scene>();
-    SetActiveScene(m_EditorScene);
+    NewScene();
 
 
     m_EditorCamera = EditorCamera(45.f, 1.6 / 0.9, 0.1, 1000.0);
@@ -294,6 +293,11 @@ void EditorLayer::OnOverlayRender()
         return;
     }
 
+
+    glm::vec3 projection_collider = {};
+    float     z                   = 0.001f;
+
+
     if (m_SceneState == ESceneState::Play)
     {
         Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
@@ -302,10 +306,15 @@ void EditorLayer::OnOverlayRender()
         }
         Render2D::BeginScene(camera.GetComponent<CameraComponent>().Camera,
                              camera.GetComponent<TransformComponent>().GetTransform());
+
+        projection_collider = camera.GetComponent<TransformComponent>().Rotation * z;
     }
     else {
         Render2D::BeginScene(m_EditorCamera);
+        projection_collider = m_EditorCamera.GetForwardDirection() * z;
     }
+
+
 
     // Box
     {
@@ -313,7 +322,7 @@ void EditorLayer::OnOverlayRender()
         for (auto entity : view) {
             const auto &[tc, bc2dc] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
 
-            glm::vec3 pos    = tc.Translation + glm::vec3(bc2dc.Offset, 0.001f);
+            glm::vec3 pos    = tc.Translation + glm::vec3(bc2dc.Offset, -projection_collider.z);
             glm::vec3 scale  = tc.Scale * glm::vec3(bc2dc.Size * 2.0f, 1.f);
             glm::mat4 transf = glm::translate(glm::mat4(1.0f), pos) *
                                glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0, 0, 1)) *
@@ -331,7 +340,7 @@ void EditorLayer::OnOverlayRender()
         for (auto entity : view) {
             const auto &[tc, cc2dc] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
 
-            glm::vec3 pos    = tc.Translation + glm::vec3(cc2dc.Offset, 0.001f);
+            glm::vec3 pos    = tc.Translation + glm::vec3(cc2dc.Offset, -projection_collider.z);
             glm::vec3 scale  = tc.Scale * (cc2dc.Radius * 2);
             glm::mat4 transf = glm::translate(glm::mat4(1.0f), pos) *
                                glm::scale(glm::mat4(1.0f), scale);
@@ -346,7 +355,7 @@ void EditorLayer::OnOverlayRender()
         const TransformComponent &tc = selectedEntity.GetComponent<TransformComponent>();
         // Red
         auto color  = glm::vec4(1, 0, 0, 1);
-        auto transf = glm::translate(tc.GetTransform(), glm::vec3(0, 0, 0.1f));
+        auto transf = glm::translate(tc.GetTransform(), glm::vec3(0, 0, -projection_collider.z * 2));
 
         Render2D::DrawRect(transf, color);
     }
@@ -1057,9 +1066,13 @@ bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
 
 void EditorLayer::NewScene()
 {
-    auto new_scene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
-    new_scene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-    SetActiveScene(new_scene);
+    if (m_SceneState != ESceneState::Stop) {
+        return;
+    }
+
+    m_EditorScene = CreateRef<Scene>(); // Just create a new scene/new tab(TODO)
+    m_EditorScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+    SetActiveScene(m_EditorScene);
 }
 
 void EditorLayer::OpenScene()
