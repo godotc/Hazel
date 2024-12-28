@@ -1,3 +1,12 @@
+//
+/*
+ * @ Author: godot42
+ * @ Create Time: 2024-07-22 03:29:17
+ * @ Modified by: @godot42
+ * @ Modified time: 2024-12-29 00:26:04
+ * @ Description:
+ */
+
 #pragma once
 
 
@@ -44,6 +53,8 @@ class HAZEL_API Window
     virtual void               SetEventCallback(const EventCallBackFn &cb) = 0;
     virtual void               SetVSync(bool bEnable)                      = 0;
     [[nodiscard]] virtual bool IsVSync() const                             = 0;
+    virtual void               SetMaximized()                              = 0;
+
 
     [[nodiscard]] virtual std::any GetNativeWindow() const = 0;
 };

@@ -3,7 +3,7 @@
  * @ Create Time: 2024-08-18 00:50:42
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 05:35:36
+ * @ Modified time: 2024-12-29 00:21:19
  */
 
 //
@@ -52,6 +52,8 @@ class EditorLayer : public hazel::Layer
 
     EditorCamera        m_EditorCamera;
 
+    bool bDefaultMaximizeWindow = true;
+
     OrthographicCameraController m_CameraController{16 / 9.f, true};
 
     // ParticleSystem m_PracticeSystem;
@@ -62,7 +64,10 @@ class EditorLayer : public hazel::Layer
     bool               bPadding         = true;
     ImGuiDockNodeFlags m_DockspaceFlags = ImGuiDockNodeFlags_None;
     ImGuiWindowFlags   m_WindowFlags    = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    bool               bShowRenderStats = true;
+
+    // window show state flags
+    bool bShowRenderStats    = true;
+    bool bShowSettingsWindow = true;
 
     bool bShow2DPhysicsCollisions = true;
     glm::vec4 m_DebugCollisionColor = {0.f, 1.f, 0.f, 1.f};
@@ -122,7 +127,7 @@ class EditorLayer : public hazel::Layer
 
     void UI_FontSwitcher();
     void UI_Settings();
-    void UI_RenderStats();
+    void Win_RenderStats();
 
     // Must call in viewport draw process(in the same window)
     void RenderGizmos();

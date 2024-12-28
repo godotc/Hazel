@@ -104,6 +104,11 @@ bool PlatGLFWWindow::IsVSync() const
     return m_Data.bVSync;
 }
 
+void PlatGLFWWindow::SetMaximized()
+{
+    glfwMaximizeWindow(m_Window);
+}
+
 unsigned int PlatGLFWWindow::GetHeight() const { return m_Data.Height; }
 
 

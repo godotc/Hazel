@@ -3,7 +3,7 @@
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 05:41:38
+ * @ Modified time: 2024-12-29 01:02:18
  */
 
 #include "glm/ext/quaternion_geometric.hpp"
@@ -86,6 +86,10 @@ EditorLayer::~EditorLayer()
 
 void EditorLayer::OnAttach()
 {
+    if (bDefaultMaximizeWindow) {
+        App::Get().GetWindow().SetMaximized();
+    }
+
     m_IconPlay     = Texture2D::Create(FPath("res/texture/editor/play.png"));
     m_IconStop     = Texture2D::Create(FPath("res/texture/editor/stop.png"));
     m_IconSimulate = Texture2D::Create(FPath("res/texture/editor/simulate_button.png"));
@@ -106,7 +110,7 @@ void EditorLayer::OnAttach()
     SetActiveScene(m_EditorScene);
 
 
-    m_EditorCamera = EditorCamera(30.f, 1.6 / 0.9, 0.1, 1000.0);
+    m_EditorCamera = EditorCamera(45.f, 1.6 / 0.9, 0.1, 1000.0);
 
     auto commandlines = App::Get().GetCommandLineArgs();
     if (commandlines.count > 1) {
@@ -389,7 +393,7 @@ void EditorLayer::OnImGuiRender()
     MenuBar();
     UI_Toolbar();
     UI_Settings();
-    UI_RenderStats();
+    Win_RenderStats();
 
     m_ContentBrowserPanel.OnImGuiRender();
     m_SceneHierarchyPanel.OnImGuiRender();
@@ -459,6 +463,9 @@ void EditorLayer::MenuBar()
         if (ImGui::MenuItem("Open...", "Ctrl+O")) {
             OpenScene();
         }
+        if (ImGui::MenuItem("Save", "Ctrl+S")) {
+            SaveScene();
+        }
         if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S")) {
             SaveAs();
         }
@@ -495,6 +502,20 @@ void EditorLayer::MenuBar()
         }
         ImGui::Separator();
 
+        ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("Editor")) {
+        if (ImGui::MenuItem("Settings", "", bShowSettingsWindow)) {
+            bShowSettingsWindow = !bShowSettingsWindow;
+        }
+        ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Windows")) {
+        if (ImGui::MenuItem("Render Stats", "", bShowRenderStats))
+        {
+            bShowRenderStats = !bShowRenderStats;
+        }
         ImGui::EndMenu();
     }
 
@@ -787,15 +808,13 @@ void EditorLayer::FontSwitcher()
 
 void EditorLayer::UI_Settings()
 {
-    static bool bOpen = true;
     // static bool bWantToClose = false;
-    if (!ImGui::Begin("Settings", &bOpen))
+    if (!ImGui::Begin("Settings", &bShowSettingsWindow))
     {
         ImGui::End();
         return;
     }
     ImGui::Checkbox("Show 2D Physics Collision", &bShow2DPhysicsCollisions);
-    ImGui::Checkbox("Show Render Stats", &bShowRenderStats);
     ImGui::ColorEdit4("Debug Collision Color", glm::value_ptr(m_DebugCollisionColor));
 
     auto pos = m_EditorCamera.GetPosition();
@@ -827,7 +846,7 @@ void EditorLayer::UI_Settings()
     ImGui::End();
 }
 
-void EditorLayer::UI_RenderStats()
+void EditorLayer::Win_RenderStats()
 {
     if (!bShowRenderStats) {
         return;
@@ -884,24 +903,19 @@ void EditorLayer::RenderGizmos()
             break;
         case ESceneState::Play:
         {
+
             Entity const *ce = m_ActiveScene->m_RuntimeCameraEntity;
             if (!ENSURE(ce)) {
                 break;
             }
-            camera_projection    = ce->GetComponent<CameraComponent>().Camera.GetProjection();
-            const auto &tfc      = ce->GetComponent<TransformComponent>();
-            glm::mat4   rotation = glm::toMat4(glm::quat(tfc.Rotation));
-            auto        dir      = tfc.Translation - selected_entity_tc.Translation;
+            camera_projection = ce->GetComponent<CameraComponent>().Camera.GetProjection();
 
-            // dir = dir.length() > 0 ? glm::normalize(dir) : glm::vec3(0, 0, 1);
-            // dir = dir.length() < 100 ? dir * 100.f : dir;
-            dir = glm::normalize(dir) * m_DebugFloat;
+            const auto &tfc = ce->GetComponent<TransformComponent>();
 
-            auto view = glm::translate(glm::mat4(1.f), dir) *
-                        rotation *
-                        glm::scale(glm::mat4(1.f), tfc.Scale);
+            glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.x, -tfc.Rotation.y, 0.0f)));
+            const auto view     = glm::translate(glm::mat4(1.f), tfc.Translation) * rotation;
 
-            camera_view = view;
+            camera_view = glm::inverse(view);
             break;
         }
         default:

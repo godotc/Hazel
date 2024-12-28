@@ -51,8 +51,6 @@ App::App(const ApplicationSpecification& app_sec)
         HZ_WARN("Set working directory to {}", app_sec.WorkingDirectory.string());
     }
 
-
-
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
     m_Window->SetVSync(true);
 

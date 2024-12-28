@@ -31,6 +31,8 @@ class PlatGLFWWindow : public Window
     void               SetVSync(bool bEnable) override;
     [[nodiscard]] bool IsVSync() const override;
 
+    void SetMaximized() override;
+
   private:
     void Init(const WindowProps &props);
     void ShutDown();
