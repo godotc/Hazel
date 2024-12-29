@@ -13,25 +13,78 @@ extern "C" {
 }
 
 
-template <typename... Ts>
-struct type_list {
-};
+void StackDump(lua_State *L)
+{
+    printf("\n***** begin stack dump **\n");
+    int n = lua_gettop(L);
+    for (int i = 1; i <= n; ++i) {
+        int type = lua_type(L, i);
+        switch (type) {
+            case LUA_TSTRING:
+                printf("[%s]", lua_tostring(L, i));
+                break;
+            case LUA_TBOOLEAN:
+                printf("[%s]", lua_toboolean(L, i) ? "true" : "false");
+                break;
+            case LUA_TNUMBER:
+                printf("[%g]", lua_tonumber(L, i));
+                break;
+            case LUA_TFUNCTION:
+                printf("[%s]", lua_tostring(L, i));
+                break;
+            default:
+                printf("[%s]", lua_typename(L, type));
+                break;
+        }
+        printf(" ");
+    }
+
+    printf("\n");
+    printf("***** end stack dump **\n\n");
+}
+
+void LoadLuaScriptFile(lua_State *L, const char *filename)
+{
+    luaL_loadfile(L, filename);
+    int ret = lua_pcall(L, 0, 0, 0);
+    if (ret != 0)
+    {
+        printf("%d %s\n", ret, lua_tostring(L, -1));
+        lua_pop(L, 1);
+    }
+    else {
+        printf("loaded %s\n", filename);
+    }
+}
+
+bool GetGlobalFunc(lua_State *L, const char *func)
+{
+    int type = lua_getglobal(L, func);
+    printf("lua_getglobal %s, Type: %s\n", func, lua_typename(L, -1));
+    if (type != LUA_TFUNCTION) {
+
+        printf("failed to get global %s\n", func);
+        printf("%d %s\n", type, lua_tostring(L, -1));
+        lua_pop(L, 1);
+        return false;
+    }
+    return true;
+}
 
 
-template <typename, size_t>
-struct nth;
-
-// end recursive condition
-template <typename T, typename... Remains>
-struct nth<type_list<T, Remains...>, 0> {
-    using type = T;
-};
-
-template <typename T, typename... Remains, size_t N>
-struct nth<type_list<T, Remains...>, N> {
-    using type = typename nth<type_list<Remains...>, N - 1>::type;
-};
-
+bool CallLuaFuncImpl(lua_State *L, int narg, int nret)
+{
+    int ret = lua_pcall(L, narg, nret, 0);
+    if (ret != 0)
+    {
+        StackDump(L);
+        printf("lua_pcall failed %d\n", ret);
+        printf("%s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+        return false;
+    }
+    return true;
+}
 
 template <typename Arg>
 concept TLuaPushable = requires(lua_State *L, Arg arg) {
@@ -54,9 +107,16 @@ void LuaPushValue(lua_State *L, T arg)
 {
     using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
 
-    if constexpr (std::is_floating_point_v<Arg> || std::is_integral_v<Arg>)
+    if constexpr (std::is_floating_point_v<Arg>)
     {
-        lua_pushnumber(L, arg);
+        // now use float, maybe double in lua
+        lua_pushnumber(L, float(arg));
+        return;
+    }
+    if constexpr (std::is_integral_v<Arg>)
+    {
+        // now use int, maybe long long in lua
+        lua_pushnumber(L, int(arg));
         return;
     }
     if constexpr (std::is_same_v<Arg, const char *>)
@@ -79,35 +139,71 @@ void LuaPushValue(lua_State *L, T arg)
     exit(-1);
 }
 
-template <TLuaPushable... Ts>
-void LuaPushValues(lua_State *L, Ts &&...ts)
+template <TLuaPushable T>
+void LuaPushValues(lua_State *L, T t)
 {
-    using types = std::tuple<Ts...>;
-
-    // nth<types, Is>::type arg = std::get<Is>(std::forward<types>(ts))>
-    // (LuaPushValue(L, std::get<Is>(std::forward_as_tuple(ts...)))...);
+    LuaPushValue(L, std::forward<T>(t));
 }
+
+template <TLuaPushable T, TLuaPushable... Ts>
+void LuaPushValues(lua_State *L, T &&t, Ts &&...ts)
+{
+    LuaPushValue(L, t);
+    LuaPushValues(L, std::forward<Ts>(ts)...);
+}
+
 
 template <TLuaPushable... Args>
-void CallLuaFunc(lua_State *L, const char *func, Args... args)
+bool CallLuaFunc(lua_State *L, const char *func, Args... args)
 {
-    printf("pcall %s\n", func);
+    printf("\n-->>CallLuaFunc %s\n", func);
 
-    if (int type = lua_getglobal(L, func); type != LUA_TFUNCTION) {
-        printf("%d %s\n", type, lua_tostring(L, -1));
-        lua_pop(L, 1);
-        return;
+    if (!GetGlobalFunc(L, func)) {
+        return false;
+    }
+    LuaPushValues(L, std::forward<Args>(args)...);
+
+    StackDump(L);
+
+    if (!CallLuaFuncImpl(L, sizeof...(args), 0)) {
+        return false;
     }
 
-    (LuaPushValues(L, args)...);
-
-    int ret = lua_pcall(L, sizeof...(args), 0, 0);
-    if (ret != 0)
-    {
-        printf("%s\n", lua_tostring(L, -1));
-        lua_pop(L, 1);
-    }
+    printf("--<<end pcall %s\n", func);
+    return true;
 }
+
+
+
+template <typename T, TLuaPushable... Args>
+bool CallLuaFuncWithRet(lua_State *L, T &out, const char *func, Args... args)
+{
+    printf("\n-->>CallLuaFuncWithRet %s\n", func);
+
+    if (!GetGlobalFunc(L, func)) {
+        return false;
+    }
+
+    LuaPushValues(L, std::forward<Args>(args)...);
+
+    if (!CallLuaFuncImpl(L, sizeof...(args), 1)) {
+        return false;
+    }
+
+    using t = std::remove_cv_t<std::remove_reference_t<T>>;
+    if constexpr (std::is_same_v<t, float>) {
+        out = lua_tonumber(L, -1);
+        return true;
+    }
+    else if constexpr (std::is_same_v<t, int>) {
+        out = lua_tointeger(L, -1);
+        return true;
+    }
+
+    return false;
+}
+
+
 
 int main()
 {
@@ -130,9 +226,6 @@ int main()
         lua_pop(L, 1);
     }
 
-    luaL_loadfile(L, "C:/Users/norm/1/Hazel/src/pkgs/nelua/scripts/test.lua");
-
-
 
     CallLuaFunc(L, "print", "hello world");
 
@@ -143,9 +236,14 @@ int main()
         int y;
     } pos = {1, 2};
 
-    CallLuaFunc(L, "add", 1, 2);
 
-    // CallLuaFunc(L, "print", pos);
+    LoadLuaScriptFile(L, "C:/Users/norm/1/Hazel/src/pkgs/nelua/scripts/test.lua");
+
+    CallLuaFunc(L, "Add", 1, 2);
+
+    if (int result = -1; CallLuaFuncWithRet(L, result, "Add", 1, 2)) {
+        printf("result: %d\n", result);
+    }
 
 
 
