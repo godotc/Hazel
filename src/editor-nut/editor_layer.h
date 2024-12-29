@@ -50,7 +50,7 @@ class EditorLayer : public hazel::Layer
     SceneHierarchyPanel m_SceneHierarchyPanel;
     ContentBrowserPanel m_ContentBrowserPanel;
 
-    EditorCamera        m_EditorCamera;
+    EditorCamera m_EditorCamera;
 
     bool bDefaultMaximizeWindow = true;
 
@@ -69,8 +69,8 @@ class EditorLayer : public hazel::Layer
     bool bShowRenderStats    = true;
     bool bShowSettingsWindow = true;
 
-    bool bShow2DPhysicsCollisions = true;
-    glm::vec4 m_DebugCollisionColor = {0.f, 1.f, 0.f, 1.f};
+    bool      bShow2DPhysicsCollisions = true;
+    glm::vec4 m_DebugCollisionColor    = {0.f, 1.f, 0.f, 1.f};
 
     // ----------------------
 
@@ -150,6 +150,8 @@ class EditorLayer : public hazel::Layer
 
 
     void OnScenePlay();
+    void OnSceneBeginPlay();
+
     void OnSceneSimulate();
     void OnSceneStop();
 };

@@ -120,55 +120,6 @@ void EditorLayer::OnAttach()
 
 
 
-#if 0
-    m_CameraEntity = m_ActiveScene->CreateEntity("camera_entity A");
-    m_CameraEntity.AddComponent<CameraComponent>();
-    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
-
-    m_SecondCameraEntity                                          = m_ActiveScene->CreateEntity("camera_entity B");
-    m_SecondCameraEntity.AddComponent<CameraComponent>().bPrimary = false;
-    m_CameraEntity.GetComponent<TransformComponent>().Translation.z += 5;
-
-
-    m_SquareEntity = m_ActiveScene->CreateEntity("Red Square");
-    m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{1, 0, 0, 1});
-
-    m_GreenSquareEntity = m_ActiveScene->CreateEntity("Green Square");
-    m_GreenSquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0, 1, 0, 1});
-    m_GreenSquareEntity.GetComponent<TransformComponent>().Translation += 1;
-
-
-
-    class CameraController : public ScriptableEntity
-    {
-      public:
-        void OnCreate()
-        {
-            HZ_CORE_INFO("{}", __FUNCSIG__);
-        }
-        void OnDestroy() {}
-        void OnUpdate(Timestep ts)
-        {
-            // TODO: Disable this on:
-            // 1. Select a entity in editor
-            // 2. Start playing games
-            // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
-            auto &translation = GetComponent<TransformComponent>().Translation;
-            float speed       = 5.f;
-            if (hazel::Input::IsKeyPressed(Key::A))
-                translation[0] -= speed * ts;
-            if (hazel::Input::IsKeyPressed(Key::D))
-                translation[0] += speed * ts;
-            if (hazel::Input::IsKeyPressed(Key::W))
-                translation[1] -= speed * ts;
-            if (hazel::Input::IsKeyPressed(Key::S))
-                translation[1] += speed * ts;
-        }
-    };
-
-    m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-#endif
-
     m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 }
 
@@ -1160,7 +1111,6 @@ bool EditorLayer::SaveSceneImpl(const Ref<Scene> scene, std::string path)
 void EditorLayer::OnScenePlay()
 {
     switch (m_SceneState) {
-
         case ESceneState::Stop:
         case ESceneState::Play:
             break;
@@ -1173,7 +1123,46 @@ void EditorLayer::OnScenePlay()
     m_SceneState   = ESceneState::Play;
     auto new_scene = Scene::Copy(m_EditorScene);
     SetActiveScene(new_scene);
+    OnSceneBeginPlay();
     m_ActiveScene->OnRuntimeStart();
+}
+
+
+void EditorLayer::OnSceneBeginPlay()
+{
+#if 1
+
+    Entity entity = m_ActiveScene->GetPrimaryCameraEntity();
+
+    class CameraController : public ScriptableEntity
+    {
+      public:
+        void OnCreate()
+        {
+            HZ_CORE_INFO("{}", __FUNCSIG__);
+        }
+        void OnDestroy() {}
+        void OnUpdate(Timestep ts)
+        {
+            // TODO: Disable this on:
+            // 1. Select a entity in editor
+            // 2. Start playing games
+            // HZ_CORE_INFO("Timestep: {}", ts.GetSeconds());
+            auto &translation = GetComponent<TransformComponent>().Translation;
+            float speed       = 5.f;
+            if (hazel::Input::IsKeyPressed(Key::A))
+                translation[0] -= speed * ts;
+            if (hazel::Input::IsKeyPressed(Key::D))
+                translation[0] += speed * ts;
+            if (hazel::Input::IsKeyPressed(Key::W))
+                translation[1] -= speed * ts;
+            if (hazel::Input::IsKeyPressed(Key::S))
+                translation[1] += speed * ts;
+        }
+    };
+
+    entity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+#endif
 }
 
 void EditorLayer::OnSceneSimulate()
