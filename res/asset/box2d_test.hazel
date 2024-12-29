@@ -4,7 +4,7 @@ Entities:
     TagComponent:
       Tag: test_png
     TransformComponent:
-      Translation: [2.52597046, 0, 0]
+      Translation: [3.65863442, 0.149149895, -0.843160629]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
@@ -17,7 +17,7 @@ Entities:
     TransformComponent:
       Translation: [-0.000778198242, 0, 9.19999981]
       Rotation: [0, 0, 0]
-      Scale: [0.100000001, 0.100000016, 0.100000001]
+      Scale: [1, 1, 1]
     CameraComponent:
       bFixedAspectRatio: false
       bPrimary: true
@@ -36,8 +36,8 @@ Entities:
     TagComponent:
       Tag: Red
     TransformComponent:
-      Translation: [-1.41760087, 1.9166168, 0.000863552094]
-      Rotation: [0, 0, 0.529741764]
+      Translation: [-1.47399199, 0.183754295, 0.000863552094]
+      Rotation: [0, 0, 0.91224438]
       Scale: [0.511919796, 0.578291833, 0.999999821]
     SpriteRendererComponent:
       Color: [0.945945919, 0, 0, 1]
@@ -56,8 +56,8 @@ Entities:
     TagComponent:
       Tag: Green
     TransformComponent:
-      Translation: [3.04877758e-05, 2.21741152, 0]
-      Rotation: [0, 0, 2.07264552e-08]
+      Translation: [0.0132289138, 0.918694854, 0]
+      Rotation: [0, 0, -0.365530819]
       Scale: [0.999999464, 0.999999106, 1]
     SpriteRendererComponent:
       Color: [0.169884086, 1, 0, 1]
@@ -76,7 +76,7 @@ Entities:
     TagComponent:
       Tag: ground
     TransformComponent:
-      Translation: [1, 1.16694295, 0.000121577497]
+      Translation: [1, 1.16694295, 0.000121593475]
       Rotation: [0, 0, 1.24441981]
       Scale: [5.05403376, 0.641799271, 0.999970198]
     SpriteRendererComponent:

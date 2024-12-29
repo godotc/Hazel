@@ -3,7 +3,7 @@
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-29 15:16:44
+ * @ Modified time: 2024-12-29 15:24:15
  */
 
 #include "glm/ext/quaternion_geometric.hpp"
@@ -922,10 +922,10 @@ void EditorLayer::RenderGizmos()
             const auto &tfc = ce->GetComponent<TransformComponent>();
 
             // glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.x, -tfc.Rotation.y, 0.0f)));
-            glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.y, -tfc.Rotation.x, -tfc.Rotation.z))); // yaw pitch roll -> yxz
-            const auto view     = glm::translate(glm::mat4(1.f), tfc.Translation) * rotation;
+            // glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.y, -tfc.Rotation.x, -tfc.Rotation.z))); // yaw pitch roll -> yxz
+            // const auto view     = glm::translate(glm::mat4(1.f), tfc.Translation) * rotation;
 
-            camera_view = glm::inverse(view);
+            camera_view = glm::inverse(tfc.GetTransform());
             break;
         }
         default:
