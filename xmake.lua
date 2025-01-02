@@ -100,7 +100,7 @@ do
     set_menu {
         usage = "xmake cpcm",
         options = {
-            { nil, "rule", "v", "release", "the rule to config build mode " }
+            { nil, "rule", "v", "debug", "the rule to config build mode " }
         }
     }
     on_run(function()

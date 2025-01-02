@@ -18,7 +18,8 @@ function add_includedirs(...) end
 ---@class PackageConfig : table
 ---@field config table
 
----@overload fun(package:string, config:PackageConfig)
+---@param package string
+---@param config PackageConfig
 function add_requires(package, config) end
 
 ---@param type "binary"|"shared"|"static"

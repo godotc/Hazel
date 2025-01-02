@@ -4,12 +4,11 @@ IndentWidth: 4
 BreakBeforeBraces: Custom
 TabWidth: 4
 
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: true
 
 AlignArrayOfStructures: Right
 
 IndentPPDirectives: BeforeHash
-IndentCaseLabels: true
 
 # 大括号换行，只有当 BreakBeforeBraces 设置为Custom时才有效
 BraceWrapping:
@@ -39,7 +38,7 @@ BraceWrapping:
   BeforeElse: true
   # 缩进大括号(整个大括号框起来的部分都缩进)
   IndentBraces: false
-  # 空函数的大括号是否可以在一行
+  # 空函数的大括号是否可以在一行 
   SplitEmptyFunction: true
   # 空记录体(struct/class/union)的大括号是否可以在一行
   SplitEmptyRecord: false
@@ -49,7 +48,7 @@ BraceWrapping:
 
 # 连续赋值时，对齐所有等号
 AlignConsecutiveAssignments: true
-
+ 
 # 连续声明时，对齐所有声明的变量名
 AlignConsecutiveDeclarations: true
 
