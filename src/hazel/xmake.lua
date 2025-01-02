@@ -46,6 +46,9 @@ add_requires("nlohmann_json")
 add_requires("box2d v2.4.2")
 -- add_requires("openssl")
 
+-- add_requires("dotnet 8.0")
+-- add_requires("mono 6.12")
+
 
 target("hazel")
 do
@@ -56,6 +59,8 @@ do
     add_deps("imguizmo")
     add_deps("glad")
     add_deps("imgui-docking")
+
+    add_deps("nelua")
 
     add_includedirs("./", { public = true })
     add_headerfiles("**.h")
@@ -84,6 +89,8 @@ do
     add_packages("box2d")
     add_packages("nlohmann_json", { public = true })
     -- add_packages("openssl", { public = true })
+    -- add_packages("dotnet", { public = true })
+    -- add_packages("mono", { public = true })
 
     on_config(function(target)
         local kind = target:get("kind")

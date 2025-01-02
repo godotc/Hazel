@@ -22,6 +22,8 @@
 
 #include "hazel/renderer/render_2d.h"
 
+#include <hazel/script/script_engine.h>
+
 // tmp
 #include "GLFW/glfw3.h"
 #include <filesystem>
@@ -56,6 +58,7 @@ App::App(const ApplicationSpecification& app_sec)
 
     Render::Init();
     Render2D::Init();
+    ScriptEngine::Init();
 
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
@@ -63,6 +66,8 @@ App::App(const ApplicationSpecification& app_sec)
 
 App::~App()
 {
+    Render2D::Shutdown();
+    ScriptEngine::Shutdown();
     PostDestruction.Broadcast();
     // the opengl context
     // delete m_Window;
