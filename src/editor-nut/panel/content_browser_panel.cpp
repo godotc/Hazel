@@ -2,20 +2,20 @@
  *  Author: @godot42
  *  Create Time: 2024-07-30 15:23:39
  *  Modified by: @godot42
- *  Modified time: 2024-07-30 16:58:51
- *  Description:
+ * @ Modified by: @godot42
+ * @ Modified time: 2025-01-02 20:29:35
  */
+
+
+#include "hz_pch.h"
 
 #include "content_browser_panel.h"
 #include "hazel/core/base.h"
-#include "hazel/renderer/render_2d.h"
 #include "imgui.h"
-#include "imgui_internal.h"
 #include "utils/path.h"
 #include <cstdint>
 #include <cwchar>
 #include <filesystem>
-#include <functional>
 #include <string>
 #include <system_error>
 
@@ -34,6 +34,11 @@ ContentBrowserPanel::ContentBrowserPanel()
     m_WhiteTexture              = Texture2D::Create(1, 1);
     uint32_t white_texture_data = 0xffffffff;
     m_WhiteTexture->SetData(&white_texture_data, sizeof(uint32_t));
+}
+
+void ContentBrowserPanel::Init()
+{
+    m_CurrentDirectory = EditorLayer::DefaultAssetsDirectory() / m_CurrentDirectory;
 }
 
 void ContentBrowserPanel::OnImGuiRender()

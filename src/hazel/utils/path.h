@@ -28,7 +28,6 @@ using stdpath = std::filesystem::path;
 
 
 
-extern std::string project_root_symbol;
 void               SetProjectRootSymbol(std::string symbol);
 const std::string &GetProjectRootSymbol();
 stdpath            get_runtime_exe_path();
@@ -74,7 +73,6 @@ struct UTILS_API FPathImpl {
 
 struct UTILS_API Files {
     static std::string GetFileNameWithoutExtension(const std::string &path);
-
 
     template <class FileFilter, class Predicate>
     static void ForeachFileInFolder(std::filesystem::path path, FileFilter file_filter, Predicate &&predicate)

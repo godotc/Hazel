@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-11-23 01:27:43
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 04:03:08
+ * @ Modified time: 2025-01-02 21:12:46
  * @ Description:
  */
 
@@ -329,9 +329,15 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
 void SceneSerializer::Serialize(const std::string &filepath)
 {
     YAML::Emitter out;
+
+    auto scene_name = std::filesystem::path(filepath).stem().string();
+    if (scene_name.empty()) {
+        scene_name = "Unknown";
+    }
+
     out << YAML::BeginMap;
     {
-        out << YAML::Key << "Scene" << YAML::Value << "TODO";
+        out << YAML::Key << "Scene" << YAML::Value << scene_name;
         out << YAML::Key << "Entities";
         out << YAML::BeginSeq;
         {

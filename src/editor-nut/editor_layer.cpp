@@ -3,7 +3,7 @@
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-29 15:24:15
+ * @ Modified time: 2025-01-02 21:22:11
  */
 
 #include "glm/ext/quaternion_geometric.hpp"
@@ -90,6 +90,8 @@ void EditorLayer::OnAttach()
         App::Get().GetWindow().SetMaximized();
     }
 
+
+
     m_IconPlay     = Texture2D::Create(FPath("res/texture/editor/play.png"));
     m_IconStop     = Texture2D::Create(FPath("res/texture/editor/stop.png"));
     m_IconSimulate = Texture2D::Create(FPath("res/texture/editor/simulate_button.png"));
@@ -118,9 +120,14 @@ void EditorLayer::OnAttach()
         serializer.Deserialize(scene_filepath);
     }
 
+    if (const auto &working_dir = App::Get().GetApplicationSpecification().WorkingDirectory; !working_dir.empty()) {
+        SetDefaultAssetsDirectory(working_dir);
+    }
+
 
 
     m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    m_ContentBrowserPanel.Init();
 }
 
 void EditorLayer::OnDetach()
@@ -160,29 +167,29 @@ void EditorLayer::OnUpdate(Timestep ts)
     // draw scene in editor
     switch (m_SceneState) {
 
-        case ESceneState::Stop:
-        {
-            // TODO: the camera's event is block by imgui_layer, but keyboard event still handled by here
-            if (bViewPortFocusing) {
-                m_CameraController.OnUpdate(ts);
-            }
-            m_EditorCamera.OnUpdate(ts);
+    case ESceneState::Stop:
+    {
+        // TODO: the camera's event is block by imgui_layer, but keyboard event still handled by here
+        if (bViewPortFocusing) {
+            m_CameraController.OnUpdate(ts);
+        }
+        m_EditorCamera.OnUpdate(ts);
 
-            m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
-            break;
-        }
-        case ESceneState::Play:
-        {
-            m_ActiveScene->OnUpdateRuntime(ts);
-            break;
-        }
-        case ESceneState::Simulate:
-        {
-            // Why not update editor camera controller?
-            m_EditorCamera.OnUpdate(ts);
-            m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
-            break;
-        }
+        m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+        break;
+    }
+    case ESceneState::Play:
+    {
+        m_ActiveScene->OnUpdateRuntime(ts);
+        break;
+    }
+    case ESceneState::Simulate:
+    {
+        // Why not update editor camera controller?
+        m_EditorCamera.OnUpdate(ts);
+        m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+        break;
+    }
     }
 
     // Mouse hover/picking preps
@@ -225,10 +232,16 @@ void EditorLayer::OnEvent(hazel::Event &event)
     dispatcher.Dispatch<MouseButtonPressedEvent>(HZ_BIND_EVENT(this, &EditorLayer::OnMouseButtonPressed));
 }
 
+static std::filesystem::path s_AssetsDirectory = {};
+
 std::filesystem::path EditorLayer::DefaultAssetsDirectory()
 {
-    static std::filesystem::path s_AssetsDirectory = FPath("res");
     return s_AssetsDirectory;
+}
+
+void EditorLayer::SetDefaultAssetsDirectory(const std::filesystem::path &path)
+{
+    s_AssetsDirectory = path;
 }
 
 void EditorLayer::SetActiveScene(Ref<Scene> new_scene)
@@ -785,6 +798,10 @@ void EditorLayer::UI_Settings()
     ImGui::InputInt("Attachment Id", &m_ViewportColorAttachmentId);
 
     ImGui::DragFloat("Debug Float", &m_DebugFloat);
+    static float line_width = 1.0f;
+    if (ImGui::DragFloat("Line Width", &line_width, 0.5f, 0.1, 20.f)) {
+        Render2D::SetLineWidth(line_width);
+    }
 
     const char *name = "None";
     if (m_HoveredEntity) {
@@ -856,32 +873,32 @@ void EditorLayer::RenderGizmos()
     glm::mat4 camera_view(1);
     switch (m_SceneState)
     {
-        case ESceneState::Stop:
-        case ESceneState::Simulate:
-            camera_projection = m_EditorCamera.GetProjection();
-            camera_view       = m_EditorCamera.GetViewMatrix();
-            break;
-        case ESceneState::Play:
-        {
+    case ESceneState::Stop:
+    case ESceneState::Simulate:
+        camera_projection = m_EditorCamera.GetProjection();
+        camera_view       = m_EditorCamera.GetViewMatrix();
+        break;
+    case ESceneState::Play:
+    {
 
-            Entity const *ce = m_ActiveScene->m_RuntimeCameraEntity;
-            if (!ENSURE(ce)) {
-                break;
-            }
-            camera_projection = ce->GetComponent<CameraComponent>().Camera.GetProjection();
-
-            const auto &tfc = ce->GetComponent<TransformComponent>();
-
-            // glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.x, -tfc.Rotation.y, 0.0f)));
-            // glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.y, -tfc.Rotation.x, -tfc.Rotation.z))); // yaw pitch roll -> yxz
-            // const auto view     = glm::translate(glm::mat4(1.f), tfc.Translation) * rotation;
-
-            camera_view = glm::inverse(tfc.GetTransform());
+        Entity const *ce = m_ActiveScene->m_RuntimeCameraEntity;
+        if (!ENSURE(ce)) {
             break;
         }
-        default:
-            HZ_ASSERT(false, "Unknown scene state");
-            break;
+        camera_projection = ce->GetComponent<CameraComponent>().Camera.GetProjection();
+
+        const auto &tfc = ce->GetComponent<TransformComponent>();
+
+        // glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.x, -tfc.Rotation.y, 0.0f)));
+        // glm::mat4  rotation = glm::toMat4(glm::quat(glm::vec3(-tfc.Rotation.y, -tfc.Rotation.x, -tfc.Rotation.z))); // yaw pitch roll -> yxz
+        // const auto view     = glm::translate(glm::mat4(1.f), tfc.Translation) * rotation;
+
+        camera_view = glm::inverse(tfc.GetTransform());
+        break;
+    }
+    default:
+        HZ_ASSERT(false, "Unknown scene state");
+        break;
     }
 
 
@@ -929,68 +946,68 @@ bool EditorLayer::OnKeyPressed(const KeyPressedEvent &Ev)
 
     // first priority
     switch (Ev.GetKeyCode()) {
-        case Key::N:
-        {
-            if (control) {
-                NewScene();
-            }
-            break;
+    case Key::N:
+    {
+        if (control) {
+            NewScene();
         }
-        case Key::O:
-        {
-            if (control) {
-                OpenScene();
-            }
-            break;
+        break;
+    }
+    case Key::O:
+    {
+        if (control) {
+            OpenScene();
         }
-        case Key::S:
-        {
-            if (control) {
-                if (shift) {
-                    SaveAs();
-                }
-                else {
-                    SaveScene();
-                }
+        break;
+    }
+    case Key::S:
+    {
+        if (control) {
+            if (shift) {
+                SaveAs();
             }
-            break;
-        }
-        case Key::W:
-        {
-            if (control) {
-                m_ActiveScene->DuplicateEntity(m_SceneHierarchyPanel.GetSelectedEntity());
+            else {
+                SaveScene();
             }
         }
-        default:
-            break;
+        break;
+    }
+    case Key::W:
+    {
+        if (control) {
+            m_ActiveScene->DuplicateEntity(m_SceneHierarchyPanel.GetSelectedEntity());
+        }
+    }
+    default:
+        break;
     }
 
     auto selected_entity = m_SceneHierarchyPanel.GetSelectedEntity();
     if (ImGuizmo::IsUsing() && selected_entity) {
         switch (Ev.GetKeyCode()) {
-            // Gizmos
-            case Key::Q:
+        // Gizmos
+        case Key::Q:
+        {
+            m_GizmoType = -1;
+            break;
+        }
+        case Key::W:
+        {
             {
-                m_GizmoType = -1;
-                break;
+                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
             }
-            case Key::W:
-            {
-                {
-                    m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-                }
-                break;
-            }
-            case Key::E:
-            {
-                m_GizmoType = ImGuizmo::OPERATION::ROTATE;
-                break;
-            }
-            case Key::R:
-            {
-                m_GizmoType = ImGuizmo::OPERATION::SCALE;
-                break;
-            }
+            break;
+        }
+        case Key::E:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            break;
+        }
+        case Key::R:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            break;
+        }
         }
         return false;
     }
@@ -1003,15 +1020,15 @@ bool EditorLayer::OnMouseButtonPressed(const MouseButtonPressedEvent &Ev)
 {
     Mouse::Button btn = (Mouse::Button)Ev.GetMouseButton();
     switch (btn) {
-        case Mouse::Button_Left:
-        {
-            if (bViewPortHovering && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
-                m_SceneHierarchyPanel.SetSelection(m_HoveredEntity);
-            }
-            break;
+    case Mouse::Button_Left:
+    {
+        if (bViewPortHovering && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
+            m_SceneHierarchyPanel.SetSelection(m_HoveredEntity);
         }
-        default:
-            break;
+        break;
+    }
+    default:
+        break;
     }
     return false;
 }
@@ -1111,14 +1128,14 @@ bool EditorLayer::SaveSceneImpl(const Ref<Scene> scene, std::string path)
 void EditorLayer::OnScenePlay()
 {
     switch (m_SceneState) {
-        case ESceneState::Stop:
-        case ESceneState::Play:
-            break;
-        case ESceneState::Simulate:
-        {
-            OnSceneStop();
-            break;
-        }
+    case ESceneState::Stop:
+    case ESceneState::Play:
+        break;
+    case ESceneState::Simulate:
+    {
+        OnSceneStop();
+        break;
+    }
     }
     m_SceneState   = ESceneState::Play;
     auto new_scene = Scene::Copy(m_EditorScene);
@@ -1185,18 +1202,18 @@ void EditorLayer::OnSceneStop()
 
     // TODO: pre-stop and post-stop
     switch (m_SceneState) {
-        case ESceneState::Stop:
-            break;
-        case ESceneState::Play:
-        {
-            m_ActiveScene->OnRuntimeStop();
-            break;
-        }
-        case ESceneState::Simulate:
-        {
-            m_ActiveScene->OnSimulationStop();
-            break;
-        }
+    case ESceneState::Stop:
+        break;
+    case ESceneState::Play:
+    {
+        m_ActiveScene->OnRuntimeStop();
+        break;
+    }
+    case ESceneState::Simulate:
+    {
+        m_ActiveScene->OnSimulationStop();
+        break;
+    }
     }
     m_SceneState = ESceneState::Stop;
 

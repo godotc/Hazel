@@ -14,11 +14,12 @@
 #include "path.h"
 #include "string_util.h"
 
-#include <iostream>
 #include <cassert>
 #include <cstdio>
 #include <filesystem>
+#include <iostream>
 #include <stdexcept>
+
 
 #if __linux__
     #include "unistd.h"
@@ -29,7 +30,7 @@
 
 namespace utils {
 
-std::string        project_root_symbol = std::string(".project-root-symbol");
+static std::string project_root_symbol = std::string(".project-root-symbol");
 void               SetProjectRootSymbol(std::string symbol) { project_root_symbol = symbol; }
 const std::string &GetProjectRootSymbol()
 {
@@ -50,7 +51,6 @@ void log(std::string fmt, ...)
     vsnprintf(buffer, sizeof(buffer), fmt.c_str(), args);
     va_end(args);
     std::cout << "path.cpp " << buffer << std::endl;
-
 }
 
 
@@ -88,6 +88,7 @@ static bool is_dir_contain_file_symbol(const std::filesystem::path &the_path, st
             return true;
         }
     }
+    log("not found %s in %s", target_symbol.c_str(), the_path.string().c_str());
     return false;
 }
 
@@ -115,9 +116,9 @@ static bool recursive_iterate_parent(const path &init_pos, std::string &target_s
         }
 #endif
 
-        log("Recursive parent %d times\n", nth++);
+        log("Recursive parent %d times", nth++);
         directory = directory.parent_path();
-        printf("current directory: %s\n", directory.string().c_str());
+        log("current directory: %s", directory.string().c_str());
 
         if (is_dir_contain_file_symbol(directory, target_symbol)) {
             out_dir = directory;
@@ -199,22 +200,22 @@ const std::filesystem::path &ProjectRoot()
 
     // TODO: current identify it by a file, maybe by some certain directory struct further more
     auto target_symbol = GetProjectRootSymbol();
-    assert(!target_symbol.empty());
     printf("target symbol: %s\n", target_symbol.c_str());
+    assert(!target_symbol.empty() || target_symbol.size() > 0 || target_symbol != "");
 
     fs::path project_root_dir = find_directory_by_file_symbol(exe_path, target_symbol);
-//     std::string temp_root         = std::filesystem::absolute(project_root_dir).string();
-//     log("abs root: %s", temp_root.c_str());
-// #if _WIN32
-//     temp_root = utils::string_replace(temp_root, "/", "\\");
-// #else
-//     temp_root = utils::string_replace(temp_root, "\\", "/");
-// #endif
-//     log("after replace: %s", temp_root.c_str());
-//     project_root          = temp_root;
+    //     std::string temp_root         = std::filesystem::absolute(project_root_dir).string();
+    //     log("abs root: %s", temp_root.c_str());
+    // #if _WIN32
+    //     temp_root = utils::string_replace(temp_root, "/", "\\");
+    // #else
+    //     temp_root = utils::string_replace(temp_root, "\\", "/");
+    // #endif
+    //     log("after replace: %s", temp_root.c_str());
+    //     project_root          = temp_root;
     project_root = std::filesystem::absolute(project_root_dir);
     log("project root: %s", project_root.string().c_str());
-    bInitialized          = true;
+    bInitialized = true;
 
     return project_root;
 }

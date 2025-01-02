@@ -22,6 +22,11 @@ class HazelEditor : public hazel::App
     HazelEditor(ApplicationSpecification spec)
         : hazel::App(spec)
     {
+        HZ_INFO("start arguments:");
+        for (int i = 0; i < spec.CommandLineArgs.count; i++) {
+            HZ_INFO("{}", spec.CommandLineArgs.args[i]);
+        }
+
         HZ_INFO("Editor construct...");
         PushLayer(new hazel::EditorLayer());
         GetWindow().SetVSync(true);
@@ -33,12 +38,6 @@ class HazelEditor : public hazel::App
             // so we need call these funs to reset it?
             RESET_IMGUI_CONTEXT();
             RESET_IMGUIZMO_CONTEXT();
-        }
-
-
-        HZ_INFO("start arguments:");
-        for (int i = 0; i < spec.CommandLineArgs.count; i++) {
-            HZ_INFO("{}", spec.CommandLineArgs.args[i]);
         }
     }
 

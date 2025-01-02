@@ -3,7 +3,7 @@
  * @ Create Time: 2024-08-18 00:50:42
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-29 00:21:19
+ * @ Modified time: 2025-01-02 21:07:45
  */
 
 //
@@ -108,6 +108,7 @@ class EditorLayer : public hazel::Layer
 
     // update it when have project
     static std::filesystem::path DefaultAssetsDirectory();
+    static void                  SetDefaultAssetsDirectory(const std::filesystem::path &path);
 
     void SetActiveScene(Ref<Scene> new_scene);
 
