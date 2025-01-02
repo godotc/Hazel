@@ -3,7 +3,7 @@
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-02 21:22:11
+ * @ Modified time: 2025-01-02 22:32:54
  */
 
 #include "glm/ext/quaternion_geometric.hpp"
@@ -286,13 +286,14 @@ void EditorLayer::OnOverlayRender()
         for (auto entity : view) {
             const auto &[tc, bc2dc] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
 
-            glm::vec3 pos    = tc.Translation + glm::vec3(bc2dc.Offset, -projection_collider.z);
-            glm::vec3 scale  = tc.Scale * glm::vec3(bc2dc.Size * 2.0f, 1.f);
-            glm::mat4 transf = glm::translate(glm::mat4(1.0f), pos) *
-                               glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0, 0, 1)) *
-                               glm::scale(glm::mat4(1.0f), scale);
+            glm::vec3 scale = tc.Scale * glm::vec3(bc2dc.Size * 2.0f, 1.f);
 
-            Render2D::DrawRect(transf, m_DebugCollisionColor);
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation) *
+                                  glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0, 0, 1)) *
+                                  glm::translate(glm::mat4(1.0f), glm::vec3(bc2dc.Offset, -projection_collider.z)) * // BoxCollider2DComponent::Offset and always on top
+                                  glm::scale(glm::mat4(1.0f), scale);
+
+            Render2D::DrawRect(transform, m_DebugCollisionColor);
         }
     }
 

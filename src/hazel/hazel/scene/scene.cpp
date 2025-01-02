@@ -3,13 +3,14 @@
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 05:09:57
+ * @ Modified time: 2025-01-02 22:23:35
  */
 
 
 
 #include "scene.h"
 #include "box2d/b2_collision.h"
+#include "box2d/b2_math.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "hazel/core/uuid.h"
 
@@ -50,12 +51,12 @@ static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::EBodyType bod
 {
     switch (body_type)
     {
-        case Rigidbody2DComponent::EBodyType::Static:
-            return b2_staticBody;
-        case Rigidbody2DComponent::EBodyType::Dynamic:
-            return b2_dynamicBody;
-        case Rigidbody2DComponent::EBodyType::Kinematic:
-            return b2_kinematicBody;
+    case Rigidbody2DComponent::EBodyType::Static:
+        return b2_staticBody;
+    case Rigidbody2DComponent::EBodyType::Dynamic:
+        return b2_dynamicBody;
+    case Rigidbody2DComponent::EBodyType::Kinematic:
+        return b2_kinematicBody;
     }
 
     HZ_CORE_ASSERT(false, "Unknown body type");
@@ -191,7 +192,9 @@ void Scene::OnPhysics2DStart()
 
             b2PolygonShape shape;
             // half-width and half-height
-            shape.SetAsBox(bc2d.Size.x * transf.Scale.x, bc2d.Size.y * transf.Scale.y);
+            shape.SetAsBox(bc2d.Size.x * transf.Scale.x, bc2d.Size.y * transf.Scale.y,
+                           b2Vec2(bc2d.Offset.x, bc2d.Offset.y),
+                           0);
 
             b2FixtureDef fixture_def;
             fixture_def.shape                = &shape;
@@ -355,8 +358,8 @@ void Scene::OnUpdateRuntime(Timestep ts)
             if (cam.bPrimary) {
                 runtime_entity_owner  = Entity(ent, this);
                 m_RuntimeCameraEntity = &runtime_entity_owner;
-                main_camera = &cam.Camera;
-                transform   = transf.GetTransform();
+                main_camera           = &cam.Camera;
+                transform             = transf.GetTransform();
                 break;
             }
         }
