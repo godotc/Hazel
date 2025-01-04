@@ -26,3 +26,5 @@ cache
 
 vs2022
 *.exe
+
+obj

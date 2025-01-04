@@ -1,16 +1,27 @@
 ---@diagnostic disable: lowercase-global
 
+---@param ... string| "module.debug" | "module.release"
+function add_rules(...) end
+
 ---@param ... string
 function add_packages(...) end
 
----@param ... string| "module.debug" | "module.release"
-function add_rules(...) end
+---@param name string
+---@param cfg table
+function add_packages(name,cfg) end
+
+---@param ... string
+function add_requires(...) end
+
+---@param name string
+---@param cfg table
+function add_requires(name,cfg) end
 
 ---@param ... string
 function add_files(...) end
 
 ---@param ... string
-function add_requires(...) end
+function add_headerfiles(...) end
 
 ---@param ... string
 function add_includedirs(...) end
