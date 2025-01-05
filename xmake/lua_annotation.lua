@@ -1,21 +1,34 @@
 ---@diagnostic disable: lowercase-global
 
+
+---@class CommonConfig : table
+---@field public boolean
+
 ---@param ... string| "module.debug" | "module.release"
 function add_rules(...) end
 
----@param ... string
-function add_packages(...) end
+do
+    ---@param ... string
+    function add_packages(...) end
 
----@param name string
----@param cfg table
-function add_packages(name,cfg) end
+    ---@param name string
+    ---@param cfg table
+    function add_packages(name, cfg) end
+end
 
----@param ... string
-function add_requires(...) end
+do
+    ---@param ... string
+    function add_requires(...) end
 
----@param name string
----@param cfg table
-function add_requires(name,cfg) end
+    ---@param name string
+    ---@param cfg CommonConfig
+    function add_requires(name, cfg) end
+end
+
+
+---@overload fun( ...:string)
+---@overload fun(pkg: string, cfg: CommonConfig)
+function add_deps() end
 
 ---@param ... string
 function add_files(...) end
@@ -50,6 +63,7 @@ function set_exceptions(v) end
 
 ---@param ... string
 function add_cxflags(...) end
+
 ---@param ... string
 function add_cxxflags(...) end
 

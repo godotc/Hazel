@@ -48,6 +48,7 @@ end
 
 
 
+includes("./xmake/rules.lua")
 includes("./xmake/tasks.lua")
 includes("./src")
 

@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:03:51
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-06 02:36:45
+ * @ Modified time: 2025-01-06 20:58:04
  * @ Description:
  */
 
@@ -41,6 +41,8 @@ void ScriptEngine::Init()
 
     HZ_CORE_ASSERT(Content.has_value(), "Failed to read main script");
     LM->LoadFromString(Content.value());
+
+    LM->CallFunc("print_hello");
 }
 
 void ScriptEngine::Shutdown()

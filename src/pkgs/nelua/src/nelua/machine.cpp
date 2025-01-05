@@ -3,20 +3,22 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-03 00:39:48
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-05 01:51:40
+ * @ Modified time: 2025-01-06 22:47:21
  * @ Description:
  */
 
 #include "machine.h"
 
-#include "lauxlib.h"
+#include <cstdarg>
+#include <cstdio>
+
+
 
 LuaMachine::LuaMachine()
 {
     L = luaL_newstate();
     luaL_openlibs(L);
 }
-
 LuaMachine::~LuaMachine()
 {
     lua_close(L);
@@ -47,6 +49,17 @@ bool LuaMachine::LoadLuaScriptFile(const char *filename)
     }
 
     printf("loaded %s\n", filename);
+    return true;
+}
+
+bool LuaMachine::call_luafunc_impl(lua_State *L, int nargs, int nret)
+{
+    int ret = lua_pcall(L, nargs, nret, 0);
+    if (ret != LUA_OK) {
+        log("lua_pcall failed: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+        return false;
+    }
     return true;
 }
 

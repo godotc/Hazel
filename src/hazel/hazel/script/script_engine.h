@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:02:52
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-05 01:47:47
+ * @ Modified time: 2025-01-06 21:02:40
  * @ Description:
  */
 
@@ -13,7 +13,8 @@
 
 #include <hazel/core/base.h>
 
-class LuaMachine;
+#include "nelua/types.h"
+
 namespace hazel {
 
 
