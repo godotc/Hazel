@@ -39,7 +39,7 @@ do
         }
     }
     on_run(function()
-        local cmd     = import("script.cmd")
+        local cmd     = import("cmd") -- works
         local opt     = import("core.base.option")
         -- print(cmd)
 

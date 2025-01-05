@@ -1,8 +1,10 @@
+---@diagnostic disable: lowercase-global
+
 function exec(...)
     local arguments = { ... }
     local cmd = ""
     for _, v in ipairs(arguments) do
-        cmd = cmd .. ' '..v 
+        cmd = cmd .. ' ' .. v
     end
     print(os.exec(cmd))
 end

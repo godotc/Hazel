@@ -63,6 +63,55 @@
             "console": "integratedTerminal",
             "visualizerFile": "${workspaceFolder}/my.natvis",
             "preLaunchTask": "build nut"
+        },
+        {
+            "type": "cppvsdbg",
+            "name": "[nelua] MSVC DEBUG",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/windows/x64/debug/nelua",
+            "logging": {
+                "moduleLoad": true,
+                "threadExit": true,
+                "processExit": true,
+                "programOutput": true,
+                "engineLogging": true,
+                "exceptions": true
+            },
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+            "visualizerFile": "${workspaceFolder}/my.natvis",
+            "preLaunchTask": "build nelua"
+        },
+        {
+            "type": "cppvsdbg",
+            "name": "[nelua] MSVC RELEASE",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/windows/x64/release/nelua",
+            "logging": {
+                "moduleLoad": true,
+                "threadExit": true,
+                "processExit": true,
+                "programOutput": true,
+                "engineLogging": true,
+                "exceptions": true
+            },
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
+            "visualizerFile": "${workspaceFolder}/my.natvis",
+            "preLaunchTask": "build nelua"
+        },
+        {
+            "type": "emmylua_new",
+            "request": "launch",
+            "name": "EmmyLua New Debug",
+            "host": "localhost",
+            "port": 9966,
+            "ext": [
+                ".lua",
+                ".lua.txt",
+                ".lua.bytes"
+            ],
+            "ideConnectDebugger": true
         }
     ]
 }

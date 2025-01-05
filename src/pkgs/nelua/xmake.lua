@@ -3,7 +3,7 @@ add_requires("lua")
 
 rule("microshit")
 do
-    on_config(function(target)
+    on_load(function(target)
         -- print(project:directory())
 
         -- import("core.project.project")
@@ -16,16 +16,19 @@ do
         -- elseif target:is_kind("shared") then
         --     add_defines(api_name, "MICROSHIT_EXPORTS")
         -- end
-        
+
 
         local kind = target:get("kind")
 
-        print (target)
+        -- print (target)
         print(target:name())
         print(target:type())
 
         if kind == "shared" then
-            target:add_cxxflags("-DTYPE_BUILD_SHARED")
+            -- target:add_defines("-DTYPE_BUILD_SHARED")
+            -- target:add_cxxflags("-DTYPE_BUILD_SHARED")
+            print("--[" .. target:name() .. "] add defines-> TYPE_BUILD_SHARED")
+            target:add("defines", "TYPE_BUILD_SHARED")
         end
     end)
 end
@@ -35,6 +38,9 @@ target("nelua")
 do
     set_kind("shared")
     add_rules("microshit")
+
+    -- set_options("microshit")
+
 
 
     add_packages("lua", { public = true })

@@ -20,6 +20,7 @@
         "glversion",
         "Guizmo",
         "headerfiles",
+        "hostfxr",
         "hwnd",
         "imconfig",
         "imgui",
@@ -34,13 +35,16 @@
         "Lsizei",
         "MULTISAMPLE",
         "nelua",
+        "nlohmann",
         "nono",
         "OPENFILENAMEA",
         "Parameteri",
+        "pcxxheader",
         "Programiv",
         "Rescan",
         "Rigidbody",
         "shaderc",
+        "shflags",
         "spdlog",
         "SPIR",
         "SPIRV",
@@ -51,7 +55,8 @@
         "targetname",
         "Texcoord",
         "Timestep",
-        "Viewports"
+        "Viewports",
+        "vulkansdk"
     ],
     "Lua.diagnostics.globals": [
         "add_requires",
@@ -102,8 +107,6 @@
         "set_strip"
     ],
     "Lua.diagnostics.disable": [
-        "undefined-field",
-        "unused-local"
     ],
     "cSpell.ignorePaths": [
         "package-lock.json",
