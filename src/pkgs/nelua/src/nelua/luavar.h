@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-06 20:30:02
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-06 23:01:44
+ * @ Modified time: 2025-01-11 04:56:22
  * @ Description:
  */
 
@@ -11,75 +11,61 @@
 
 #pragma once
 
-#include "machine.h"
+#include "lua.h"
 #include "types.h"
+#include <string>
+#include <string_view>
 #include <variant>
 
+#include "manager.h"
+
+#include "utility/string_utils.h"
 
 
-struct LuaRef {
-
-    int ref;
-    int state_idx;
-    LuaRef(lua_State *L)
-    {
-        ref = luaL_ref(L, LUA_REGISTRYINDEX);
-        // state_idx = LuaMachineManager::GetLMByLuaState(L)->index;
-    }
-};
 
 struct LuaVar {
-    // using value_type = std::variant<
-    //     lua_Integer,
-    //     lua_Number,
-    //     std::string,
-    //     void *,
-    //     bool>;
 
-    // struct interal_value_tyep {
-    //     value_type  value;
-    //     ELuaType::T type;
-    // };
+    struct LuaRef {
 
-    // value_type *values;
-    // size_t      count;
-
-    // void SetFromLua(lua_State *L, int pos, ELuaType::T type)
-    // {
-    // }
+        int ref;
+        int state_idx;
+        LuaRef(lua_State *L)
+        {
+            ref       = luaL_ref(L, LUA_REGISTRYINDEX);
+            state_idx = LuaMachineManager::Get().GetIndex(L);
+        }
+    };
 
     std::variant<lua_Integer,
                  lua_Number,
                  std::string,
                  void *, // userdata/table
+                 LuaRef,
                  bool>
                 value;
     ELuaType::T type;
 
+    LuaVar() { type = ELuaType::Nil; }
 
 
-    template <typename T>
-    static LuaVar GetValue(lua_State *L, int pos, ELuaType::T type)
+
+    static LuaVar GetValue(lua_State *L, std::string_view path)
     {
         LuaVar ret;
 
         // push global table
         lua_pushglobaltable(L);
-
-        std::string_view path(key);
         std::string_view left, right;
 
-        LuaVar ret = {};
-
-        while (string_split(path, '.', left, right)) {
-            if (lua_type(L, -1) != LUA_TTABLE)
+        while (ut::str::split(path, '.', left, right)) {
+            if (lua_type(L, -1) != LUA_TTABLE) {
                 break;
+            }
             lua_pushstring(L, left.data());
             lua_gettable(L, -2);
 
+            ret.type = decltype(ret.type)(lua_type(L, -1));
 
-            // LuaVar::Type type = LV_NIL;
-            ret.type = lua_type(L, -1);
             switch (ret.type) {
             case LUA_TNIL:
             {
@@ -88,20 +74,28 @@ struct LuaVar {
             }
             case LUA_TSTRING:
             {
-                size_t      len;
-                const char *buf = lua_tolstring(L, -1, &len);
-                ret.value       = std::string(buf, len);
-                ret.type        = ELuaType::String;
+                // TODO: string ref?
+                size_t len;
+                ret.value.emplace<std::string>(lua_tolstring(L, -1, &len), len);
+                ret.type = ELuaType::String;
                 break;
             }
             case LUA_TFUNCTION:
             case LUA_TTABLE:
             case LUA_TUSERDATA:
             {
-                LuaRef ref(L);
+                // Get pos of -2
+                lua_gettop(L);
+
+                ret.value.emplace<LuaRef>(L);
                 ret.type = ELuaType::UserData;
             }
-
+            case LUA_TLIGHTUSERDATA:
+            {
+                ret.value = lua_touserdata(L, -1);
+                ret.type  = ELuaType::LightUserData;
+                break;
+            }
             case LUA_TBOOLEAN:
             {
                 ret.value = lua_toboolean(L, -1);
@@ -118,12 +112,6 @@ struct LuaVar {
                     ret.value = lua_tonumber(L, -1);
                     ret.type  = ELuaType::Number;
                 }
-                break;
-            }
-            case LUA_TLIGHTUSERDATA:
-            {
-                ret.value = lua_touserdata(L, -1);
-                ret.type  = ELuaType::LightUserData;
                 break;
             }
             default:

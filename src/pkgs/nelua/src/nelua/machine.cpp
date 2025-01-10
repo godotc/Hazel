@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-03 00:39:48
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-06 22:47:21
+ * @ Modified time: 2025-01-11 05:01:34
  * @ Description:
  */
 
@@ -14,14 +14,10 @@
 
 
 
-LuaMachine::LuaMachine()
+LuaMachine::LuaMachine(lua_State *L, int index)
 {
-    L = luaL_newstate();
-    luaL_openlibs(L);
-}
-LuaMachine::~LuaMachine()
-{
-    lua_close(L);
+    this->L     = L;
+    this->index = index;
 }
 
 bool LuaMachine::LoadFromString(const std::string &str)

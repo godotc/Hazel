@@ -1,3 +1,12 @@
+//
+/*
+ * @ Author: godot42
+ * @ Create Time: 2025-01-06 20:27:55
+ * @ Modified by: @godot42
+ * @ Modified time: 2025-01-11 03:42:53
+ * @ Description:
+ */
+
 #pragma once
 
 #include "microshit.h"
@@ -14,11 +23,10 @@ extern "C" {
 
 
 namespace ELuaType {
-using T = int; // Type
-enum
+
+enum T
 {
-    None = LUA_TNONE,
-    Nil  = LUA_TNIL,
+    Nil = LUA_TNIL,
 
     Boolean = LUA_TBOOLEAN,
 

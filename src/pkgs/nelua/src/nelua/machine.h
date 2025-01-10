@@ -3,13 +3,15 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-03 00:29:21
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-06 22:58:59
+ * @ Modified time: 2025-01-11 05:01:39
  * @ Description:
  */
 
 
 #pragma once
 
+#include "lua.h"
+#include "luavar.h"
 #include "microshit.h"
 
 #include "types.h"
@@ -34,11 +36,10 @@ class NELUA_API LuaMachine
 {
     lua_State *L;
     int        index;
-
-    bool bDebugOuput;
+    bool       bDebugOuput = false;
 
   public:
-    LuaMachine();
+    LuaMachine(lua_State *L, int index);
     virtual ~LuaMachine();
 
     void log(const char *fmt, ...)
@@ -67,6 +68,22 @@ class NELUA_API LuaMachine
 
     bool CallMemberFunc(const char *path, const char *member_func)
     {
+        LuaVar var = LuaVar::GetValue(L, path);
+        if (var.type == ELuaType::Nil) {
+            log("failed to get %s\n", path);
+            return false;
+        }
+
+        if (var.type != ELuaType::Table) {
+            log("failed to get %s, not a table: %d\n", path, var.type);
+        }
+
+        lua_pushstring(L, member_func);
+        lua_gettable(L, -2);
+        if (lua_isfunction(L, -1)) {
+            return call_luafunc_impl(L, 0, 0);
+        }
+
         return false;
     }
 
