@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-06 20:30:02
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 04:56:22
+ * @ Modified time: 2025-01-11 06:12:28
  * @ Description:
  */
 
@@ -13,6 +13,8 @@
 
 #include "lua.h"
 #include "types.h"
+
+#include <cstdio>
 #include <string>
 #include <string_view>
 #include <variant>
@@ -29,10 +31,12 @@ struct LuaVar {
 
         int ref;
         int state_idx;
+        int pos;
         LuaRef(lua_State *L)
         {
             ref       = luaL_ref(L, LUA_REGISTRYINDEX);
             state_idx = LuaMachineManager::Get().GetIndex(L);
+            pos       = lua_gettop(L);
         }
     };
 
@@ -48,6 +52,80 @@ struct LuaVar {
     LuaVar() { type = ELuaType::Nil; }
 
 
+    void SetValue(lua_State *L, int pos)
+    {
+        int type = lua_type(L, pos);
+
+        switch (type) {
+        case LUA_TNIL:
+        {
+            type = ELuaType::Nil;
+            break;
+        }
+        case LUA_TSTRING:
+        {
+            // TODO: string ref?
+            size_t len;
+            value.emplace<std::string>(lua_tolstring(L, -1, &len), len);
+            type = ELuaType::String;
+            break;
+        }
+        case LUA_TFUNCTION:
+        case LUA_TTABLE:
+        case LUA_TUSERDATA:
+        {
+            value.emplace<LuaRef>(L);
+            type = ELuaType::UserData;
+        }
+        case LUA_TLIGHTUSERDATA:
+        {
+            value = lua_touserdata(L, -1);
+            type  = ELuaType::LightUserData;
+            break;
+        }
+        case LUA_TBOOLEAN:
+        {
+            value = lua_toboolean(L, -1);
+            type  = ELuaType::Boolean;
+            break;
+        }
+        case LUA_TNUMBER:
+        {
+            if (lua_isinteger(L, -1)) {
+                value = lua_tointeger(L, -1);
+                type  = ELuaType::Integer;
+            }
+            else {
+                value = lua_tonumber(L, -1);
+                type  = ELuaType::Number;
+            }
+            break;
+        }
+        default:
+            type = ELuaType::Nil;
+            break;
+        }
+
+
+        return;
+    }
+
+    static LuaVar Get(lua_State *L, std::string_view key)
+    {
+        LuaVar ret;
+
+        printf("index %s\n", key.data());
+        if (lua_type(L, -1) != LUA_TTABLE) {
+            printf("not a table\n");
+        }
+        lua_pushstring(L, key.data());
+        lua_getglobal(L, key.data());
+
+        ret.SetValue(L, -1);
+
+        return ret;
+    }
+
 
     static LuaVar GetValue(lua_State *L, std::string_view path)
     {
@@ -58,71 +136,11 @@ struct LuaVar {
         std::string_view left, right;
 
         while (ut::str::split(path, '.', left, right)) {
-            if (lua_type(L, -1) != LUA_TTABLE) {
-                break;
-            }
-            lua_pushstring(L, left.data());
-            lua_gettable(L, -2);
-
-            ret.type = decltype(ret.type)(lua_type(L, -1));
-
-            switch (ret.type) {
-            case LUA_TNIL:
-            {
-                ret.type = ELuaType::Nil;
-                break;
-            }
-            case LUA_TSTRING:
-            {
-                // TODO: string ref?
-                size_t len;
-                ret.value.emplace<std::string>(lua_tolstring(L, -1, &len), len);
-                ret.type = ELuaType::String;
-                break;
-            }
-            case LUA_TFUNCTION:
-            case LUA_TTABLE:
-            case LUA_TUSERDATA:
-            {
-                // Get pos of -2
-                lua_gettop(L);
-
-                ret.value.emplace<LuaRef>(L);
-                ret.type = ELuaType::UserData;
-            }
-            case LUA_TLIGHTUSERDATA:
-            {
-                ret.value = lua_touserdata(L, -1);
-                ret.type  = ELuaType::LightUserData;
-                break;
-            }
-            case LUA_TBOOLEAN:
-            {
-                ret.value = lua_toboolean(L, -1);
-                ret.type  = ELuaType::Boolean;
-                break;
-            }
-            case LUA_TNUMBER:
-            {
-                if (lua_isinteger(L, -1)) {
-                    ret.value = lua_tointeger(L, -1);
-                    ret.type  = ELuaType::Integer;
-                }
-                else {
-                    ret.value = lua_tonumber(L, -1);
-                    ret.type  = ELuaType::Number;
-                }
-                break;
-            }
-            default:
-                ret.type = ELuaType::Nil;
-                break;
-            }
-
-            lua_remove(L, -2);
+            ret = LuaVar::Get(L, left);
             if (ret.type == ELuaType::Nil) {
                 break;
             }
+
             path = right;
         }
         lua_pop(L, 1);

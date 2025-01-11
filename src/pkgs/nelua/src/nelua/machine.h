@@ -3,18 +3,19 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-03 00:29:21
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 05:01:39
+ * @ Modified time: 2025-01-11 05:38:44
  * @ Description:
  */
 
 
 #pragma once
+#include "types.h"
 
-#include "lua.h"
 #include "luavar.h"
 #include "microshit.h"
 
-#include "types.h"
+#include "nelua/manager.h"
+
 
 
 #include <cstddef>
@@ -34,13 +35,22 @@ extern void StackDump(lua_State *L);
 
 class NELUA_API LuaMachine
 {
+    friend class LuaMachineManager;
+
     lua_State *L;
     int        index;
-    bool       bDebugOuput = false;
 
   public:
+    bool bDebugOuput = false;
+
+  public:
+
     LuaMachine(lua_State *L, int index);
-    virtual ~LuaMachine();
+    virtual ~LuaMachine() {}
+
+    lua_State *const *GetState() { return &L; }
+    int               GetIndex() { return index; }
+    bool              IsValid() { return L != nullptr && index > 0; }
 
     void log(const char *fmt, ...)
     {

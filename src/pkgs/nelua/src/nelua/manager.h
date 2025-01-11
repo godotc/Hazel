@@ -1,10 +1,16 @@
+//
+/*
+ * @ Author: godot42
+ * @ Create Time: 2025-01-06 20:33:36
+ * @ Modified by: @godot42
+ * @ Modified time: 2025-01-11 05:27:45
+ * @ Description:
+ */
+
 
 
 #pragma once
 
-
-
-#include "lua.h"
 #include "microshit.h"
 #include "types.h"
 #include <atomic>
@@ -27,5 +33,6 @@ struct NELUA_API LuaMachineManager {
 
     LuaMachine NewMachine();
     bool       RemoveMachine(lua_State *L);
+    bool       RemoveMachine(LuaMachine &machine);
     int32_t    GetIndex(lua_State *L);
 };

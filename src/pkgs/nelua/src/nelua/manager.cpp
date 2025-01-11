@@ -1,9 +1,15 @@
-#include "lua.h"
+//
+/*
+ * @ Author: godot42
+ * @ Create Time: 2025-01-11 04:04:25
+ * @ Modified by: @godot42
+ * @ Modified time: 2025-01-11 05:29:00
+ * @ Description:
+ */
+
 #include "types.h"
 
 #include "machine.h"
-#include "manager.h"
-#include <cstdint>
 
 
 
@@ -22,6 +28,10 @@ LuaMachine LuaMachineManager::NewMachine()
 
 bool LuaMachineManager::RemoveMachine(lua_State *L)
 {
+    if (!L) {
+        return false;
+    }
+
     if (auto it = L2Idx.find(L); it != L2Idx.end()) {
         lua_State *L = it->first;
         Idx2L.erase(it->second);
@@ -31,6 +41,13 @@ bool LuaMachineManager::RemoveMachine(lua_State *L)
     }
     return false;
 }
+
+bool LuaMachineManager::RemoveMachine(LuaMachine &machine)
+{
+    return RemoveMachine(machine.L);
+}
+
+
 
 int32_t LuaMachineManager::GetIndex(lua_State *L)
 {

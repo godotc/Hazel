@@ -28,7 +28,7 @@ struct HAZEL_API ApplicationCommandLineArgs {
 class App;
 
 struct HAZEL_API ApplicationSpecification {
-    std::string        Name = "Hazel Application";
+    std::string                Name = "Hazel Application";
     std::filesystem::path      WorkingDirectory;
     ApplicationCommandLineArgs CommandLineArgs;
 };
@@ -56,7 +56,7 @@ class HAZEL_API App
 
 
   public:
-    App(const ApplicationSpecification& app_sec = ApplicationSpecification());
+    App(const ApplicationSpecification &app_sec = ApplicationSpecification());
     virtual ~App();
 
     static inline App &Get() { return *g_Application; }
@@ -64,6 +64,7 @@ class HAZEL_API App
   public:
     void Run();
     void Close();
+    void Shutdown() { Close(); }
 
   public:
     void PushLayer(Layer *layer);
@@ -75,7 +76,7 @@ class HAZEL_API App
 
     inline Window &GetWindow() { return *m_Window; }
 
-    ApplicationSpecification GetApplicationSpecification() const { return m_ApplicationSpecification; }
+    ApplicationSpecification   GetApplicationSpecification() const { return m_ApplicationSpecification; }
     ApplicationCommandLineArgs GetCommandLineArgs() const { return m_ApplicationSpecification.CommandLineArgs; }
 
   protected:

@@ -3,11 +3,12 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:03:51
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-06 20:58:04
+ * @ Modified time: 2025-01-11 05:38:53
  * @ Description:
  */
 
 
+#include "hazel/core/app.h"
 #include "hz_pch.h"
 
 
@@ -17,6 +18,7 @@
 #include <filesystem>
 
 
+#include "nelua/manager.h"
 #include "utils/file.h"
 #include "utils/path.h"
 
@@ -28,26 +30,31 @@
 namespace hazel {
 
 
-LuaMachine *ScriptEngine::LM = nullptr;
+LuaMachine ScriptEngine::LM(nullptr, -1);
 
 namespace fs = std::filesystem;
 
 void ScriptEngine::Init()
 {
-    LM = new LuaMachine();
+    LM             = LuaMachineManager::Get().NewMachine();
+    LM.bDebugOuput = true;
 
     fs::path main    = FPath("src/pkgs/nelua/scripts/main.lua");
     auto     Content = utils::File::read_all(main);
 
     HZ_CORE_ASSERT(Content.has_value(), "Failed to read main script");
-    LM->LoadFromString(Content.value());
+    LM.LoadFromString(Content.value());
 
-    LM->CallFunc("print_hello");
+    LM.CallFunc("print_hello");
+
+    LM.CallMemberFunc("main", "print_hello");
+
+    App::Get().Shutdown();
 }
 
 void ScriptEngine::Shutdown()
 {
-    delete LM;
+    LuaMachineManager::Get().RemoveMachine(LM);
 }
 
 
