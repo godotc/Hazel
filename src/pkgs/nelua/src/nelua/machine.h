@@ -3,12 +3,15 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-03 00:29:21
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 05:38:44
+ * @ Modified time: 2025-01-23 05:32:47
  * @ Description:
  */
 
 
 #pragma once
+extern "C" {
+#include "lua.h"
+}
 #include "types.h"
 
 #include "luavar.h"
@@ -22,15 +25,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include <typeinfo>
 
+#include "log.h"
+#include "utility/string_utils.h"
 
-
-extern void StackDump(lua_State *L);
 
 
 class NELUA_API LuaMachine
@@ -52,15 +56,6 @@ class NELUA_API LuaMachine
     int               GetIndex() { return index; }
     bool              IsValid() { return L != nullptr && index > 0; }
 
-    void log(const char *fmt, ...)
-    {
-        if (bDebugOuput) {
-            va_list args;
-            va_start(args, fmt);
-            vfprintf(stderr, fmt, args);
-            va_end(args);
-        }
-    }
 
     void stack_dump()
     {
@@ -78,6 +73,7 @@ class NELUA_API LuaMachine
 
     bool CallMemberFunc(const char *path, const char *member_func)
     {
+        log("-->>CallLuaMemberFunc %s.%s", path, member_func);
         LuaVar var = LuaVar::GetValue(L, path);
         if (var.type == ELuaType::Nil) {
             log("failed to get %s\n", path);
@@ -87,15 +83,69 @@ class NELUA_API LuaMachine
         if (var.type != ELuaType::Table) {
             log("failed to get %s, not a table: %d\n", path, var.type);
         }
+        bool ret = false;
 
         lua_pushstring(L, member_func);
         lua_gettable(L, -2);
         if (lua_isfunction(L, -1)) {
-            return call_luafunc_impl(L, 0, 0);
+            ret = call_luafunc_impl(L, 0, 0);
+        }
+        log("--<< end CallLuaMemberFunc %s.%s\n", path, member_func);
+
+        StackDump(L);
+        return ret;
+    }
+
+    bool CallMemberFuncV2(const char *path, const char *member_func)
+    {
+        log("-->>begin CallLuaMemberFuncV2 %s.%s", path, member_func);
+
+        std::vector<std::string> result;
+        result = ut::str::split(path, '.');
+
+        bool bGetFunc = false;
+
+        if (result.size() == 1) {
+            lua_getglobal(L, path);
+            // lua_pushvalue(L, -1);
+            lua_pushstring(L, member_func);
+            lua_gettable(L, -2);
+
+            if (lua_isfunction(L, -1)) {
+                bGetFunc = true;
+            }
+        }
+        else {
+            lua_getglobal(L, result[0].c_str());
+            // lua_pushvalue(L, -1);
+
+            for (size_t i = 1; i < result.size(); i++) {
+                lua_pushstring(L, result[i].c_str());
+                lua_gettable(L, -2);
+                // lua_pushvalue(L, -1);
+            }
+
+            lua_pushstring(L, member_func);
+            lua_gettable(L, -2);
+            if (lua_isfunction(L, -1)) {
+                bGetFunc = true;
+            }
         }
 
-        return false;
+        bool ret = false;
+
+        if (!bGetFunc) {
+            ret = call_luafunc_impl(L, 0, 0);
+        }
+
+        log("--<<end CallLuaMemberFuncV2 %s.%s\n", path, member_func);
+        lua_pop(L, result.size());
+
+        StackDump(L);
+
+        return ret;
     }
+
 
 
     template <TLuaPushable... Args>

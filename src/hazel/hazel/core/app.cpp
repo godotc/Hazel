@@ -34,17 +34,19 @@ namespace hazel {
 
 App *App::g_Application = nullptr;
 
-App::App(const ApplicationSpecification& app_sec)
+App::App(const ApplicationSpecification &app_sec)
 {
     HZ_PROFILE_FUNCTION();
+
+    ScriptEngine::PreInit();
 
     HZ_INFO("App construct");
     HZ_CORE_ASSERT(!g_Application, "Already a application instance");
     g_Application = this;
 
     m_ApplicationSpecification = app_sec;
-    m_Window = Window::Create(WindowProps(app_sec.Name));
-    namespace fs = std::filesystem;
+    m_Window                   = Window::Create(WindowProps(app_sec.Name));
+    namespace fs               = std::filesystem;
     if (!m_ApplicationSpecification.WorkingDirectory.empty()) {
         HZ_ASSERT(fs::exists(m_ApplicationSpecification.WorkingDirectory), "Working directory does not exist");
 

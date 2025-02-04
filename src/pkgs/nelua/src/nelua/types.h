@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-06 20:27:55
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 05:52:09
+ * @ Modified time: 2025-01-19 06:28:49
  * @ Description:
  */
 
@@ -20,6 +20,9 @@ extern "C" {
 
 
 #include <optional>
+
+
+extern void StackDump(lua_State *L);
 
 
 namespace ELuaType {

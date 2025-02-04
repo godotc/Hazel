@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 03:32:35
+ * @ Modified time: 2025-01-19 06:17:42
  * @ Description:
  */
 
@@ -30,19 +30,25 @@ std::vector<std::string> split(std::string_view source, char delimiter)
 {
 
     std::vector<std::string> ret;
-    int                      nth = 0;
     // "abc def"
-    while ((nth = source.find(delimiter)) != std::string::npos) {
-        ret.emplace_back(source.substr(0, nth - 1));
-        source.remove_prefix(nth + 1);
-    }
+    while (true) {
+        // printf("source: %s\n", source.data());
+        int n = source.find_first_of(delimiter);
+        if (n == std::string::npos) {
+            ret.emplace_back(source);
+            break;
+        }
+        ret.emplace_back(source.substr(0, n));
+        source.remove_prefix(n + 1);
+    };
     return ret;
 }
 
-bool split(std::string_view source, char sep, std::string_view &left, std::string_view &right)
+bool split(std::string_view source, char sep, std::string &left, std::string_view &right)
 {
     int n = source.find_first_of(sep);
     if (n == std::string::npos) {
+        left = source;
         return false;
     }
     left  = source.substr(0, n);

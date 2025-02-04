@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:03:51
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 05:38:53
+ * @ Modified time: 2025-01-23 05:33:24
  * @ Description:
  */
 
@@ -34,8 +34,10 @@ LuaMachine ScriptEngine::LM(nullptr, -1);
 
 namespace fs = std::filesystem;
 
-void ScriptEngine::Init()
+void ScriptEngine::PreInit()
 {
+
+
     LM             = LuaMachineManager::Get().NewMachine();
     LM.bDebugOuput = true;
 
@@ -47,9 +49,14 @@ void ScriptEngine::Init()
 
     LM.CallFunc("print_hello");
 
-    LM.CallMemberFunc("main", "print_hello");
+    // LM.CallMemberFunc("Module.Guide", "print_hello");
+    LM.CallMemberFuncV2("Module.Guide", "print_hello");
 
     App::Get().Shutdown();
+}
+
+void ScriptEngine::Init()
+{
 }
 
 void ScriptEngine::Shutdown()
