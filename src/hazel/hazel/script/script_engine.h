@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:02:52
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 05:05:07
+ * @ Modified time: 2025-01-19 05:40:54
  * @ Description:
  */
 
@@ -26,6 +26,7 @@ class ScriptEngine
     static LuaMachine LM;
 
   public:
+    static void PreInit();
     static void Init();
     static void Shutdown();
 };
