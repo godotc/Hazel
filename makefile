@@ -1,5 +1,9 @@
 
 .PHONY: cpcm
+
+t:=nut
+arg:=""
+
 cpcm:
 	xmake project -k compile_commands
 
@@ -9,5 +13,5 @@ cfg:
 	xmake project -k compile_commands
 
 r:
-	xmake b nut
-	xmake r nut
+	xmake b $(t)
+	xmake r $(t) $(arg)

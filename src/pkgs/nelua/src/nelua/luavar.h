@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-06 20:30:02
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-19 06:33:56
+ * @ Modified time: 2025-02-07 01:29:21
  * @ Description:
  */
 
@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "lauxlib.h"
 extern "C" {
 #include "lua.h"
 }
@@ -28,26 +29,40 @@ extern "C" {
 #include "log.h"
 
 
+struct LuaRef {
+
+    static int create_ref(lua_State *L, bool bWeak)
+    {
+        lua_newtable(L); // new_table={}
+
+        if (bWeak) {
+            lua_newtable(L); // metatable={}
+
+            lua_pushliteral(L, "__mode");
+            lua_pushliteral(L, "v");
+            // n's -2 = -1 -> new_table's "__mode" = "v"
+            lua_rawset(L, -3); // metatable._mode='v'
+
+            lua_setmetatable(L, -2); // setmetatable(new_table,metatable)
+        }
+
+        lua_pushvalue(L, -2);  // push the previous top of stack
+        lua_rawseti(L, -2, 1); // new_table[1]=original value on top of the stack
+
+        // Now new_table is on top of the stack, rest is up to you
+        // Here is how you would store the reference:
+        return luaL_ref(L, LUA_REGISTRYINDEX); // this pops the new_table
+    }
+};
+
+
 struct LuaVar {
 
-    struct LuaRef {
-
-        int ref;
-        int state_idx;
-        int pos;
-        LuaRef(lua_State *L)
-        {
-            // ref       = luaL_ref(L, LUA_REGISTRYINDEX);
-            // state_idx = LuaMachineManager::Get().GetIndex(L);
-            // pos       = lua_gettop(L);
-        }
-    };
 
     std::variant<lua_Integer,
                  lua_Number,
                  std::string,
                  void *, // userdata/table
-                 LuaRef,
                  bool>
                 value;
     ELuaType::T type;
@@ -58,7 +73,7 @@ struct LuaVar {
     void SetValue(lua_State *L, int pos)
     {
         type = (ELuaType::T)lua_type(L, pos);
-        log("set value type of %d : %d -> %s", pos, type, lua_typename(L, type));
+        log("set value type of pos %d : %d -> %s", pos, type, lua_typename(L, type));
 
         switch (type) {
         case LUA_TNIL:
@@ -85,15 +100,16 @@ struct LuaVar {
         }
         case LUA_TUSERDATA:
         {
-            value.emplace<LuaRef>(L);
+            type = ELuaType::UserData;
             break;
         }
         case LUA_TLIGHTUSERDATA:
         {
-            value = lua_touserdata(L, -1);
             type  = ELuaType::LightUserData;
+            value = lua_touserdata(L, -1);
             break;
         }
+
         case LUA_TBOOLEAN:
         {
             value = lua_toboolean(L, -1);

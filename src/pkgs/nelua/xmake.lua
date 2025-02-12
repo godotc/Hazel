@@ -1,6 +1,7 @@
 add_requires("lua")
+add_requires("gtest")
 
-
+includes("./src/nelua_test/")
 
 target("nelua")
 do
@@ -13,7 +14,8 @@ do
 
     add_packages("lua", { public = true })
 
-    add_files("./src/**.cpp")
-    add_headerfiles("./src/**.h", { public = true })
+    add_files("./src/nelua/**.cpp")
+    add_headerfiles("./src/nelua/**.h", { public = true })
     add_includedirs("./src", { public = true })
 end
+

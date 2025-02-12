@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdarg>
-#include <cstddef>
 #include <cstdio>
 #include <source_location>
 #include <string>

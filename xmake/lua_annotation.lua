@@ -2,7 +2,7 @@
 
 
 ---@class CommonConfig : table
----@field public boolean
+---@field public public boolean
 
 ---@param ... string| "module.debug" | "module.release"
 function add_rules(...) end
@@ -12,7 +12,7 @@ do
     function add_packages(...) end
 
     ---@param name string
-    ---@param cfg table
+    ---@param cfg CommonConfig
     function add_packages(name, cfg) end
 end
 
@@ -34,9 +34,11 @@ function add_deps() end
 function add_files(...) end
 
 ---@param ... string
+---@overload fun(pkg: string, cfg: CommonConfig)
 function add_headerfiles(...) end
 
 ---@param ... string
+---@overload fun(pkg: string, cfg: CommonConfig)
 function add_includedirs(...) end
 
 ---@class PackageConfig : table
