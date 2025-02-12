@@ -1,7 +1,7 @@
 target("nelua_test")
 do
     set_kind("binary")
-    print("script dir:", os.scriptdir())
+    -- print("script dir:", os.scriptdir())
     set_rundir(os.scriptdir())
 
     -- before_run(function()

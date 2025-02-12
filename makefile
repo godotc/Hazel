@@ -2,7 +2,8 @@
 .PHONY: cpcm
 
 t:=nut
-arg:=""
+build_arg:=
+arg:=
 
 cpcm:
 	xmake project -k compile_commands
@@ -13,5 +14,5 @@ cfg:
 	xmake project -k compile_commands
 
 r:
-	xmake b $(t)
+	xmake b $(t) $(build_arg)
 	xmake r $(t) $(arg)

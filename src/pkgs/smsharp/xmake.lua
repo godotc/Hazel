@@ -5,12 +5,6 @@ rule("dotnet")
 do
     set_extensions(".cs")
 
-    on_build(function(target)
-        import("core.project.project")
-
-        -- cmd.exec("dotnet", "build")
-    end)
-
 
     after_build(function(target)
         import("core.project.project")
@@ -27,4 +21,10 @@ do
     add_packages("dotnet")
 
     add_files("./src/**.cpp")
+    add_defines("UNICODE")
+
+    before_build(function(target)
+        print("before build ", target:name())
+        
+    end)
 end
