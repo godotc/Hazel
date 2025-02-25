@@ -62,6 +62,8 @@ do
 
     add_deps("nelua")
 
+	add_deps("spirv-cross")
+
     add_includedirs("./", { public = true })
     add_headerfiles("**.h")
     set_pcxxheader("hz_pch.h")

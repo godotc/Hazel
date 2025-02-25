@@ -8,7 +8,7 @@
 #include "glad/glad.h"
 #include "hazel/renderer/texture.h"
 #include <cstdint>
-#include <wingdi.h>
+// #include <wingdi.h>
 
 namespace hazel {
 

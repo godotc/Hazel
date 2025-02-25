@@ -5,3 +5,6 @@
 	path = src/pkgs/imgui-docking
 	url = git@github.com:ocornut/imgui.git
 	branch = docking
+[submodule "src/pkgs/SPIRV-Cross"]
+	path = src/pkgs/SPIRV-Cross
+	url = git@github.com:KhronosGroup/SPIRV-Cross.git

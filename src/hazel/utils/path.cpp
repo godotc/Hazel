@@ -107,7 +107,7 @@ static bool recursive_iterate_parent(const path &init_pos, std::string &target_s
             break;
         }
 #if __linux__
-        if (directory.filename() != "/") {
+        if (directory.filename() == "/") {
             break;
         }
 #elif _WIN32
@@ -170,8 +170,13 @@ path find_directory_by_file_symbol(path &initial_pos, std::string target_symbol)
             return target_path;
         }
     }
+    else {
+        printf("wtf\n");
+    }
 
-    throw std::runtime_error("The directory mark by symbol file not found! Symbol file: " + target_symbol);
+    throw std::runtime_error(
+        "The directory mark by symbol file not found! Symbol file: " + target_symbol +
+        "Initial pos: " + initial_pos.c_str());
 }
 
 
@@ -187,7 +192,7 @@ const std::filesystem::path &ProjectRoot()
 
 
     fs::path exe_path = get_runtime_exe_path();
-    printf("exe_path: %ls\n", exe_path.c_str());
+    printf("exe_path: %s\n", exe_path.c_str());
 
     if (exe_path.empty())
     {

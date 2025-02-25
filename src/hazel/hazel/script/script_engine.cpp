@@ -50,9 +50,8 @@ void ScriptEngine::PreInit()
     LM.CallFunc("print_hello");
 
     // LM.CallMemberFunc("Module.Guide", "print_hello");
-    LM.CallMemberFuncV2("Module.Guide", "print_hello",false);
-
-    App::Get().Shutdown();
+    LM.CallMemberFuncV2("Module.Guide", "print_hello", false);
+    // App::Get().Shutdown();
 }
 
 void ScriptEngine::Init()

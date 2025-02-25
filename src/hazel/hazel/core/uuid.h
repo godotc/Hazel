@@ -11,7 +11,7 @@
 #pragma once
 
 #include <cstdint>
-#include <xhash>
+// #include <xhash>
 
 #if _WIN32
     #undef UUID
@@ -35,13 +35,13 @@ class UUID
 
 
 
-namespace std {
-template <>
-struct hash<hazel::UUID> {
-    std::size_t operator()(const hazel::UUID &uuid) const
-    {
-        // return hash<uint64_t>()(uuid);
-        return uint64_t(uuid);
-    }
-};
-} // namespace std
+ namespace std {
+ template <>
+ struct hash<hazel::UUID> {
+     std::size_t operator()(const hazel::UUID &uuid) const
+     {
+         // return hash<uint64_t>()(uuid);
+         return uint64_t(uuid);
+     }
+ };
+ } // namespace std

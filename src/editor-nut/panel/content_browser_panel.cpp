@@ -110,11 +110,14 @@ void ContentBrowserPanel::OnImGuiRender()
 
             if constexpr (std::is_same_v<const wchar_t *, decltype(relative_path.c_str())>)
             {
-                auto relative_path_str = relative_path.c_str();
+                const char *relative_path_str = relative_path.c_str();
                 // relative_path_str[wcslen(relative_path_str) - 1] = L'\0';
                 // The payload will be copied
+                // ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM",
+                //                          relative_path_str, (wcslen(relative_path_str) + 1) * sizeof(wchar_t),
+                //                          ImGuiCond_Once);
                 ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM",
-                                          relative_path_str, (wcslen(relative_path_str) + 1) * sizeof(wchar_t),
+                                          relative_path_str, (strlen(relative_path_str) + 1) * sizeof(char),
                                           ImGuiCond_Once);
             }
             else {

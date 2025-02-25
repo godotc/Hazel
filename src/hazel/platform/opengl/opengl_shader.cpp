@@ -38,8 +38,9 @@
 #include <ios>
 
 #include <shaderc/shaderc.hpp>
-#include <spirv_cross/spirv_cross.hpp>
-#include <spirv_cross/spirv_glsl.hpp>
+// #include <spirv_cross/spirv_cross.hpp>
+// #include <spirv_cross/spirv_glsl.hpp>
+#include <spirv_glsl.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -74,10 +75,10 @@ static GLenum ShaderTypeFromString(const std::string &type)
 static shaderc_shader_kind GLShaderStageToShaderRcType(GLenum Stage)
 {
     switch (Stage) {
-        case GL_VERTEX_SHADER:
-            return shaderc_glsl_vertex_shader;
-        case GL_FRAGMENT_SHADER:
-            return shaderc_glsl_fragment_shader;
+    case GL_VERTEX_SHADER:
+        return shaderc_glsl_vertex_shader;
+    case GL_FRAGMENT_SHADER:
+        return shaderc_glsl_fragment_shader;
     }
     HZ_CORE_ASSERT(false, "Unknown shader type!");
     return shaderc_shader_kind(0);
@@ -87,10 +88,10 @@ static const char *GLShaderStageToString(GLenum stage)
 {
     switch (stage)
     {
-        case GL_VERTEX_SHADER:
-            return "GL_VERTEX_SHADER";
-        case GL_FRAGMENT_SHADER:
-            return "GL_FRAGMENT_SHADER";
+    case GL_VERTEX_SHADER:
+        return "GL_VERTEX_SHADER";
+    case GL_FRAGMENT_SHADER:
+        return "GL_FRAGMENT_SHADER";
     }
     HZ_CORE_ASSERT(false);
     return nullptr;
@@ -129,10 +130,10 @@ static const char *GLShaderStage_CachedOpenGL_FileExtension(GLenum stage)
 {
     switch (stage)
     {
-        case GL_VERTEX_SHADER:
-            return ".cached_opengl.vert";
-        case GL_FRAGMENT_SHADER:
-            return ".cached_opengl.frag";
+    case GL_VERTEX_SHADER:
+        return ".cached_opengl.vert";
+    case GL_FRAGMENT_SHADER:
+        return ".cached_opengl.frag";
     }
     HZ_CORE_ASSERT(false);
     return "";
@@ -142,10 +143,10 @@ static const char *GLShaderStage_CachedVulkan_FileExtension(GLenum stage)
 {
     switch (stage)
     {
-        case GL_VERTEX_SHADER:
-            return ".cached_vulkan.vert";
-        case GL_FRAGMENT_SHADER:
-            return ".cached_vulkan.frag";
+    case GL_VERTEX_SHADER:
+        return ".cached_vulkan.vert";
+    case GL_FRAGMENT_SHADER:
+        return ".cached_vulkan.frag";
     }
     HZ_CORE_ASSERT(false);
     return "";

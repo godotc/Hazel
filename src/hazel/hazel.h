@@ -29,5 +29,3 @@
 #include "hazel/scene/entity.h"
 #include "hazel/scene/scene.h"
 #include "hazel/scene/scriptable_entity.h"
-
-

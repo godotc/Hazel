@@ -54,10 +54,10 @@
 #include "ImGuizmo.h"
 #include "editor_layer.h"
 #include <cstdint>
-#include <objidlbase.h>
-#include <processthreadsapi.h>
+// #include <objidlbase.h>
+// #include <processthreadsapi.h>
 #include <string>
-#include <sysinfoapi.h>
+// #include <sysinfoapi.h>
 #include <vector>
 
 
@@ -68,9 +68,11 @@
 
 // debug
 #include "platform/opengl/gl_macros.h"
-#include <gl/GL.h>
+#if _WIN32
+    #include <gl/GL.h>
+#endif
 #include <glad/glad.h>
-#include <winuser.h>
+// #include <winuser.h>
 
 namespace hazel {
 
@@ -1157,7 +1159,8 @@ void EditorLayer::OnSceneBeginPlay()
       public:
         void OnCreate()
         {
-            HZ_CORE_INFO("{}", __FUNCSIG__);
+            // HZ_CORE_INFO("{}", __FUNCSIG__);
+            HZ_CORE_INFO("{}", __PRETTY_FUNCTION__);
         }
         void OnDestroy() {}
         void OnUpdate(Timestep ts)
