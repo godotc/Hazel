@@ -2,29 +2,20 @@
 
 
 ---@class CommonConfig : table
----@field public public boolean
+---@field public public boolean|nil
 
 ---@param ... string| "module.debug" | "module.release"
 function add_rules(...) end
 
-do
-    ---@param ... string
-    function add_packages(...) end
+---@overload fun(...: string):void
+---@overload fun(pkg: string, cfg: CommonConfig):void
+---@param pkg string
+function add_packages(...) end
 
-    ---@param name string
-    ---@param cfg CommonConfig
-    function add_packages(name, cfg) end
-end
-
-do
-    ---@param ... string
-    function add_requires(...) end
-
-    ---@param name string
-    ---@param cfg CommonConfig
-    function add_requires(name, cfg) end
-end
-
+    ---@overload fun(...:string):void
+---@overload fun(pkg: string, cfg: CommonConfig):void
+---@overload fun(pkg:string):void
+function add_requires(...) end
 
 ---@overload fun( ...:string)
 ---@overload fun(pkg: string, cfg: CommonConfig)
@@ -34,19 +25,15 @@ function add_deps() end
 function add_files(...) end
 
 ---@param ... string
----@overload fun(pkg: string, cfg: CommonConfig)
 function add_headerfiles(...) end
 
----@param ... string
+---@overload fun(...:string)
 ---@overload fun(pkg: string, cfg: CommonConfig)
 function add_includedirs(...) end
 
 ---@class PackageConfig : table
 ---@field config table
 
----@param package string
----@param config PackageConfig
-function add_requires(package, config) end
 
 ---@param type "binary"|"shared"|"static"
 function set_kind(type) end

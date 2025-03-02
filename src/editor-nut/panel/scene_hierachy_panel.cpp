@@ -1,4 +1,5 @@
 #include "hazel/core/log.h"
+#include "hazel/utils/platform_utils.h"
 #include "hz_pch.h"
 
 #include "entt/entity/fwd.hpp"
@@ -339,38 +340,38 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         if (old_projection_type != camera.GetProjectionType()) {
             switch (camera.GetProjectionType())
             {
-                case SceneCamera::ProjectionType::Perspective:
-                {
-                    float perspective_fov = glm::degrees(camera.GetPerspectiveFovy());
-                    if (imgui::DragFloat("VerticalFov", &perspective_fov)) {
-                        camera.SetPerspectiveFovy(glm::radians(perspective_fov));
-                    }
-                    float perspective_near = camera.GetPerspectiveNear();
-                    if (imgui::DragFloat("Near", &perspective_near)) {
-                        camera.SetPerspectiveNear(perspective_near);
-                    }
-                    float perspective_far = camera.GetPerspectiveFar();
-                    if (imgui::DragFloat("Far", &perspective_far)) {
-                        camera.SetPerspectiveFar(perspective_far);
-                    }
-                    break;
+            case SceneCamera::ProjectionType::Perspective:
+            {
+                float perspective_fov = glm::degrees(camera.GetPerspectiveFovy());
+                if (imgui::DragFloat("VerticalFov", &perspective_fov)) {
+                    camera.SetPerspectiveFovy(glm::radians(perspective_fov));
                 }
-                case SceneCamera::ProjectionType::Orthographic:
-                {
-                    float ortho_size = camera.GetOrthographicSize();
-                    if (imgui::DragFloat("Size", &ortho_size)) {
-                        camera.SetOrthographicSize(ortho_size);
-                    }
-                    float ortho_near_size = camera.GetOrthographicNear();
-                    if (imgui::DragFloat("Near", &ortho_near_size)) {
-                        camera.SetOrthographicNear(ortho_near_size);
-                    }
-                    float ortho_far_size = camera.GetOrthographicFar();
-                    if (imgui::DragFloat("Far", &ortho_far_size)) {
-                        camera.SetOrthographicFar(ortho_far_size);
-                    }
-                    break;
+                float perspective_near = camera.GetPerspectiveNear();
+                if (imgui::DragFloat("Near", &perspective_near)) {
+                    camera.SetPerspectiveNear(perspective_near);
                 }
+                float perspective_far = camera.GetPerspectiveFar();
+                if (imgui::DragFloat("Far", &perspective_far)) {
+                    camera.SetPerspectiveFar(perspective_far);
+                }
+                break;
+            }
+            case SceneCamera::ProjectionType::Orthographic:
+            {
+                float ortho_size = camera.GetOrthographicSize();
+                if (imgui::DragFloat("Size", &ortho_size)) {
+                    camera.SetOrthographicSize(ortho_size);
+                }
+                float ortho_near_size = camera.GetOrthographicNear();
+                if (imgui::DragFloat("Near", &ortho_near_size)) {
+                    camera.SetOrthographicNear(ortho_near_size);
+                }
+                float ortho_far_size = camera.GetOrthographicFar();
+                if (imgui::DragFloat("Far", &ortho_far_size)) {
+                    camera.SetOrthographicFar(ortho_far_size);
+                }
+                break;
+            }
             };
         }
     });
@@ -452,6 +453,14 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+    });
+
+    draw_component<LuaScriptComponent>("Lua Script", entity, [](LuaScriptComponent &component) {
+        imgui::InputText("Script", component.ScriptPath.data(), 256);
+        ImGui::SameLine();
+        if (imgui::Button("select")) {
+            component.ScriptPath = FileDialogs::OpenFile("Lua Files (*.lua)\0*.lua\0", component.ScriptPath);
+        }
     });
 }
 

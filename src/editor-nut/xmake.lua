@@ -7,7 +7,7 @@ target("nut")
 
     add_headerfiles("**.h")
     add_files("**.cpp")
-    add_includedirs("./", { public = false })
+    add_includedirs("./", {public = true})
 
 
     on_config(function(target)

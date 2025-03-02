@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:02:52
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-19 05:40:54
+ * @ Modified time: 2025-03-02 15:57:32
  * @ Description:
  */
 
@@ -20,6 +20,7 @@
 namespace hazel {
 
 
+// this will be a game instance subsystem?
 class ScriptEngine
 {
 
@@ -29,6 +30,9 @@ class ScriptEngine
     static void PreInit();
     static void Init();
     static void Shutdown();
+
+
+    static LuaMachine &GetMachine() { return LM; }
 };
 
 }; // namespace hazel

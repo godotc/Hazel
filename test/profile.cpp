@@ -5,12 +5,14 @@
 #include "cstdio"
 #include <algorithm>
 #include <chrono>
-#include <fstream>
 #include <cmath>
+#include <fstream>
 #include <iostream>
+#include <stdlib.h>
 #include <string>
 #include <thread>
 #include <vector>
+
 
 struct ProfileResult {
     std::string Name;
@@ -148,7 +150,7 @@ auto f1()
     PROFILE_FUNCTION();
     auto v = std::vector<int>(1000, 1);
     for (auto &i : v) {
-        std::cout << "Hello #" << sin(i + random()) << std::endl;
+        std::cout << "Hello #" << sin(i + rand()) << std::endl;
     }
 }
 auto f2()
@@ -156,7 +158,7 @@ auto f2()
     PROFILE_FUNCTION();
     auto v = std::vector<int>(1000, 1);
     for (auto i : v) {
-        std::cout << "Hello #" << sin(i + random()) << std::endl;
+        std::cout << "Hello #" << sin(i + rand()) << std::endl;
     }
 }
 
@@ -170,6 +172,7 @@ auto BenchMark()
 
 int main()
 {
+    return 1;
     Instrumentor::Get().BeginSession("Profile");
     BenchMark();
     Instrumentor::Get().EndSession();

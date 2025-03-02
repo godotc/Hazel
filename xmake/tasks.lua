@@ -1,32 +1,32 @@
+do -- grab all cpp file under test folder as a target
+    local bDebug = false
+    local test_files = os.files(os.projectdir() .. "/test/*.cpp")
+    for _, file in ipairs(test_files) do
+        local name = path.basename(file)
+        target_name = "test." .. name
+        target(target_name)
+        do
+            if bDebug then
+                print("add test unit:", target_name)
+            end
+            set_group("test")
+            set_kind("binary")
+            add_files(file)
+            target_end()
+        end
+    end
+end
 task("test")
 do
-    set_menu {}
+    set_menu {
+        usage = "xmake test",
+        options = {
+            { nil, "rule", "v", "debug", "the rule to config build mode " }
+        }
+    }
     on_run(function()
-        import("core.project.project")
-        for targetname, target in pairs(project.targets()) do
-            print("==================")
-            print(targetname)
-            print(target:name())
-            print(target:kind())
-            -- print(target)
-            print(target:targetfile())
-            print(target:basename())
-            print(target:filename())
-            print(target:linkname())
-            print(target:targetdir())
-            -- return
-
-            -- local target_name = arg[1] or "__DEFAULT_VAR__"
-            -- local target_dir = arg[2] or "__DEFAULT_VAR__"
-            -- local target_base_name = arg[3] or "__DEFAULT_VAr__"
-        end
-
-        -- exec_cmds(
-        --     "xmake f -m debug --test=y",
-        --     -- "xmake f -m debug",
-        --     "xmake build -g test",
-        --     "xmake run -g test"
-        -- )
+        os.exec("xmake b -g test")
+        os.exec("xmake r -g test")
     end)
 end
 

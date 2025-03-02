@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2023-11-17 23:45:29
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-28 04:48:08
+ * @ Modified time: 2025-03-02 18:49:26
  * @ Description:
  */
 
@@ -77,3 +77,18 @@ using Weak = std::weak_ptr<T>;
 
 
 }; // namespace hazel
+
+
+/*
+ * @param name
+ * @param type
+ */
+#define NPROPERTY(...)
+
+enum NPROPERTY
+{
+
+
+};
+
+#define GENERATED_BODY(...)
