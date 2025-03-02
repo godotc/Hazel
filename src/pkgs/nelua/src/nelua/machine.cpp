@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-03 00:39:48
  * @ Modified by: @godot42
- * @ Modified time: 2025-02-07 01:18:21
+ * @ Modified time: 2025-03-03 02:41:13
  * @ Description:
  */
 
@@ -34,10 +34,12 @@ bool LuaMachine::LoadFromString(const std::string &str)
     return true;
 }
 
-bool LuaMachine::LoadLuaScriptFile(const char *filename)
+
+
+bool LuaMachine::LoadLuaScriptFile(const char *filename, int nret)
 {
     luaL_loadfile(L, filename);
-    int ret = lua_pcall(L, 0, 0, 0);
+    int ret = lua_pcall(L, 0, nret, 0);
     if (ret != 0)
     {
         printf("%d %s\n", ret, lua_tostring(L, -1));

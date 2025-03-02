@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-11 04:04:25
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-23 05:33:05
+ * @ Modified time: 2025-03-02 19:03:56
  * @ Description:
  */
 
@@ -21,9 +21,10 @@ LuaMachine LuaMachineManager::NewMachine()
 
     L2Idx.insert({L, Index});
     Idx2L.insert({Index, L});
+    LuaMachine lm(L, Index);
     ++Index;
 
-    return LuaMachine(L, Index);
+    return lm;
 }
 
 bool LuaMachineManager::RemoveMachine(lua_State *L)
@@ -55,4 +56,12 @@ int32_t LuaMachineManager::GetIndex(lua_State *L)
         return it->second;
     }
     return -1;
+}
+
+LuaMachineManager::~LuaMachineManager()
+{
+    for (auto L : L2Idx)
+    {
+        lua_close(L.first);
+    }
 }

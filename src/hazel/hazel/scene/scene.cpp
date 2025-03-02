@@ -3,7 +3,7 @@
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-02 22:23:35
+ * @ Modified time: 2025-03-03 02:39:21
  */
 
 
@@ -306,6 +306,12 @@ void Scene::OnRuntimeStart()
 void Scene::OnRuntimeStop()
 {
     OnPhysics2DStop();
+
+    m_Registry.view<LuaScriptComponent>().each([=](auto entity, LuaScriptComponent &lua_comp) {
+        if (lua_comp.bInitialized) {
+            lua_comp.OnDestroy();
+        }
+    });
 }
 
 void Scene::OnSimulationStart()
@@ -340,6 +346,12 @@ void Scene::OnUpdateRuntime(Timestep ts)
                 ns_comp.Instance->OnCreate();
             }
             ns_comp.Instance->OnUpdate(ts);
+        });
+        m_Registry.view<LuaScriptComponent>().each([=](auto entity, LuaScriptComponent &lua_comp) {
+            if (!lua_comp.bInitialized) {
+                lua_comp.Init();
+            }
+            lua_comp.OnUpdate(ts);
         });
     }
 

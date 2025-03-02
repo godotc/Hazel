@@ -55,6 +55,7 @@ do
     -- set_kind("shared")
     set_kind("static")
 
+    set_rundir(os.projectdir())
 
     add_deps("imguizmo")
     add_deps("glad")

@@ -21,6 +21,9 @@ add_packages(
     "toml++"
 )
 
+add_requires("utfcpp")
+add_packages("utfcpp", { public = true })
+
 -- add_requires("entt 3.12", { configs = { debug = true } })
 add_requires("entt 3.13", { configs = { debug = true, cxxflgs = "-std=c++20" } })
 add_packages("entt", { public = true })
@@ -36,7 +39,7 @@ add_packages("yaml-cpp", { public = true })
 
 includes("pkgs")
 includes(
-    "hazel"
-    , "editor-nut"
+    "hazel/hazel.xmake.lua",
+    "editor-nut"
 -- ,"sandbox"
 )

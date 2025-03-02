@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-06 20:33:36
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-11 05:27:45
+ * @ Modified time: 2025-03-02 19:03:58
  * @ Description:
  */
 
@@ -35,4 +35,10 @@ struct NELUA_API LuaMachineManager {
     bool       RemoveMachine(lua_State *L);
     bool       RemoveMachine(LuaMachine &machine);
     int32_t    GetIndex(lua_State *L);
+
+  private:
+    LuaMachineManager() {}
+
+
+    ~LuaMachineManager();
 };

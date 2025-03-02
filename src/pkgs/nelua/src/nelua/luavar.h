@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-06 20:30:02
  * @ Modified by: @godot42
- * @ Modified time: 2025-02-07 01:29:21
+ * @ Modified time: 2025-03-03 01:55:36
  * @ Description:
  */
 
@@ -38,10 +38,18 @@ struct LuaRef {
         if (bWeak) {
             lua_newtable(L); // metatable={}
 
+#if 0
             lua_pushliteral(L, "__mode");
             lua_pushliteral(L, "v");
             // n's -2 = -1 -> new_table's "__mode" = "v"
             lua_rawset(L, -3); // metatable._mode='v'
+
+
+#else
+            lua_pushliteral(L, "v");
+            lua_setfield(L, -2, "__mode"); // metatable.__mode='v'
+#endif
+
 
             lua_setmetatable(L, -2); // setmetatable(new_table,metatable)
         }

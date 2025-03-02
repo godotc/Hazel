@@ -18,7 +18,6 @@ add_rules("mode.debug", "mode.release")
 set_project("hazel")
 set_languages("c++20")
 -- local bin_dir = "bin/$(plat)/$(arch)"
--- set_targetdir(bin_dir)
 
 if is_mode("debug") then
     add_defines("__HZ_DEBUG")
@@ -50,18 +49,4 @@ end
 
 includes("./xmake/rules.lua")
 includes("./xmake/tasks.lua")
-includes("./src")
-
--- on_config(function()
---     print("-- Loading manual testting...")
---     for _, file in ipairs(os.files("./test")) do
---         local name = path.basename(file)
---         target_name = "test." .. name
---         print(target_name)
---         target(target_name)
---         set_group("tst")
---         set_kind("binary")
---         add_files(file)
---         target_end()
---     end
--- end)
+includes("./src/xmake.lua")

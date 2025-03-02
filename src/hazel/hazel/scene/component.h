@@ -2,8 +2,8 @@
  * @ Author: godot42
  * @ Create Time: 2024-08-21 22:28:05
  * @ Modified by: @godot42
- * @ Modified time: 2024-12-15 05:15:54
- * @ Description:
+ * @ Modified by: @godot42
+ * @ Modified time: 2025-03-03 02:35:57
  */
 
 #pragma once
@@ -19,9 +19,12 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "hazel/core/base.h"
 #include "hazel/core/uuid.h"
 #include "hazel/sref/typelist.hpp"
 
+
+#include "nelua/types.h"
 
 
 
@@ -267,6 +270,30 @@ struct NativeScriptComponent : public Component<NativeScriptComponent> {
     void OnComponentAddedImpl(const Scene *scene) override {}
 };
 
+struct LuaScriptComponent : public Component<LuaScriptComponent> {
+    GENERATED_COMPONENT_BODY(LuaScriptComponent)
+
+    GENERATED_BODY()
+
+    NPROPERTY()
+    std::string ScriptPath;
+
+    bool bInitialized = false;
+
+    void Init();
+
+    int refScriptObj    = LUA_REFNIL;
+    int refOnCreate  = LUA_REFNIL;
+    int refOnUpdate  = LUA_REFNIL;
+    int refOnDestroy = LUA_REFNIL;
+
+    void OnCreate();
+    void OnUpdate(float ts);
+    void OnDestroy();
+
+    void OnComponentAddedImpl(const Scene *scene) override {}
+};
+
 
 using TComponentTypes = sref::type_list<
     IDComponent,
@@ -278,7 +305,9 @@ using TComponentTypes = sref::type_list<
     Rigidbody2DComponent,
     BoxCollider2DComponent,
     CircleCollider2DComponent,
-    NativeScriptComponent>;
+    NativeScriptComponent,
+    LuaScriptComponent>;
+
 
 
 } // namespace hazel

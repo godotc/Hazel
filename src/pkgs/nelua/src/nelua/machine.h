@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-03 00:29:21
  * @ Modified by: @godot42
- * @ Modified time: 2025-02-04 22:16:15
+ * @ Modified time: 2025-03-03 02:25:18
  * @ Description:
  */
 
@@ -33,9 +33,9 @@ extern "C" {
 #include <typeinfo>
 
 #include "log.h"
+
+
 #include "utility/string_utils.h"
-
-
 
 class NELUA_API LuaMachine
 {
@@ -52,13 +52,16 @@ class NELUA_API LuaMachine
     LuaMachine(lua_State *L, int index);
     virtual ~LuaMachine() {}
 
-    lua_State *const *GetState() { return &L; }
-    int               GetIndex() { return index; }
-    bool              IsValid() { return L != nullptr && index > 0; }
+    lua_State *GetState() { return L; }
+    int        GetIndex() { return index; }
+    bool       IsValid() { return L != nullptr && index > 0; }
 
 
-    void stack_dump()
+    void stack_dump(std::string_view sig = "")
     {
+        if (!sig.empty()) {
+            printf("%s\t", sig.data());
+        }
         if (bDebugOuput) {
             StackDump(L);
         }
@@ -67,7 +70,7 @@ class NELUA_API LuaMachine
 
   public:
     bool LoadFromString(const std::string &str);
-    bool LoadLuaScriptFile(const char *filename);
+    bool LoadLuaScriptFile(const char *filename, int nret = 0);
 
 
 
@@ -163,6 +166,17 @@ class NELUA_API LuaMachine
         return ret;
     }
 
+    bool LuaCall(int nargs, int nret)
+    {
+        return call_luafunc_impl(L, nargs, nret);
+    }
+
+
+    template <TLuaPushable T>
+    void PushValue(T v)
+    {
+        push_value(std::forward<T>(v));
+    }
 
 
     template <TLuaPushable... Args>

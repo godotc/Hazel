@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-11 05:31:16
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-19 05:56:03
+ * @ Modified time: 2025-03-03 02:34:39
  * @ Description:
  */
 
@@ -12,6 +12,9 @@
 
 void StackDump(lua_State *L)
 {
+    // print a specifc color
+    printf("\x1b[32m");
+
     printf("***** begin stack dump **\n");
     int n = lua_gettop(L);
     for (int i = 1; i <= n; ++i) {
@@ -36,4 +39,6 @@ void StackDump(lua_State *L)
         printf(", ");
     }
     printf("\n***** end stack dump **\n");
+    // end color
+    printf("\x1b[0m");
 }
