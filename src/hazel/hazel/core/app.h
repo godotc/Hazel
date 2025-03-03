@@ -38,6 +38,7 @@ class HAZEL_API App
     static App *g_Application;
 
     ApplicationSpecification m_ApplicationSpecification;
+    std::filesystem::path    m_WorkingDirectory;
 
     LayerStack m_LayerStack;
     Window    *m_Window;
@@ -78,6 +79,8 @@ class HAZEL_API App
 
     ApplicationSpecification   GetApplicationSpecification() const { return m_ApplicationSpecification; }
     ApplicationCommandLineArgs GetCommandLineArgs() const { return m_ApplicationSpecification.CommandLineArgs; }
+
+    const std::filesystem::path &GetWorkingDirectory() const { return m_WorkingDirectory; }
 
   protected:
     void OnEvent(Event &ev);

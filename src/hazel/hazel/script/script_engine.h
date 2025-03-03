@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:02:52
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-02 15:57:32
+ * @ Modified time: 2025-03-04 02:23:43
  * @ Description:
  */
 
@@ -26,10 +26,17 @@ class ScriptEngine
 
     static LuaMachine LM;
 
+    std::vector<luaL_Reg> m_Functions;
+
   public:
     static void PreInit();
     static void Init();
     static void Shutdown();
+
+
+    static int NativeLog(lua_State *L);
+
+    void LogLua(std::string msg);
 
 
     static LuaMachine &GetMachine() { return LM; }

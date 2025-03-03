@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:03:51
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-02 15:47:21
+ * @ Modified time: 2025-03-04 02:32:33
  * @ Description:
  */
 
@@ -41,6 +41,9 @@ void ScriptEngine::PreInit()
     LM             = LuaMachineManager::Get().NewMachine();
     LM.bDebugOuput = true;
 
+    LM.stack_dump("preinit");
+
+    // need preload some lua codes?
     fs::path main    = FPath("src/pkgs/nelua/scripts/main.lua");
     auto     Content = utils::File::read_all(main);
 
@@ -52,24 +55,65 @@ void ScriptEngine::PreInit()
     // LM.CallMemberFunc("Module.Guide", "print_hello");
     LM.CallMemberFuncV2("Module.Guide", "print_hello", false);
 
+
     // App::Get().Shutdown();
 }
 
 void ScriptEngine::Init()
 {
-    // register Scriptable entity
+    lua_State *L = LM.GetState();
 
-    if (fs::exists("main.lua")) {
-        auto path = fs::absolute("main.lua");
-        HZ_INFO("Found main script: {}", path.string());
-        auto p =  utf8::utf16to8(path.u16string());
-        LM.LoadLuaScriptFile(p.c_str());
+
+    LM.RegisterGlobalFunc("NativeLog", &ScriptEngine::NativeLog);
+
+    {
+        LM.stack_dump("before update package.path");
+
+        lua_getglobal(L, "package");
+        lua_getfield(L, -1, "path");
+        std::string path = lua_tostring(L, -1);
+
+
+        path = (App::Get().GetWorkingDirectory() / "?.lua").string() + ";" + path;
+        lua_pushstring(L, path.c_str());
+
+        LM.stack_dump("on update package.path");
+
+        lua_setfield(L, -3, "path");
+
+        lua_pushvalue(L, -2);
+        lua_setglobal(L, "package");
+
+        LM.stack_dump("after update package.path");
+        lua_pop(L, 2);
+
     }
 }
 
 void ScriptEngine::Shutdown()
 {
     LuaMachineManager::Get().RemoveMachine(LM);
+}
+
+int ScriptEngine::NativeLog(lua_State *L)
+{
+    // TODO: arg1 should be a log level
+    int         n = lua_gettop(L);
+    std::string msg;
+    msg.reserve(n * 4);
+    for (int i = 1; i <= n; i++) {
+        const char *s = lua_tostring(L, i);
+        msg += s;
+        msg.push_back(' ');
+    }
+    HZ_INFO("LogLua {}", msg);
+    return 0;
+}
+
+void ScriptEngine::LogLua(std::string msg)
+{
+    // lua_pushstring(LM.GetState(), msg.c_str());
+    LM.CallFunc("print", msg.c_str());
 }
 
 

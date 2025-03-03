@@ -8,6 +8,7 @@ do
     --     print("curdir ==  $(curdir)")
     --     print("scriptdir == $(scriptdir)")
     -- end)
+    set_languages("c++20")
 
     add_deps("nelua", { public = true })
 

@@ -9,10 +9,11 @@ end
 
 function Script:OnCreate()
     print("Script:OnCreate")
+    NativeLog("Hello", 1, 2, 3)
 end
 
 function Script:OnUpdate(dt)
-    print("Script:OnUpdate", dt)
+    -- print("Script:OnUpdate", dt)
 end
 
 function Script:OnDestroy()

@@ -54,6 +54,7 @@ App::App(const ApplicationSpecification &app_sec)
         std::filesystem::current_path(app_sec.WorkingDirectory);
         HZ_WARN("Set working directory to {}", app_sec.WorkingDirectory.string());
     }
+    m_WorkingDirectory = std::filesystem::current_path();
 
     m_Window->SetEventCallback([this](Event &ev) -> void { this->OnEvent(ev); });
     m_Window->SetVSync(true);

@@ -1,0 +1,31 @@
+{
+    "completion": {
+        "autoRequire": true,
+        "autoRequireFunction": "require",
+        "autoRequireNamingConvention": "keep",
+        "callSnippet": false,
+        "enable": true,
+        "postfix": "@"
+    },
+    "workspace": {
+        "encoding": "utf-8",
+        "ignoreDir": [],
+        "ignoreGlobs": [],
+        "library": [
+            "."
+        ],
+        "preloadFileSize": 0,
+        "workspaceRoots": []
+    },
+    "diagnostics": {
+        "diagnosticInterval": 500,
+        "disable": [],
+        "enable": true,
+        "enables": [],
+        "globals": [],
+        "globalsRegex": [],
+        "severity": {
+            "undefined-global": "warning"
+        }
+    }
+}

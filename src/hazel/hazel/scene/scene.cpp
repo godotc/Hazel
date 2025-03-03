@@ -3,7 +3,7 @@
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-03 02:39:21
+ * @ Modified time: 2025-03-04 02:33:50
  */
 
 
@@ -31,6 +31,9 @@
 
 #include "hazel/scene/scriptable_entity.h"
 #include "hazel/sref/typelist.hpp"
+
+#include "hazel/core/app.h"
+#include "hazel/script/script_engine.h"
 
 
 
@@ -301,6 +304,25 @@ Ref<Scene> Scene::Copy(Ref<Scene> scene)
 void Scene::OnRuntimeStart()
 {
     OnPhysics2DStart();
+
+    // register Scriptable entity
+
+    // if (fs::exists("main.lua")) {
+    //     auto path = fs::absolute("main.lua");
+    //     HZ_INFO("Found main script: {}", path.string());
+    //     auto p = utf8::utf16to8(path.u16string());
+    //     LM.LoadLuaScriptFile(p.c_str());
+    // }
+
+
+    auto      &LM = ScriptEngine::GetMachine();
+    lua_State *L  = LM.GetState();
+    lua_pushstring(L, App::Get().GetWorkingDirectory().string().c_str());
+    lua_setglobal(L, "WORKING_DIR");
+    if (!ScriptEngine::GetMachine().LoadLuaScriptFile("main.lua"))
+    {
+        HZ_CORE_ERROR("Failed to load main.lua");
+    }
 }
 
 void Scene::OnRuntimeStop()

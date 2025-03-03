@@ -3,7 +3,7 @@
  * @ Create Time: 2024-11-13 17:47:25
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-03 02:39:46
+ * @ Modified time: 2025-03-04 00:03:34
  */
 
 
@@ -60,15 +60,16 @@ void LuaScriptComponent::Init()
     LM.stack_dump("after new");
 
     lua_pushvalue(LM.GetState(), -1);
-    refScriptObj = luaL_ref(LM.GetState(), LUA_REGISTRYINDEX); // -1 stack
+    refScriptObj = luaL_ref(LM.GetState(), LUA_REGISTRYINDEX); // -1 stack (this table)
+
     LM.stack_dump("after ref 1");
 
-    // lua_pushvalue(LM.GetState(), -1);
     int ret = lua_getfield(LM.GetState(), -1, "OnCreate");
     if (ret != LUA_TFUNCTION) {
         HZ_CORE_ERROR("Failed to load script: {}", ScriptPath);
     }
-    refOnCreate = luaL_ref(LM.GetState(), LUA_REGISTRYINDEX); // -1 stack
+    refOnCreate = luaL_ref(LM.GetState(), LUA_REGISTRYINDEX); // -1 stack (this function)
+    LM.stack_dump("after ref 2");
 
     // lua_pushvalue(LM.GetState(), -1);
     ret = lua_getfield(LM.GetState(), -1, "OnUpdate");
@@ -76,8 +77,8 @@ void LuaScriptComponent::Init()
         HZ_CORE_ERROR("Failed to load script: {}", ScriptPath);
     }
     refOnUpdate = luaL_ref(LM.GetState(), LUA_REGISTRYINDEX); // -1 stack
+    LM.stack_dump("after ref 3");
 
-    // lua_pushvalue(LM.GetState(), -1);
     ret = lua_getfield(LM.GetState(), -1, "OnDestroy");
     if (ret != LUA_TFUNCTION) {
         HZ_CORE_ERROR("Failed to load script: {}", ScriptPath);
@@ -100,7 +101,8 @@ void LuaScriptComponent::OnCreate()
         auto LM = ScriptEngine::GetMachine();
         lua_rawgeti(LM.GetState(), LUA_REGISTRYINDEX, refOnCreate);
         lua_rawgeti(LM.GetState(), LUA_REGISTRYINDEX, refScriptObj);
-        LM.LuaCall(0, 0);
+        // LM.stack_dump("after get refOnCreate and refScriptObj");
+        LM.LuaCall(1, 0);
     }
 }
 
