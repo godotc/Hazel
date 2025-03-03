@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2024-11-23 01:27:43
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-02 21:12:46
+ * @ Modified time: 2025-03-04 00:16:14
  * @ Description:
  */
 
@@ -145,12 +145,12 @@ static std::string RigidBody2DBodyTypeToString(Rigidbody2DComponent::EBodyType b
 {
     switch (bodyType)
     {
-        case Rigidbody2DComponent::EBodyType::Static:
-            return "Static";
-        case Rigidbody2DComponent::EBodyType::Dynamic:
-            return "Dynamic";
-        case Rigidbody2DComponent::EBodyType::Kinematic:
-            return "Kinematic";
+    case Rigidbody2DComponent::EBodyType::Static:
+        return "Static";
+    case Rigidbody2DComponent::EBodyType::Dynamic:
+        return "Dynamic";
+    case Rigidbody2DComponent::EBodyType::Kinematic:
+        return "Kinematic";
     }
 
     HZ_CORE_ASSERT(false, "Unknown body type");
@@ -321,6 +321,14 @@ static void SerializeEntity(YAML::Emitter &out, Entity &entity)
         out << YAML::EndMap;
     }
 
+    if (entity.HasComponent<LuaScriptComponent>()) {
+        out << YAML::Key << "LuaScriptComponent";
+        out << YAML::BeginMap;
+        auto &lua_script_component = entity.GetComponent<LuaScriptComponent>();
+        out << YAML::Key << "ScriptPath" << YAML::Value << lua_script_component.ScriptPath;
+        out << YAML::EndMap;
+    }
+
 
 
     out << YAML::EndMap;
@@ -461,7 +469,7 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 rb2d.bFixedRotation = rigid_body_2d_component["bFixedRotation"].as<bool>();
             }
 
-            if (const auto box_collider_2d_component = entity["BoxCollider2DComponent"])
+            if (const auto &box_collider_2d_component = entity["BoxCollider2DComponent"])
             {
                 auto &bc2d = deserialized_entity.AddComponent<BoxCollider2DComponent>();
 
@@ -473,7 +481,7 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 bc2d.RestitutionThreshold = box_collider_2d_component["RestitutionThreshold"].as<float>();
             }
 
-            if (const auto circle_collider_2d_component = entity["CircleCollider2DComponent"])
+            if (const auto &circle_collider_2d_component = entity["CircleCollider2DComponent"])
             {
                 auto &cc2d = deserialized_entity.AddComponent<CircleCollider2DComponent>();
 
@@ -483,6 +491,10 @@ bool SceneSerializer::Deserialize(const std::string &filepath)
                 cc2d.Friction             = circle_collider_2d_component["Friction"].as<float>();
                 cc2d.Restitution          = circle_collider_2d_component["Restitution"].as<float>();
                 cc2d.RestitutionThreshold = circle_collider_2d_component["RestitutionThreshold"].as<float>();
+            }
+            if (const auto &native_script_component = entity["LuaScriptComponent"]) {
+                auto &lua_script_component      = deserialized_entity.AddComponent<LuaScriptComponent>();
+                lua_script_component.ScriptPath = native_script_component["ScriptPath"].as<std::string>();
             }
         }
     }

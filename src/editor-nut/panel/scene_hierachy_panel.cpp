@@ -459,7 +459,10 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         imgui::InputText("Script", component.ScriptPath.data(), 256);
         ImGui::SameLine();
         if (imgui::Button("select")) {
-            component.ScriptPath = FileDialogs::OpenFile("Lua Files (*.lua)\0*.lua\0", component.ScriptPath);
+            auto absPath = FileDialogs::OpenFile("Lua Files (*.lua)\0*.lua\0", component.ScriptPath);
+            if (!absPath.empty()) {
+                component.ScriptPath = std::filesystem::relative(absPath, EditorLayer::DefaultAssetsDirectory()).string();
+            }
         }
     });
 }
