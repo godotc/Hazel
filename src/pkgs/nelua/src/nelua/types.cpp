@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-11 05:31:16
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-03 02:34:39
+ * @ Modified time: 2025-03-04 02:10:01
  * @ Description:
  */
 
@@ -17,6 +17,7 @@ void StackDump(lua_State *L)
 
     printf("***** begin stack dump **\n");
     int n = lua_gettop(L);
+    printf("stack size: %d\n", n);
     for (int i = 1; i <= n; ++i) {
         int type = lua_type(L, i);
         switch (type) {

@@ -3,7 +3,7 @@
  *  Create Time: 2024-07-28 20:32:18
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2025-01-02 22:32:54
+ * @ Modified time: 2025-03-04 00:23:53
  */
 
 #include "glm/ext/quaternion_geometric.hpp"
@@ -1149,9 +1149,6 @@ void EditorLayer::OnScenePlay()
 void EditorLayer::OnSceneBeginPlay()
 {
 #if 1
-
-    Entity entity = m_ActiveScene->GetPrimaryCameraEntity();
-
     class CameraController : public ScriptableEntity
     {
       public:
@@ -1179,7 +1176,9 @@ void EditorLayer::OnSceneBeginPlay()
         }
     };
 
-    entity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+    if (Entity entity = m_ActiveScene->GetPrimaryCameraEntity()) {
+        entity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+    }
 #endif
 }
 
