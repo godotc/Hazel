@@ -1,3 +1,5 @@
+
+
 #pragma once
 
 #include <cstdio>
@@ -37,4 +39,4 @@ inline void log_impl(const char *fmt, std::source_location loc, Ts... ts)
     printf(format.c_str(), filename.data(), loc.line(), std::forward<Ts>(ts)...);
 }
 
-#define log(fmt, ...) log_impl(fmt, std::source_location::current() __VA_OPT__(, ) __VA_ARGS__);
+#define Log(fmt, ...) log_impl(fmt, std::source_location::current() __VA_OPT__(, ) __VA_ARGS__);

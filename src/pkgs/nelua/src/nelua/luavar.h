@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-06 20:30:02
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-03 01:55:36
+ * @ Modified time: 2025-03-04 01:36:13
  * @ Description:
  */
 
@@ -81,7 +81,7 @@ struct LuaVar {
     void SetValue(lua_State *L, int pos)
     {
         type = (ELuaType::T)lua_type(L, pos);
-        log("set value type of pos %d : %d -> %s", pos, type, lua_typename(L, type));
+        Log("set value type of pos %d : %d -> %s", pos, type, lua_typename(L, type));
 
         switch (type) {
         case LUA_TNIL:
@@ -147,15 +147,15 @@ struct LuaVar {
 
     LuaVar Get(lua_State *L, std::string_view key)
     {
-        log("index %s, cur luavar type: %d", key.data(), type);
+        Log("index %s, cur luavar type: %d", key.data(), type);
         if (type == ELuaType::Table) {
-            log("get table %s", key.data());
+            Log("get table %s", key.data());
             lua_pushstring(L, key.data());
             int w = lua_gettable(L, -2);
-            log("w %d", w);
+            Log("w %d", w);
         }
         else if (type == ELuaType::Nil) {
-            log("get nil, get global %s", key.data());
+            Log("get nil, get global %s", key.data());
             lua_getglobal(L, key.data());
         }
 
@@ -179,10 +179,10 @@ struct LuaVar {
 
         do {
             bFound = ut::str::split(path, '.', left, right);
-            log("left %s, right %s", left.data(), right.data());
+            Log("left %s, right %s", left.data(), right.data());
             ret = ret.Get(L, left);
             StackDump(L);
-            log("LuaVar::Get ret type: %d", ret.type);
+            Log("LuaVar::Get ret type: %d", ret.type);
             if (ret.type != ELuaType::Table) {
                 break;
             }
