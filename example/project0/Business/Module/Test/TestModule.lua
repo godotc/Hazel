@@ -1,5 +1,4 @@
-local ModuleBase = require("FrameWork.ModuleBase")
-
+local ModuleBase = require "Business.Module.ModuleBase"
 
 
 ---@class TestModule: ModuleBase

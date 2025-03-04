@@ -1,34 +1,65 @@
--- debug config
 local original_traceback = debug.traceback
 
-debug.traceback = function(msg, level)
-    level = (level or 1) + 1 -- 默认层级+1，跳过当前函数
-    local tb = original_traceback(msg, level)
-    print(123)
-    tb = tb:gsub("(%.%.%).-([%w_]+%.lua)", function(_, filename)
-        -- 查找文件名对应的完整路径
-        local stack_level = 2 -- 从调用栈的上一层开始
-        while true do
-            local info = debug.getinfo(stack_level, "S")
-            if not info then break end
-            local path = info.source:sub(2)
-            if path:find(filename, 1, true) then
-                return path:gsub("\\", "/")
-            end
-            stack_level = stack_level + 1
+function new_traceback(msg, level)
+    level = (level or 1) + 1 -- 跳过当前函数
+    local tb = {}
+    if msg then
+        -- 确保消息为字符串
+        if type(msg) ~= "string" and type(msg) ~= "number" then
+            msg = tostring(msg)
         end
-        return "unknown_path/" .. filename
-    end)
-    return tb
+        table.insert(tb, msg)
+    end
+    table.insert(tb, "stack traceback:")
+
+    local stack_level = level
+    while true do
+        local info = debug.getinfo(stack_level, "nSl")
+        if not info then break end
+
+        -- 处理源码路径
+        local source = info.source
+        if source:sub(1, 1) == "@" then
+            source = source:sub(2)      -- 移除开头的 '@'
+        end
+        source = source:gsub("\\", "/") -- 统一为正斜杠
+
+        -- 拼接工作目录
+        if WORKING_DIR then
+            source = WORKING_DIR .. "/" .. source
+        end
+
+        -- 构造行信息
+        local line = string.format(
+            "%s:%d: in %s '%s'",
+            source,
+            info.currentline or 0,
+            info.what,
+            info.name or "anonymous"
+        )
+        table.insert(tb, line)
+
+        stack_level = stack_level + 1
+    end
+
+    return table.concat(tb, "\n")
 end
 
+debug.traceback = new_traceback
 
-print(WORKING_DIR)
-if WORKING_DIR ~= nil then
+-- 设置 package.path
+if WORKING_DIR then
+    print("WORKING_DIR=", WORKING_DIR)
     package.path = package.path .. ";" .. WORKING_DIR .. "/Business/?.lua"
 end
+print(package.path)
 
 
-require "Business.MainEntry"
+print("wtf")
+require("Business.MainEntry")
+-- print(BusinessMain)
+-- BusinessMain()
 
-xpcall(MainEntry, print)
+-- BusinessMain:b()
+
+BusinessMain()
