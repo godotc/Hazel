@@ -3,7 +3,7 @@
  * @ Create Time: 2024-08-15 22:17:08
  * @ Modified by: @godot42
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-04 02:33:50
+ * @ Modified time: 2025-03-05 01:41:57
  */
 
 
@@ -315,6 +315,7 @@ void Scene::OnRuntimeStart()
     // }
 
 
+    ScriptEngine::Init();
     auto      &LM = ScriptEngine::GetMachine();
     lua_State *L  = LM.GetState();
     lua_pushstring(L, App::Get().GetWorkingDirectory().string().c_str());
@@ -334,6 +335,7 @@ void Scene::OnRuntimeStop()
             lua_comp.OnDestroy();
         }
     });
+    ScriptEngine::Shutdown();
 }
 
 void Scene::OnSimulationStart()

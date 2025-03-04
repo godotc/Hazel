@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-02 23:02:52
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-04 02:23:43
+ * @ Modified time: 2025-03-05 01:50:17
  * @ Description:
  */
 
@@ -29,7 +29,8 @@ class ScriptEngine
     std::vector<luaL_Reg> m_Functions;
 
   public:
-    static void PreInit();
+    static void Test();
+
     static void Init();
     static void Shutdown();
 

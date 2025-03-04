@@ -3,7 +3,7 @@
  * @ Author: godot42
  * @ Create Time: 2025-01-11 04:04:25
  * @ Modified by: @godot42
- * @ Modified time: 2025-03-02 19:03:56
+ * @ Modified time: 2025-03-05 01:46:13
  * @ Description:
  */
 
@@ -17,7 +17,6 @@ LuaMachine LuaMachineManager::NewMachine()
 {
 
     lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
 
     L2Idx.insert({L, Index});
     Idx2L.insert({Index, L});

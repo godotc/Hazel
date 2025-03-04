@@ -38,7 +38,7 @@ App::App(const ApplicationSpecification &app_sec)
 {
     HZ_PROFILE_FUNCTION();
 
-    ScriptEngine::PreInit();
+    ScriptEngine::Test();
 
     HZ_INFO("App construct");
     HZ_CORE_ASSERT(!g_Application, "Already a application instance");
