@@ -1,0 +1,9 @@
+target("reflect-bin")
+do
+    set_kind("binary")
+    add_files(
+        "./src/main.cpp",
+        "./src/dynamic.cpp",
+        "./src/enhance_any.cpp"
+    )
+end
