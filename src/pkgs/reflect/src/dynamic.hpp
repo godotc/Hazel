@@ -5,34 +5,41 @@
 
 #include <assert.h>
 #include <functional>
+#include <iostream>
 #include <set>
 #include <typeinfo>
 
+
 #include "Base.h"
+#include "dynamic_any.hpp"
+#include "invokeable.hpp"
+#include "static.hpp"
 
 
 
-#include <iostream>
-
-
-
-namespace TOPLEVEL_NAMESPACE {
+TOPLEVEL_NAMESPACE_BEGIN
 
 class Type;
 class Numeric;
 class Enum;
 class Class;
-class EnhanceAny;
+class DynamicAny;
 
 template <typename T>
 class Factory;
 
 
-
 extern std::set<const Type *> &getGlobalTypes();
+
 
 template <typename T>
 const Type *getType();
+
+template <typename T>
+auto &registerType();
+
+
+#pragma region Type
 
 
 
@@ -40,6 +47,7 @@ struct Type {
 
     enum EKind
     {
+        Void,
         Numeric,
         Enum,
         Class,
@@ -58,24 +66,72 @@ struct Type {
 
     const class Numeric *asNumeric() const;
 
-    static std::string_view kindToString(EKind kind);
+    static std::string_view kindToString(EKind kind)
+    {
+        switch (kind) {
+        case EKind::Void:
+            return "Void";
+        case EKind::Numeric:
+            return "Numeric";
+        case EKind::Enum:
+            return "Enum";
+        case EKind::Class:
+            return "Class";
+        case EKind::Function:
+            return "Function";
+        default:
+            return "Unknown";
+        }
+    }
 };
+
 
 
 namespace Test {
 
 #if WITH_TEST
-inline void typeTest()
-{
-    Type  t("test", Type::EKind::Numeric);
-    auto &global_types = getGlobalTypes();
-    global_types.insert(&t);
-}
+extern void typeTest();
 #endif
 
 } // namespace Test
 
 
+#pragma endregion
+
+#pragma region Void
+
+struct Void : Type {
+
+    Void() : Type("Void", Type::EKind::Void) {}
+    static Void create()
+    {
+        return Void();
+    }
+};
+
+class VoidFactory final
+{
+    Void typeInfo;
+
+  public:
+    static VoidFactory &instance()
+    {
+        static VoidFactory instance;
+        std::once_flag     flag;
+        std::call_once(
+            flag,
+            [](auto &instance) {
+                getGlobalTypes().insert(&instance.typeInfo);
+            },
+            instance);
+        return instance;
+    }
+
+    const Void &getTypeInfo() const { return typeInfo; }
+};
+#pragma endregion
+
+#pragma region Numeric
 struct Numeric : Type {
 
     enum class EKind
@@ -87,7 +143,8 @@ struct Numeric : Type {
         Int64,
         Float,
         Double,
-        Bool
+        Bool,
+        Void,
     };
 
     union
@@ -139,8 +196,13 @@ struct Numeric : Type {
             return "Bool";
         case EKind::Unknown:
             return "Unknown";
+        case EKind::Void:
+            return "Void";
             break;
         }
+
+        assert(false);
+        return "";
     }
 
     template <typename T>
@@ -165,9 +227,11 @@ struct Numeric : Type {
             int64Value = value;
             break;
         case EKind::Float:
-            UNIMPLEMENTED();
+            floatValue = value;
         case EKind::Double:
+            doubleValue = value;
         case EKind::Bool:
+            boolValue = value;
             break;
         }
     }
@@ -176,6 +240,19 @@ struct Numeric : Type {
     static EKind DetectKind()
     {
         using t1 = std::remove_reference_t<T>;
+
+
+
+        if constexpr (false) {
+            void *v;
+            using tv = decltype(v);
+
+            auto a = std::is_integral_v<tv>;
+            auto b = std::is_floating_point_v<tv>;
+            auto c = std::is_pointer_v<tv>;
+            auto d = std::is_null_pointer_v<tv>;
+        }
+
 
         if constexpr (std::is_integral_v<t1>)
         {
@@ -210,6 +287,11 @@ struct Numeric : Type {
             }
 #endif
         }
+        else if constexpr (std::is_void_v<t1>) {
+            return EKind::Void;
+        }
+
+
 
         // what type is T?
         fprintf(stderr, "Unknown type: %s\n", typeid(T).name());
@@ -247,27 +329,189 @@ class NumericFactory final
     // }
 };
 
+#pragma endregion
+
+
+
+#pragma region Class
+
+
+struct ClassMember {
+};
+
+
+#pragma region ClassFunction
+
+
+
+struct ClassFunction : public Type {
+    using Any = DynamicAny;
+
+    std::string               name;
+    const Type               *returnType;
+    std::vector<const Type *> parameterTypes;
+    // void(*ptr);
+
+    Invokable *invoke_ptr;
+
+
+    ClassFunction(const std::string &name)
+        : Type(name, Type::EKind::Function)
+    {
+    }
+
+    Any call(Any &instance, const std::vector<Any> &args)
+    {
+        return invoke_ptr->invoke(instance, args);
+    }
+
+
+    template <typename Func>
+    static ClassFunction create(const std::string &name, Func func)
+    {
+        using func_t      = decltype(func);
+        using traits      = function_traits<func_t>;
+        using owner       = typename traits::owner_class;
+        using return_type = typename traits::return_type;
+        using parameters  = typename traits::parameters;
+
+        if constexpr (false) {
+            struct A {
+                void a() { printf("baga\n"); }
+            };
+
+            auto cf = ClassFunction::create<decltype(&A::a)>("a");
+        }
+
+        // void(*ptr) = new (typename traits::ptr_type)(T);
+
+        auto ret           = ClassFunction(name);
+        ret.returnType     = getType<return_type>(),
+        ret.parameterTypes = convertTypeListToVector<parameters>(std::make_index_sequence<traits::parameters::size>()),
+        ret.invoke_ptr     = new InvokableImpl<func_t>(func);
+        return ret;
+    }
+
+  private:
+    template <typename Params, size_t... Idx>
+    static std::vector<const Type *> convertTypeListToVector(std::index_sequence<Idx...>)
+    {
+        return {getType<nth_t<Params, Idx>>()...};
+    }
+};
+
+
+namespace Test {
+#if WITH_TEST
+inline void classFunctionTest()
+{
+    struct A {
+        void a() { printf("============ %s calling\n", __FUNCTION_SIG); }
+
+        void printInt(int n)
+        {
+            printf("=============%s %d\n", __FUNCTION_SIG, n);
+        }
+    };
+
+    auto pA = &A::a;
+
+    using traits = function_traits<decltype(pA)>;
+    using r      = traits::return_type;
+    using b      = traits::parameters;
+    auto n       = traits::parameters::size;
+
+
+
+    A          aInstance;
+    DynamicAny aInstanceConstRef = DynamicAny::make_const_ref(aInstance);
+
+    ClassFunction func = ClassFunction::create("a", &A::a);
+    func.call(aInstanceConstRef, {});
+
+
+
+    ClassFunction func2 = ClassFunction::create("printInt", &A::printInt);
+    func2.call(aInstanceConstRef, {DynamicAny::make_copy(42)});
+    // this for store ptr in the class?
+    // auto ptr = std::make_unique<ClassFunction>(std::move(func));
+}
+
+#endif
+} // namespace Test
+
+
+#pragma endregion
+
+
+#pragma region ClassVariable
+
+struct ClassVariable {
+    using Any = DynamicAny;
+
+    // Class      *ownerClass;
+    std::string name;
+    const Type *type;
+
+    template <typename OwnerClass, typename... Args>
+    Any call(const std::vector<Any> &args);
+
+    template <typename T>
+    static ClassVariable create(const std::string &name)
+    {
+        // using traits = variable_traits<T>;
+        return ClassVariable{
+            // .ownerClass = ownerClass,
+            // .name = name,
+            // .type = traits::type,
+        };
+    }
+};
+
+#pragma endregion
 
 
 class Class : public Type
 {
-    struct Member {
-    };
+    using Any = DynamicAny;
 
+  public:
   private:
-    std::vector<Member> functions;
-    std::vector<Member> variables;
+    std::vector<ClassMember> functions;
+    std::vector<ClassMember> variables;
 
   public:
     Class() : Type("Unknown-Class", Type::EKind::Class) {}
     Class(const std::string &name) : Type(name, Type::EKind::Class) {}
 
-    template <typename T>
-    static Class create()
+
+    void addFunction(ClassFunction &&member)
     {
-        return Class{};
+        UNIMPLEMENTED();
+        // functions.emplace_back(std::move(member));
+    }
+    void addVariable(ClassVariable &&member)
+    {
+        UNIMPLEMENTED();
+        // variables.emplace_back(std::move(member));
+    }
+
+
+    template <typename OwnerClass, typename RetType, size_t... Idx, typename... Args>
+    static Any callMemberFunctionImpl(RetType (OwnerClass::*ptr)(Args...), const std::vector<Any> &args, std::index_sequence<Idx...>)
+    {
+        OwnerClass *instance = (OwnerClass *)args[0].getPayload();
+        auto        ret      = instance->*ptr(unwrap<Args>(args[Idx + 1])...);
+        return make_copy(ret);
     }
 };
+
+namespace Test {
+#if WITH_TEST
+void classTest();
+#endif
+
+} // namespace Test
 
 
 template <typename T>
@@ -278,13 +522,19 @@ class ClassFactory final
   public:
     static ClassFactory &instance()
     {
-        static ClassFactory instance = []() {
-            ClassFactory instance{Class::create<T>()};
-            getGlobalTypes().insert(&instance.getTypeInfo());
-            return instance;
-        }();
+        static ClassFactory<T> instance;
+        static std::once_flag  flag;
+        std::call_once(
+            flag,
+            [](ClassFactory<T> &instance) {
+                debug(), "Class Factory instance created : [", typeid(T).name(), "]";
+                getGlobalTypes().insert(&instance.getTypeInfo());
+            },
+            instance);
         return instance;
     }
+
+    ClassFactory() = default;
 
     ClassFactory(Class &&info) : typeInfo(std::move(info))
     {
@@ -296,17 +546,18 @@ class ClassFactory final
         return *this;
     }
 
-    template <typename VariableType>
+    template <typename MemberVariable>
     ClassFactory &addVariable(std::string_view name)
     {
-        UNIMPLEMENTED();
+        // typeInfo.addVariable(ClassVariable::create<MemberVariable>(name));
         return *this;
     }
 
     template <typename FunctionType>
     ClassFactory &addFunction(std::string_view name)
     {
-        UNIMPLEMENTED();
+        auto func = ClassFunction::create<FunctionType>(std::string(name));
+        typeInfo.addFunction(std::move(func));
         return *this;
     }
 
@@ -320,6 +571,19 @@ class ClassFactory final
     // }
 };
 
+#pragma endregion
+
+
+
+struct TrivialFactory {
+    static TrivialFactory &instance()
+    {
+        static TrivialFactory instace;
+        return instace;
+    }
+};
+
+
 
 template <typename T>
 class Factory final
@@ -327,10 +591,20 @@ class Factory final
   public:
     static auto &getFactory()
     {
+
         using t1 = std::remove_reference_t<T>;
 
-        if constexpr (std::is_fundamental_v<t1>) {
+        // std::is_member_function_pointer<>
+        if constexpr (std::is_function_v<t1>) {
+            UNIMPLEMENTED();
+            assert(false);
+            return TrivialFactory::instance();
+        }
+        else if constexpr (std::is_arithmetic_v<t1>) {
             return NumericFactory<T>::instance();
+        }
+        else if constexpr (std::is_void_v<t1>) {
+            return VoidFactory::instance();
         }
         // else if constexpr (std::is_enum_v<t1>) {
         //     return EnumFactory<T>::Instance();
@@ -338,21 +612,46 @@ class Factory final
         else if constexpr (std::is_class_v<t1>) {
             return ClassFactory<T>::instance();
         }
-        // else {
-        //     return TrivialFactory::Instance();
-        // }
+        else {
+            debug(), "Getting factory of ", typeid(T).name();
+            assert(false);
+            return TrivialFactory::instance();
+        }
     }
 };
 
 
+
+#pragma
+// -------------------------inline tempalte functions-------------------------
+
+
+template <typename T>
+const Type *getType()
+{
+    return &Factory<T>::getFactory().getTypeInfo();
+}
+
+template <typename T>
+auto &registerType()
+{
+    return Factory<T>::getFactory();
+}
+
+template <typename OwnerClass, typename... Args>
+inline DynamicAny ClassVariable::call(const std::vector<Any> &args)
+{
+    assert(args.size() == 1 && args[0].getTypeInfo() == getType<Class>());
+    return Class::callMemberFunctionImpl(args, std::make_index_sequence<sizeof...(Args)>());
+}
+
 namespace Test {
 
 #if WITH_TEST
-inline void test()
-{
-    const Type *intType = getType<int>();
-    intType->asNumeric();
-}
+
 #endif
 } // namespace Test
-}; // namespace TOPLEVEL_NAMESPACE
+
+
+
+TOPLEVEL_NAMESPACE_END

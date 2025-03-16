@@ -618,6 +618,7 @@ class Class : public Type
             return inner_call(ptr, args, std::make_index_sequence<sizeof...(Args)>());
         }
 
+
         template <typename T>
         static MemberFunction Create(const std::string &name);
 

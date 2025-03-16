@@ -8,15 +8,17 @@
 
 #define __SSO 1
 
-namespace reflect {
+TOPLEVEL_NAMESPACE_BEGIN
+
 
 class Type;
 
-template <class T>
+
+template <typename T>
 const Type *getType();
 
 
-class EnhanceAny
+class DynamicAny
 {
   public:
     template <class T>
@@ -34,38 +36,38 @@ class EnhanceAny
     };
 
     struct Operations {
-        std::function<EnhanceAny(const EnhanceAny &)> copy;
-        std::function<EnhanceAny(EnhanceAny &)>       steal;
-        std::function<void(EnhanceAny &)>             release;
+        std::function<DynamicAny(const DynamicAny &)> copy;
+        std::function<DynamicAny(DynamicAny &)>       steal;
+        std::function<void(DynamicAny &)>             release;
     };
 
 
   private:
 
-    using Any = EnhanceAny;
+    using Any = DynamicAny;
 
     template <class T>
     struct operation_traits {
 
-        static EnhanceAny copy(const EnhanceAny &other)
+        static DynamicAny copy(const DynamicAny &other)
         {
             assert(other.typeinfo == getType<T>());
 
-            EnhanceAny ret;
+            DynamicAny ret;
             ret.payload     = new T{*static_cast<T *>(other.payload)}; // erase type
             ret.typeinfo    = other.typeinfo;
-            ret.storageType = EnhanceAny::EStorageType::Owned;
+            ret.storageType = DynamicAny::EStorageType::Owned;
             ret.operations  = other.operations;
             return ret;
         }
 
-        static EnhanceAny steal(EnhanceAny &other)
+        static DynamicAny steal(DynamicAny &other)
         {
             assert(other.typeinfo == getType<T>());
-            EnhanceAny ret;
+            DynamicAny ret;
 
 #if __SSO
-            if constexpr (sizeof(T) <= sizeof(EnhanceAny::smallSizeObject)) {
+            if constexpr (sizeof(T) <= sizeof(DynamicAny::smallSizeObject)) {
                 // Emplacement New:  call the construct on a memory that already allocated which on stack
                 new (ret.smallSizeObject) T{*static_cast<T *>(other.payload)};
             }
@@ -76,21 +78,21 @@ class EnhanceAny
             ret.payload = new T{std::move(*static_cast<T *>(other.payload))}; // erase type
 #endif
             ret.typeinfo      = other.typeinfo;
-            ret.storageType   = EnhanceAny::EStorageType::Owned;
-            other.storageType = EnhanceAny::EStorageType::Stolen; // update origin's data state
+            ret.storageType   = DynamicAny::EStorageType::Owned;
+            other.storageType = DynamicAny::EStorageType::Stolen; // update origin's data state
             ret.operations    = other.operations;
             return ret;
         }
 
 
-        static void release(EnhanceAny &other)
+        static void release(DynamicAny &any)
         {
-            assert(other.typeinfo == getType<T>());
+            assert(any.typeinfo == getType<T>());
 
-            delete static_cast<T *>(other.payload); // TODO: maybe force convert (void*)
-            other.payload     = nullptr;
-            other.storageType = EnhanceAny::EStorageType::Empty;
-            other.typeinfo    = nullptr;
+            delete static_cast<T *>(any.payload); // TODO: maybe force convert (void*)
+            any.payload     = nullptr;
+            any.storageType = DynamicAny::EStorageType::Empty;
+            any.typeinfo    = nullptr;
         }
     };
 
@@ -147,14 +149,27 @@ class EnhanceAny
     template <class T>
     static auto make_const_ref(const T &other)
     {
-        UNIMPLEMENTED();
-        return Any();
+        Any ret;
+        // ret.payload      = static_cast<void *>(&other); // also pointer to this deref value
+        ret.payload     = (void *)(&other); // also pointer to this deref value
+        ret.typeinfo    = getType<T>();
+        ret.storageType = EStorageType::ConstRef;
+        if constexpr (std::is_copy_constructible_v<T>) {
+            ret.operations.copy = operation_traits<T>::copy;
+        }
+        if constexpr (std::is_move_constructible_v<T>) {
+            ret.operations.steal = operation_traits<T>::steal;
+        }
+        if constexpr (std::is_destructible_v<T>) {
+            ret.operations.release = operation_traits<T>::release;
+        }
+        return ret;
     }
 
-    EnhanceAny() = default;
+    DynamicAny() = default;
 
     // Copy constructor
-    EnhanceAny(const EnhanceAny &other)
+    DynamicAny(const DynamicAny &other)
     {
         typeinfo    = other.typeinfo;
         storageType = other.storageType;
@@ -173,7 +188,7 @@ class EnhanceAny
     }
 
     // Move constructor
-    EnhanceAny(EnhanceAny &&other) // noexcept
+    DynamicAny(DynamicAny &&other) // noexcept
     {
         typeinfo    = std::move(other.typeinfo);
         payload     = std::move(other.payload);
@@ -182,7 +197,7 @@ class EnhanceAny
     }
 
     // Copy assignment
-    EnhanceAny &operator=(const EnhanceAny &other)
+    DynamicAny &operator=(const DynamicAny &other)
     {
         if (this != &other) {
             typeinfo    = other.typeinfo;
@@ -205,7 +220,7 @@ class EnhanceAny
 
 
     // Move assignment
-    EnhanceAny &operator=(EnhanceAny &&other) // noexcept
+    DynamicAny &operator=(DynamicAny &&other) // noexcept
     {
         if (this != &other) {
             typeinfo    = std::move(other.typeinfo);
@@ -217,7 +232,7 @@ class EnhanceAny
     }
 
 
-    ~EnhanceAny()
+    ~DynamicAny()
     {
         if (operations.release && (storageType == EStorageType::Owned || storageType == EStorageType::Stolen)) {
 #ifndef NODEBUG
@@ -262,6 +277,9 @@ class EnhanceAny
             return "ConstRef";
             break;
         }
+
+        assert(false);
+        return "";
     }
 
   private:
@@ -277,4 +295,4 @@ extern void any_test();
 #endif
 } // namespace Test
 
-} // namespace reflect
+TOPLEVEL_NAMESPACE_END

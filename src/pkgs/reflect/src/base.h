@@ -1,6 +1,7 @@
 #pragma once
 
 #include "assert.h"
+#include <source_location>
 
 
 
@@ -8,7 +9,18 @@
     #define TOPLEVEL_NAMESPACE reflect
 #endif
 
+#define TOPLEVEL_NAMESPACE_BEGIN namespace TOPLEVEL_NAMESPACE {
+#define TOPLEVEL_NAMESPACE_END }
+
 #define WITH_TEST 1
+
+#if _WIN32
+    #define __FUNCTION_SIG __FUNCSIG__
+#elif __linux__
+    #define __FUNCTION_SIG __PRETTY_FUNCTION__
+#else
+    #error Need your implementation
+#endif
 
 // 定义字符串转换工具宏
 #define TO_STRING_IMPL(x) #x
@@ -61,12 +73,18 @@ inline std::ostream &operator<<(std::ostream &out, std::optional<T> v)
 
 
 struct debug {
+    std::ostream &out = std::cout;
+
+    debug(std::source_location loc = std::source_location::current())
+    {
+        out << loc.file_name() << ":" << loc.line() << " | ";
+    }
     template <typename Arg>
     debug &operator,(Arg arg)
     {
-        std::cout << arg;
+        out << arg;
         return *this;
     }
-    ~debug() { std::cout << '\n'; }
+    ~debug() { out << '\n'; }
 };
 // static auto d = debug{};
